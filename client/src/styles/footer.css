@@ -1,0 +1,11 @@
+.footer {
+  position: absolute;
+  bottom: 0;
+  font-size: 12px;
+  font-weight: 100;
+  padding: 10px 0;
+}
+
+.footer > p {
+  margin: 15px 0;
+}

@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  min-width: 900px;
+}
+
+#root {
+  width: 100%;
+}
+
+@font-face {
+  font-family: 'pixel1';
+  src: url('/fonts/neodgm.woff') format('woff');
+}
+@font-face {
+  font-family: 'pixel2';
+  src: url('/fonts/PixelMplus12-Regular.woff') format('woff');
+}
+
+* {
+  font-family: "pixel1", "pixel2";
+}

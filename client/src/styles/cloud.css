@@ -1,0 +1,7 @@
+.cloud {
+  padding: 30px 20px;
+  padding-bottom: 150px;
+  color: white;
+  z-index: 10;
+  position: relative;
+}

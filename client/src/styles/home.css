@@ -1,0 +1,33 @@
+.home {
+  color: white;
+  width: calc(100% - 40px);
+  height: calc(100% - 180px);
+  z-index: 10;
+  padding-top: 30px;
+  padding-bottom: 150px;
+  padding-right: 20px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.title {
+  font-size: 35px;
+  margin: 0;
+  padding-bottom: 40px;
+  box-sizing: border-box;
+}
+
+.sub-title {
+  font-size: 18px;
+  padding-top: 30px;
+  margin: 0;
+}
+
+.home > p {
+  font-size: 14px;
+  line-height: 30px;
+}
+
+del {
+  font-size: 10px;
+}

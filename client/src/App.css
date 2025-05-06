@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+}
+
+.content {
+  flex: 1;
+  background-image: url('/images/home/background1.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+}
