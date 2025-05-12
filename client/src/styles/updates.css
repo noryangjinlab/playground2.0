@@ -1,4 +1,4 @@
-.home {
+.updates {
   color: white;
   width: calc(100% - 40px);
   height: calc(100% - 180px);
@@ -16,19 +16,4 @@
   margin: 0;
   padding-bottom: 40px;
   box-sizing: border-box;
-}
-
-.sub-title {
-  font-size: 18px;
-  padding-top: 30px;
-  margin: 0;
-}
-
-.home > p {
-  font-size: 14px;
-  line-height: 30px;
-}
-
-del {
-  font-size: 10px;
 }
