@@ -1,0 +1,46 @@
+{
+  "id": "ab4d041d-486a-4224-abea-85d9198e1c92",
+  "parentId": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+  "title": "콤퓨타 응용기술들",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              }
+            ],
+            "text": "콤퓨타"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "childNote",
+        "attrs": {
+          "noteId": "f2cb2e75-7333-4b08-83f5-5dc96007a0b7",
+          "title": "각종 백엔드 자료들"
+        }
+      },
+      {
+        "type": "paragraph"
+      }
+    ]
+  }
+}

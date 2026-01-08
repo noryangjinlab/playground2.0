@@ -1,0 +1,15 @@
+{
+  "id": "3149d9c1-164c-41ba-8c46-36e39a7ba6ac",
+  "parentId": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+  "title": "전기전자공학",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": []
+  }
+}

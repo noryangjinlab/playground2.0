@@ -1,0 +1,19 @@
+{
+  "id": "60d517da-1978-4ab3-94b5-fefc3235888a",
+  "parentId": "d67ab366-c07a-40ce-9f95-3b36d237fd77",
+  "title": "나노소재공학 개론",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    },
+    {
+      "id": "d67ab366-c07a-40ce-9f95-3b36d237fd77",
+      "title": "나노소재학"
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": []
+  }
+}

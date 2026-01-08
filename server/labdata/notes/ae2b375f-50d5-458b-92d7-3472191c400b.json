@@ -1,0 +1,27 @@
+{
+  "id": "ae2b375f-50d5-458b-92d7-3472191c400b",
+  "parentId": "f2cb2e75-7333-4b08-83f5-5dc96007a0b7",
+  "title": "Node + React + NginX 배포하기",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    },
+    {
+      "id": "ab4d041d-486a-4224-abea-85d9198e1c92",
+      "title": "콤퓨타 응용기술들"
+    },
+    {
+      "id": "f2cb2e75-7333-4b08-83f5-5dc96007a0b7",
+      "title": "각종 백엔드 자료들"
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph"
+      }
+    ]
+  }
+}

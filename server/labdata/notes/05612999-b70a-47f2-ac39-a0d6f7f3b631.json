@@ -1,0 +1,80 @@
+{
+  "id": "05612999-b70a-47f2-ac39-a0d6f7f3b631",
+  "parentId": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+  "title": "즛토마요 선풍금 시리즈 (원작: ELECTRONICOS FANTASTICOS!)",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              }
+            ],
+            "text": "즛토마요 선풍금("
+          },
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              },
+              {
+                "type": "bold"
+              }
+            ],
+            "text": "扇風琴)"
+          },
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              }
+            ],
+            "text": " 시리즈 (원작: ELECTRONICOS FANTASTICOS!)"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "14px"
+                }
+              }
+            ],
+            "text": "깜빡이는 빛 신호가 만들어내는 주파수를 광피크로 변조하여 소리를 만들어낸다. 줄 하나 없으나 영미권에서는 어째서인지 Electric Fan Harp라고 부르고있다. "
+          }
+        ]
+      }
+    ]
+  }
+}
