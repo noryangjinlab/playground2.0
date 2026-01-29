@@ -52,7 +52,7 @@ function Signup() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3000/auth/signup', {
+    const res = await fetch('https://noryangjinlab.org/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

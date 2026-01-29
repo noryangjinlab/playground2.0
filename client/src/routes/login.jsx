@@ -52,7 +52,7 @@ function Login() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3000/auth/login', {
+    const res = await fetch('https://noryangjinlab.org/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -72,7 +72,7 @@ function Login() {
 
   const onLogout = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3000/auth/logout', {
+    const res = await fetch('https://noryangjinlab.org/auth/logout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
@@ -92,7 +92,7 @@ function Login() {
     if (!ok) return;
     const ok2 = window.confirm("혼또니?");
     if (!ok2) return;
-    const res = await fetch('http://localhost:3000/auth/bye', {
+    const res = await fetch('https://noryangjinlab.org/auth/bye', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
@@ -107,7 +107,7 @@ function Login() {
   };
 
   async function getMySession() {
-    const res = await fetch('http://localhost:3000/auth/me', {
+    const res = await fetch('https://noryangjinlab.org/auth/me', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'

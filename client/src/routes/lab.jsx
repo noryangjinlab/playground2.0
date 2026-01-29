@@ -352,7 +352,7 @@ const LabImageBehavior = Extension.create({
       const fd = new FormData()
       fd.append('file', file)
 
-      const res = await fetch('http://localhost:3000/lab/image/upload', {
+      const res = await fetch('https://noryangjinlab.org/lab/image/upload', {
         method: 'POST',
         credentials: 'include',
         body: fd,
@@ -496,7 +496,7 @@ const Lab = () => {
 
       saveTimerRef.current = setTimeout(async () => {
         saveTimerRef.current = null
-        await fetch('http://localhost:3000/lab/save', {
+        await fetch('https://noryangjinlab.org/lab/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -512,7 +512,7 @@ const Lab = () => {
 
   useEffect(() => {
     const run = async () => {
-      const res = await fetch('http://localhost:3000/auth/me', {
+      const res = await fetch('https://noryangjinlab.org/auth/me', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -539,7 +539,7 @@ const Lab = () => {
 
     const run = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/lab/${noteId}`, {
+        const res = await fetch(`https://noryangjinlab.org/lab/${noteId}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -598,7 +598,7 @@ const Lab = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:3000/lab/image/delete/${encodeURIComponent(filename)}`,
+          `https://noryangjinlab.org/lab/image/delete/${encodeURIComponent(filename)}`,
           {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -630,7 +630,7 @@ const Lab = () => {
       if (!targetId) return
 
       try {
-        const res = await fetch(`http://localhost:3000/lab/delete/${targetId}`, {
+        const res = await fetch(`https://noryangjinlab.org/lab/delete/${targetId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -665,7 +665,7 @@ const Lab = () => {
       content: [],
     }
 
-    await fetch('http://localhost:3000/lab/save', {
+    await fetch('https://noryangjinlab.org/lab/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -8,7 +8,7 @@ export default function Standby() {
   const [standByList, setStandByList] = useState([]);
 
   async function getMySession() {
-    const res = await fetch('http://localhost:3000/auth/me', {
+    const res = await fetch('https://noryangjinlab.org/auth/me', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
@@ -24,7 +24,7 @@ export default function Standby() {
   }
 
   async function getStandBy() {
-    const res = await fetch('http://localhost:3000/auth/standby', {
+    const res = await fetch('https://noryangjinlab.org/auth/standby', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
@@ -55,7 +55,7 @@ export default function Standby() {
                 아이디:{e.username}&nbsp;&nbsp;이름:{e.name}&nbsp;&nbsp;
                 <button onClick={async (event)=>{
                   event.preventDefault();
-                  const res = await fetch('http://localhost:3000/auth/confirmstandby', {
+                  const res = await fetch('https://noryangjinlab.org/auth/confirmstandby', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
