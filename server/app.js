@@ -12,13 +12,9 @@ dotenv.config();
 
 const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const clientBuildPath = path.join(__dirname, "..", "client", "dist");
 
 app.set('trust proxy', 1);
-
 
 app.use(
   helmet({
@@ -30,10 +26,11 @@ app.use(express.json());
 const isProd = process.env.NODE_ENV === 'production';
 
 app.use(cors({
-  origin: isProd ? 'https://noryangjinlab.duckdns.org' : 'http://localhost:5173',
+  origin: isProd
+    ? ['https://noryangjinlab.duckdns.org', 'http://noryangjinlab.duckdns.org']
+    : 'http://localhost:5173',
   credentials: true
 }));
-// 정적 파일 서빙 형식으로 변경 시 수정 고려
 
 app.use(session({
   key: 'session_id',
@@ -48,7 +45,6 @@ app.use(session({
     maxAge: 1000 * 60 * 60
   }
 }));
-
 
 app.use(express.static(clientBuildPath));
 app.use('/auth', authRouter);
