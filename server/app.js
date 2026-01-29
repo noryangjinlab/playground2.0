@@ -51,7 +51,7 @@ app.use(express.static(clientBuildPath));
 app.use('/auth', authRouter);
 app.use('/lab', labRouter);
 
-app.get('*', (req, res) => {
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 
