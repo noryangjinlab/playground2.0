@@ -50,8 +50,10 @@ app.use(express.static(clientBuildPath));
 app.use('/auth', authRouter);
 app.use('/lab', labRouter);
 
-app.get('/*splat', (req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/assets')) return res.sendStatus(404);
+  if (path.extname(req.path)) return res.sendStatus(404);
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
