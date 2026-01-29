@@ -19,7 +19,7 @@ app.set('trust proxy', 1);
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
-    hsts: false
+    contentSecurityPolicy: false
   })
 );
 app.use(express.json());
@@ -28,7 +28,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 app.use(cors({
   origin: isProd
-    ? ['https://noryangjinlab.duckdns.org', 'http://noryangjinlab.duckdns.org']
+    ? ['https://noryangjinlab.org', 'https://www.noryangjinlab.org']
     : 'http://localhost:5173',
   credentials: true
 }));
@@ -41,7 +41,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false,
+    secure: isProd,
     sameSite: 'lax',
     maxAge: 1000 * 60 * 60
   }
