@@ -51,9 +51,7 @@ app.use(express.static(clientBuildPath));
 app.use('/auth', authRouter);
 app.use('/lab', labRouter);
 
-app.get('(.*)', (req, res) => {
-  if (req.path.startsWith('/assets')) return res.sendStatus(404);
-  if (path.extname(req.path)) return res.sendStatus(404);
+app.get('/:path*', (req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
