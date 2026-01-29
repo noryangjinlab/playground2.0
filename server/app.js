@@ -18,7 +18,8 @@ app.set('trust proxy', 1);
 
 app.use(
   helmet({
-    crossOriginResourcePolicy: false
+    crossOriginResourcePolicy: false,
+    hsts: false
   })
 );
 app.use(express.json());
@@ -50,7 +51,7 @@ app.use(express.static(clientBuildPath));
 app.use('/auth', authRouter);
 app.use('/lab', labRouter);
 
-app.get('/*splat', (req, res) => {
+app.get('(.*)', (req, res) => {
   if (req.path.startsWith('/assets')) return res.sendStatus(404);
   if (path.extname(req.path)) return res.sendStatus(404);
   res.sendFile(path.join(clientBuildPath, 'index.html'));
