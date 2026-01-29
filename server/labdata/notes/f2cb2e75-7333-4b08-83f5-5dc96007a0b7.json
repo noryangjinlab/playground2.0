@@ -26,6 +26,13 @@
         }
       },
       {
+        "type": "childNote",
+        "attrs": {
+          "noteId": "a401bee7-ca7e-485d-9f69-ab4a252aac4f",
+          "title": "Ngrok 사용법"
+        }
+      },
+      {
         "type": "paragraph"
       }
     ]

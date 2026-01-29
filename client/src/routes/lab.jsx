@@ -588,6 +588,9 @@ const Lab = () => {
     if (imgDeleteBtn) {
       if (admin !== 'admin0106') return
 
+      const ok = window.confirm("정말 삭제할겨?")
+      if (!ok) return
+
       const container = imgDeleteBtn.closest('[data-lab-image]')
       if (!container) return
       const filename = container.getAttribute('data-filename')
@@ -615,6 +618,12 @@ const Lab = () => {
 
     const deleteBtn = e.target.closest('[data-child-note-delete]')
     if (deleteBtn) {
+
+      if (admin !== 'admin0106') return
+
+      const ok = window.confirm("정말 삭제할겨?")
+      if (!ok) return
+      
       const container = deleteBtn.closest('[data-child-note]')
       if (!container) return
       const targetId = container.getAttribute('data-note-id')

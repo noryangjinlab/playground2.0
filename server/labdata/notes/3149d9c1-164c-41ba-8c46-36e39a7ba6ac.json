@@ -10,6 +10,47 @@
   ],
   "content": {
     "type": "doc",
-    "content": []
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              }
+            ],
+            "text": "전전 이즈 굳"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "18px"
+                }
+              }
+            ],
+            "text": "<전기산업기사>"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      }
+    ]
   }
 }

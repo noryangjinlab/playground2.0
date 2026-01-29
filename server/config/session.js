@@ -10,7 +10,7 @@ const options = {
   database: process.env.DB_NAME,
   clearExpired: true,
   checkExpirationInterval: 900000,
-  expiration: 1000 * 60 * 60 * 10
+  expiration: 1000 * 60 * 60 * 10 * 10
 };
 
 const sessionStore = new MySQLStore(options);

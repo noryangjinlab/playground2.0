@@ -1,0 +1,122 @@
+{
+  "id": "a401bee7-ca7e-485d-9f69-ab4a252aac4f",
+  "parentId": "f2cb2e75-7333-4b08-83f5-5dc96007a0b7",
+  "title": "Ngrok 사용법",
+  "ancestors": [
+    {
+      "id": "6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345",
+      "title": ""
+    },
+    {
+      "id": "ab4d041d-486a-4224-abea-85d9198e1c92",
+      "title": "콤퓨타 응용기술들"
+    },
+    {
+      "id": "f2cb2e75-7333-4b08-83f5-5dc96007a0b7",
+      "title": "각종 백엔드 자료들"
+    }
+  ],
+  "content": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "textStyle",
+                "attrs": {
+                  "fontSize": "24px"
+                }
+              }
+            ],
+            "text": "Ngrok 사용법"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "ngrok로 배포 없이 localhost에서 열려있는 포트로 들어올 수 있다. 아래 절차를 통해 임시 도메인이 발급된다."
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "아래는 윈도우 기준이다."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "설치 : winget install ngrok.ngrok"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "확인 : ngrok version"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "--> 환경변수 등록 불필요"
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "사용시 브라우저에서 ngrok로 로그인하여 토큰을 발급받아야 한다."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "토큰 등록 : ngrok config add-authtoken <토큰>"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "서버 열기 : ngrok http <포트>"
+          }
+        ]
+      }
+    ]
+  }
+}
