@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
+import { fetchApi } from "../api";
 
 
 const LoginContainer = styled.div`
@@ -50,77 +51,70 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('https://noryangjinlab.org/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+  const onSubmit = (e) => {
+    e.preventDefault()
+    fetchApi('/auth/login', {
+      method: "POST",
       body: JSON.stringify({
         username: form.username,
         password: form.password
       })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(`${data.nickname}님 환영합니다`);
-      navigate('/');
-    } else {
-      alert(data.message);
-    }
-  };
-
-  const onLogout = async (e) => {
-    e.preventDefault();
-    const res = await fetch('https://noryangjinlab.org/auth/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      navigate('/');
-    } else {
-      alert(data.message);
-    }
-  };
-
-  const onBye = async (e) => {
-    e.preventDefault();
-    const ok = window.confirm("정말로 탈퇴하시겠습니까?");
-    if (!ok) return;
-    const ok2 = window.confirm("혼또니?");
-    if (!ok2) return;
-    const res = await fetch('https://noryangjinlab.org/auth/bye', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      navigate('/');
-    } else {
-      alert(data.message);
-    }
-  };
-
-  async function getMySession() {
-    const res = await fetch('https://noryangjinlab.org/auth/me', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setUser(data);
-    } else {
-      setUser(null);
-    }
+    }).then((data)=>{
+      alert(`${data.nickname}님 환영합니다`)
+      navigate('/')
+    }).catch((error)=>{
+      alert(error.message)
+    })
   }
 
-  useEffect(()=>{getMySession();}, []);
+  const onLogout = (e) => {
+    e.preventDefault()
+    fetchApi('/auth/logout', {
+      method: "POST",
+      body: JSON.stringify({
+        username: form.username,
+        password: form.password
+      })
+    }).then((data)=>{
+      alert(data.message)
+      navigate('/')
+    }).catch((error)=>{
+      alert(error.message)
+    })
+  }
+
+  const onBye = (e) => {
+    e.preventDefault();
+    const ok = window.confirm("정말로 탈퇴하시겠습니까?")
+    if (!ok) return
+    const ok2 = window.confirm("혼또니?")
+    if (!ok2) return
+
+    fetchApi('/auth/bye', {
+      method: "POST",
+      body: JSON.stringify({
+        username: form.username,
+        password: form.password
+      })
+    }).then((data)=>{
+      alert(data.message)
+      navigate('/')
+    }).catch((error)=>{
+      alert(error.message)
+    })
+  }
+
+  async function getMySession() {
+    fetchApi('/auth/me', {
+      method: "GET"
+    }).then((data)=>{
+      setUser(data)
+    }).catch((error)=>{
+      setUser(null)
+    })
+  }
+
+  useEffect(()=>{getMySession()}, [])
 
   return (
     <>

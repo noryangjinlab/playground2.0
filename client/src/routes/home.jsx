@@ -9,7 +9,7 @@ const HomeContainer = styled.div`
 function Home() {
   return (
     <HomeContainer>
-      <h1 style={{margin: 0, padding: '8px 0 25px 0'}}>noryangjinlab v2.0.1</h1>
+      <h1 style={{margin: 0, padding: '8px 0 25px 0'}}>noryangjinLAB v2.0.1</h1>
       <Now/>
       <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
       <div>

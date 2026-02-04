@@ -60,13 +60,6 @@ const Contents = styled.div`
   }
 `
 
-
-// axios 설정
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost:3000';
-
-
-
 function App() {
 
   const [audioState, setAudioState] = useState(2);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { fetchApi } from "../api";
 
 export default function Standby() {
 
@@ -7,35 +8,30 @@ export default function Standby() {
   const [admin, setAdmin] = useState(null);
   const [standByList, setStandByList] = useState([]);
 
-  async function getMySession() {
-    const res = await fetch('https://noryangjinlab.org/auth/me', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setAdmin(data.username);
-      getStandBy();
-    } else {
-      alert("접근 권한이 없습니다");
-      navigate("/");
-    }
-  }
 
   async function getStandBy() {
-    const res = await fetch('https://noryangjinlab.org/auth/standby', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setStandByList(data.list);
-    } else {
-      alert("접근 권한이 없습니다");
-      navigate("/");
-    }
+
+    fetchApi('/auth/standby', {
+      method: "GET",
+    }).then((data)=>{
+      setStandByList(data.list)
+    }).catch((error)=>{
+      alert("접근 권한이 없습니다")
+      navigate("/")
+    })
+  }
+
+  async function getMySession() {
+
+    fetchApi('/auth/me', {
+      method: "GET",
+    }).then((data)=>{
+      setAdmin(data.username)
+      getStandBy()
+    }).catch((error)=>{
+      alert("접근 권한이 없습니다")
+      navigate("/")
+    })
   }
 
 
@@ -53,26 +49,24 @@ export default function Standby() {
             return (
               <p key={i}>
                 아이디:{e.username}&nbsp;&nbsp;이름:{e.name}&nbsp;&nbsp;
-                <button onClick={async (event)=>{
-                  event.preventDefault();
-                  const res = await fetch('https://noryangjinlab.org/auth/confirmstandby', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                <button onClick={(event)=>{
+                  event.preventDefault()
+
+                  fetchApi('/auth/confirmstandby', {
+                    method: "POST",
                     body: JSON.stringify({
                       username: e.username,
                       password: e.password,
                       name: e.name,
                       nickname: e.nickname
                     })
-                  });
-                  const data = await res.json();
-                  if (res.ok) {
-                    alert(data.message);
-                    window.location.reload();
-                  } else {
-                    alert(data.message);
-                  }
+                  }).then((data)=>{
+                    alert(data.message)
+                    window.location.reload()
+                  }).catch((error)=>{
+                    alert(error.message)
+                  })
+
                 }}>확인</button>
               </p>
             )

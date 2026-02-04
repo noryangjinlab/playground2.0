@@ -6,6 +6,7 @@ import { Plugin } from 'prosemirror-state'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
+import { fetchApi } from '../api'
 
 
 const TipTapEditor = styled.div`
@@ -348,17 +349,17 @@ const LabImageBehavior = Extension.create({
   addProseMirrorPlugins() {
     const editor = this.editor
 
-    const uploadImage = async file => {
+    const uploadImage = file => {
       const fd = new FormData()
       fd.append('file', file)
-
-      const res = await fetch('https://noryangjinlab.org/lab/image/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: fd,
+      fetchApi('/image/upload', {
+        method: "POST",
+        body: fd
+      }).then((data)=>{
+        console.log(data.message)
+      }).catch((error)=>{
+        alert(error.message)
       })
-      if (!res.ok) throw new Error('image upload failed')
-      return await res.json()
     }
 
     const insertFiles = async (files, insertPos) => {
@@ -494,32 +495,35 @@ const Lab = () => {
       if (!noteId) return
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
-      saveTimerRef.current = setTimeout(async () => {
+      saveTimerRef.current = setTimeout(() => {
         saveTimerRef.current = null
-        await fetch('https://noryangjinlab.org/lab/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+        fetchApi('/lab/save', {
+          method: "POST",
           body: JSON.stringify({
             id: noteId,
             content: json,
-          }),
+          })
+        }).then((data)=>{
+          
+        }).catch((error)=>{
+          alert(error.message)
         })
-      }, 1000)
+      }, 300)
     },
     [noteId],
   )
 
   useEffect(() => {
-    const run = async () => {
-      const res = await fetch('https://noryangjinlab.org/auth/me', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+    const run = () => {
+
+      fetchApi('/auth/me', {
+        method: "GET"
+      }).then((data)=>{
+        setAdmin(data.username)
+      }).catch((error)=>{
+        setAdmin(null)
+        alert(error.message)
       })
-      const data = await res.json()
-      if (res.ok) setAdmin(data.username)
-      else setAdmin(null)
     }
     run()
   }, [])
@@ -537,25 +541,22 @@ const Lab = () => {
   useEffect(() => {
     if (!editor || !noteId) return
 
-    const run = async () => {
+    const run = () => {
       try {
-        const res = await fetch(`https://noryangjinlab.org/lab/${noteId}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        })
-        if (res.ok) {
-          const note = await res.json()
-          if (note && note.content) editor.commands.setContent(note.content)
-          else editor.commands.setContent('<p>Hello Tiptap</p>')
+        fetchApi(`/lab/${noteId}`, {
+          method: "GET"
+        }).then((data)=>{
+          if (data && data.content) editor.commands.setContent(data.content)
+          else editor.commands.setContent('')
 
-          setNoteTitle(note.title || '')
-          setNoteAncestors(note.ancestors || [])
-        } else {
+          setNoteTitle(data.title || '')
+          setNoteAncestors(data.ancestors || [])
+        }).catch((error)=>{
           editor.commands.setContent('')
           setNoteTitle('')
           setNoteAncestors([])
-        }
+          console.log(error.message)
+        })
       } catch (e) {
         console.error(e)
       }
@@ -581,7 +582,7 @@ const Lab = () => {
     navigate(`/lab/${targetId}`)
   }
 
-  const handleEditorClick = async e => {
+  const handleEditorClick = e => {
     if (!editor) return
 
     const imgDeleteBtn = e.target.closest('[data-lab-image-delete]')
@@ -597,15 +598,13 @@ const Lab = () => {
       if (!filename) return
 
       try {
-        const res = await fetch(
-          `https://noryangjinlab.org/lab/image/delete/${encodeURIComponent(filename)}`,
-          {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-          },
-        )
-        if (!res.ok) return
+        fetchApi(`/lab/image/delete/${encodeURIComponent(filename)}`, {
+          method: "DELETE"
+        }).then((data)=>{
+          
+        }).catch((error)=>{
+          console.log(error.message)
+        })
       } catch (err) {
         console.error(err)
         return
@@ -630,12 +629,13 @@ const Lab = () => {
       if (!targetId) return
 
       try {
-        const res = await fetch(`https://noryangjinlab.org/lab/delete/${targetId}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+        fetchApi(`/lab/delete/${targetId}`, {
+          method: "DELETE"
+        }).then((data)=>{
+          
+        }).catch((error)=>{
+          console.log(error.message)
         })
-        if (!res.ok) return
       } catch (err) {
         console.error(err)
         return
@@ -653,7 +653,7 @@ const Lab = () => {
     openNote(targetId)
   }
 
-  const handleCreateChildNote = async () => {
+  const handleCreateChildNote = () => {
     if (!editor || !noteId) return
     if (admin !== 'admin0106') return
 
@@ -665,16 +665,18 @@ const Lab = () => {
       content: [],
     }
 
-    await fetch('https://noryangjinlab.org/lab/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+    fetchApi(`/lab/save`, {
+      method: "POST",
       body: JSON.stringify({
         id: childId,
         parentId: noteId,
         title,
         content: childDoc,
-      }),
+      })
+    }).then((data)=>{
+      
+    }).catch((error)=>{
+      console.log(error.message)
     })
 
     editor

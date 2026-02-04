@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
+import { fetchApi } from "../api";
 
 
 
@@ -50,27 +51,25 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('https://noryangjinlab.org/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+  const onSubmit = (e) => {
+    e.preventDefault()
+    fetchApi('/auth/signup', {
+      method: "POST",
       body: JSON.stringify({
         username: form.username,
         password: form.password,
         name: form.name,
         nickname: form.nickname
       })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      navigate('/');
-    } else {
-      alert(data.message);
-    }
-  };
+    }).then((data)=>{
+      alert(data.message)
+      console.log(data.message)
+      navigate('/')
+    }).catch((error)=>{
+      alert(error.message)
+      console.log(error.message)
+    })
+  }
 
   return (
     <SignupContainer>
