@@ -48,14 +48,14 @@ app.use(session({
 }));
 
 app.use(express.static(clientBuildPath));
-app.use('/auth', authRouter);
-app.use('/lab', labRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/lab', labRouter);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '127.0.0.1', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
