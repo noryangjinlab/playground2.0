@@ -39,7 +39,7 @@ export const audioData = [
   ],
   [
     {
-      title: "頬に夜の灯 (Hoho Ni Yoru No Hi)",
+      title: "頬に夜の灯",
       artist: "吉田美奈子 (Yoshida Minako)",
       path: "/audio/Hoho Ni Yoru No Hi.mp3"
     },
@@ -72,6 +72,11 @@ export const audioData = [
       title: "Morning Glory",
       artist: "山下達郎 (Yamashita Tatsuro)",
       path: "/audio/Morning Glory.mp3"
+    },
+    {
+      title: "空に虹が浮かんでも",
+      artist: "宇都美慶子 (Utsumi Keiko)",
+      path: "/audio/空に虹が浮かんでも.mp3"
     },
     {
       title: "4:00A.M.",
@@ -130,8 +135,6 @@ export const audioData = [
   [
     'Welcome to Our Lab (Default)',
     "'80s / '90s City Pop Collection",
-    "20th Century Neon Genesis Mix",
-    "Molla",
-    "Molla2"
+    "20th Century Neon Genesis Mix"
   ]
 ]

@@ -35,7 +35,7 @@
               {
                 "type": "textStyle",
                 "attrs": {
-                  "fontSize": "14px"
+                  "fontSize": "16px"
                 }
               }
             ],
@@ -52,7 +52,7 @@
               {
                 "type": "textStyle",
                 "attrs": {
-                  "fontSize": "14px"
+                  "fontSize": "16px"
                 }
               }
             ],
@@ -81,18 +81,28 @@
         ]
       },
       {
-        "type": "childNote",
-        "attrs": {
-          "noteId": "afe7e6dc-51c4-4b67-b8ca-9e16390faec5",
-          "title": "본 사이트에 대한 패치노트"
-        }
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "childNote",
+            "attrs": {
+              "noteId": "afe7e6dc-51c4-4b67-b8ca-9e16390faec5",
+              "title": "본 사이트에 대한 패치노트"
+            }
+          }
+        ]
       },
       {
-        "type": "childNote",
-        "attrs": {
-          "noteId": "05612999-b70a-47f2-ac39-a0d6f7f3b631",
-          "title": "즛토마요 선풍금 시리즈 (원작: ELECTRONICOS FANTASTICOS!)"
-        }
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "childNote",
+            "attrs": {
+              "noteId": "05612999-b70a-47f2-ac39-a0d6f7f3b631",
+              "title": "즛토마요 선풍금 시리즈 (원작: ELECTRONICOS FANTASTICOS!)"
+            }
+          }
+        ]
       },
       {
         "type": "paragraph",
@@ -112,25 +122,40 @@
         ]
       },
       {
-        "type": "childNote",
-        "attrs": {
-          "noteId": "d67ab366-c07a-40ce-9f95-3b36d237fd77",
-          "title": "나노소재학"
-        }
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "childNote",
+            "attrs": {
+              "noteId": "d67ab366-c07a-40ce-9f95-3b36d237fd77",
+              "title": "나노소재학"
+            }
+          }
+        ]
       },
       {
-        "type": "childNote",
-        "attrs": {
-          "noteId": "ab4d041d-486a-4224-abea-85d9198e1c92",
-          "title": "콤퓨타 응용기술들"
-        }
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "childNote",
+            "attrs": {
+              "noteId": "ab4d041d-486a-4224-abea-85d9198e1c92",
+              "title": "콤퓨타 응용기술들"
+            }
+          }
+        ]
       },
       {
-        "type": "childNote",
-        "attrs": {
-          "noteId": "3149d9c1-164c-41ba-8c46-36e39a7ba6ac",
-          "title": "전기전자공학"
-        }
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "childNote",
+            "attrs": {
+              "noteId": "3149d9c1-164c-41ba-8c46-36e39a7ba6ac",
+              "title": "전기전자공학"
+            }
+          }
+        ]
       },
       {
         "type": "paragraph"

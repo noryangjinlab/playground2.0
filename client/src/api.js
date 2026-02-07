@@ -1,4 +1,5 @@
 const BASE_URL = 'https://noryangjinlab.org';
+// const BASE_URL = 'http://localhost:3000';
 
 export const fetchApi = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
