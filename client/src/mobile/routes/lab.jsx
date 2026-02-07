@@ -510,7 +510,7 @@ const Lab = () => {
         }).then((data)=>{
           
         }).catch((error)=>{
-          alert(error.message)
+          console.log(error.message)
         })
       }, 300)
     },
@@ -526,7 +526,7 @@ const Lab = () => {
         setAdmin(data.username)
       }).catch((error)=>{
         setAdmin(null)
-        alert(error.message)
+        console.log(error.message)
       })
     }
     run()
