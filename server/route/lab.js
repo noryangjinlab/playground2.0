@@ -44,13 +44,13 @@ router.post('/image/upload', upload.single('file'), async (req, res) => {
   if (!(req.session && req.session.username === 'admin0106')) {
     return res.status(403).json({ message: '권한이 없습니다' });
   }
-
   if (!req.file) {
     return res.status(400).json({ message: '파일이 없습니다' });
   }
 
   const filename = req.file.filename;
-  const url = `http://localhost:3000/lab/images/${encodeURIComponent(filename)}`;
+  const base = `${req.protocol}://${req.get('host')}`;
+  const url = `${base}/api/lab/images/${encodeURIComponent(filename)}`;
 
   return res.json({ filename, url });
 });

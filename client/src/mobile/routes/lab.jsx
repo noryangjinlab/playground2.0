@@ -323,7 +323,7 @@ const LabImageBehavior = Extension.create({
     const uploadImage = async file => {
       const fd = new FormData()
       fd.append('file', file)
-      const data = await fetchApi('/image/upload', {
+      const data = await fetchApi('/lab/image/upload', {
         method: 'POST',
         body: fd,
       })
