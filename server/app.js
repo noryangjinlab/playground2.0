@@ -12,8 +12,8 @@ dotenv.config();
 
 const app = express();
 
-// nginx에서 서빙
-// const clientBuildPath = path.join(__dirname, "..", "client", "dist");
+// nginx에서 서빙 (제거?)
+const clientBuildPath = path.join(__dirname, "..", "client", "dist");
 
 app.set('trust proxy', 1);
 
