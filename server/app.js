@@ -12,7 +12,8 @@ dotenv.config();
 
 const app = express();
 
-const clientBuildPath = path.join(__dirname, "..", "client", "dist");
+// nginx에서 서빙
+// const clientBuildPath = path.join(__dirname, "..", "client", "dist");
 
 app.set('trust proxy', 1);
 
@@ -50,10 +51,6 @@ app.use(session({
 app.use(express.static(clientBuildPath));
 app.use('/api/auth', authRouter);
 app.use('/api/lab', labRouter);
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(clientBuildPath, 'index.html'));
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
