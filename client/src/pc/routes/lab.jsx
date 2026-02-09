@@ -180,7 +180,19 @@ const LabImageView = props => {
   return (
     <NodeViewWrapper data-lab-image="true" data-filename={node.attrs.filename || ''} style={{ display: 'block', margin: '6px 0', maxWidth: '100%' }}>
       <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', width: 'fit-content' }}>
-        <img src={node.attrs.src || ''} alt={node.attrs.alt || ''} style={{ display: 'block', maxWidth: '100%', height: 'auto', ...styleW }} draggable={false} />
+        <img
+          data-drag-handle
+          src={node.attrs.src || ''}
+          alt={node.attrs.alt || ''}
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            height: 'auto',
+            cursor: canEdit ? 'grab' : 'default',
+            ...styleW,
+          }}
+          draggable={false}
+        />
 
         <button
           data-lab-image-delete="true"
@@ -286,6 +298,7 @@ const LabImage = Node.create({
             alt,
             style: `display:block;max-width:100%;height:auto;${w}`,
             draggable: 'false',
+            'data-drag-handle': 'true',
           },
         ],
         [
