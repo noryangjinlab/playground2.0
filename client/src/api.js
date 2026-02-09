@@ -1,25 +1,36 @@
-const BASE_URL = 'https://noryangjinlab.org/api';
-// const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://noryangjinlab.org/api'
+// const BASE_URL = 'http://localhost:3000/api'
 
 export const fetchApi = async (endpoint, options = {}) => {
-  const url = `${BASE_URL}${endpoint}`;
+  const url = `${BASE_URL}${endpoint}`
 
-  // 기본 설정 (Credentials 포함)
-  const defaultOptions = {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    credentials: 'include', 
-  };
+  const isFormData = options.body instanceof FormData
 
-  const response = await fetch(url, defaultOptions);
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'API 요청 실패');
+  const headers = {
+    ...(options.headers || {}),
   }
 
-  return response.json();
-};
+  if (!isFormData) {
+    if (!headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json'
+    }
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    const ct = response.headers.get('content-type') || ''
+    const errorData = ct.includes('application/json')
+      ? await response.json().catch(() => ({}))
+      : {}
+    throw new Error(errorData.message || `API 요청 실패 (${response.status})`)
+  }
+
+  const ct = response.headers.get('content-type') || ''
+  if (ct.includes('application/json')) return response.json()
+  return response.text()
+}
