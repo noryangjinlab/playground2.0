@@ -3,18 +3,16 @@ import StarterKit from '@tiptap/starter-kit'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Extension, Node } from '@tiptap/core'
 import { Plugin } from 'prosemirror-state'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { fetchApi } from '../../api'
-
 
 const TipTapEditor = styled.div`
   .ProseMirror {
     padding: 1px 5px 1px 5px;
   }
 
-  // 해당 속성을 가진 태그 선택 : []
   &.readonly [data-child-note-delete] {
     display: none;
   }
@@ -30,8 +28,6 @@ const TipTapEditor = styled.div`
 
 const HOME_ID = '6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345'
 
-
-// 글자 사이즈 변경 커스텀 익스텐션 정의
 const FontSize = Extension.create({
   name: 'fontSize',
   addGlobalAttributes() {
@@ -41,8 +37,7 @@ const FontSize = Extension.create({
         attributes: {
           fontSize: {
             default: null,
-            parseHTML: element =>
-              element.style.fontSize ? element.style.fontSize.replace(/['"]/g, '') : null,
+            parseHTML: element => (element.style.fontSize ? element.style.fontSize.replace(/['"]/g, '') : null),
             renderHTML: attributes => {
               if (!attributes.fontSize) return {}
               return { style: `font-size: ${attributes.fontSize}` }
@@ -65,7 +60,6 @@ const FontSize = Extension.create({
     }
   },
 })
-
 
 const ChildNote = Node.create({
   name: 'childNote',
@@ -125,10 +119,7 @@ const ChildNote = Node.create({
         const { $from } = selection
         const nodeBefore = $from.nodeBefore
 
-        if (
-          (selection.node && selection.node.type.name === this.name) ||
-          (nodeBefore && nodeBefore.type.name === this.name)
-        ) {
+        if ((selection.node && selection.node.type.name === this.name) || (nodeBefore && nodeBefore.type.name === this.name)) {
           return true
         }
         return false
@@ -139,10 +130,7 @@ const ChildNote = Node.create({
         const { $from } = selection
         const nodeAfter = $from.nodeAfter
 
-        if (
-          (selection.node && selection.node.type.name === this.name) ||
-          (nodeAfter && nodeAfter.type.name === this.name)
-        ) {
+        if ((selection.node && selection.node.type.name === this.name) || (nodeAfter && nodeAfter.type.name === this.name)) {
           return true
         }
         return false
@@ -190,25 +178,9 @@ const LabImageView = props => {
   const styleW = node.attrs.width ? { width: node.attrs.width } : {}
 
   return (
-    <NodeViewWrapper
-      data-lab-image="true"
-      data-filename={node.attrs.filename || ''}
-      style={{ display: 'block', margin: '6px 0', maxWidth: '100%' }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          display: 'inline-block',
-          maxWidth: '100%',
-          width: 'fit-content',
-        }}
-      >
-        <img
-          src={node.attrs.src || ''}
-          alt={node.attrs.alt || ''}
-          style={{ display: 'block', maxWidth: '100%', height: 'auto', ...styleW }}
-          draggable={false}
-        />
+    <NodeViewWrapper data-lab-image="true" data-filename={node.attrs.filename || ''} style={{ display: 'block', margin: '6px 0', maxWidth: '100%' }}>
+      <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', width: 'fit-content' }}>
+        <img src={node.attrs.src || ''} alt={node.attrs.alt || ''} style={{ display: 'block', maxWidth: '100%', height: 'auto', ...styleW }} draggable={false} />
 
         <button
           data-lab-image-delete="true"
@@ -305,8 +277,7 @@ const LabImage = Node.create({
       [
         'div',
         {
-          style:
-            'position:relative;display:inline-block;max-width:100%;width:fit-content;',
+          style: 'position:relative;display:inline-block;max-width:100%;width:fit-content;',
         },
         [
           'img',
@@ -331,8 +302,7 @@ const LabImage = Node.create({
           'div',
           {
             'data-lab-image-resize': 'true',
-            style:
-              'position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:transparent;',
+            style: 'position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:transparent;',
           },
         ],
       ],
@@ -350,17 +320,14 @@ const LabImageBehavior = Extension.create({
   addProseMirrorPlugins() {
     const editor = this.editor
 
-    const uploadImage = file => {
+    const uploadImage = async file => {
       const fd = new FormData()
       fd.append('file', file)
-      fetchApi('/image/upload', {
-        method: "POST",
-        body: fd
-      }).then((data)=>{
-        console.log(data.message)
-      }).catch((error)=>{
-        alert(error.message)
+      const data = await fetchApi('/image/upload', {
+        method: 'POST',
+        body: fd,
       })
+      return data
     }
 
     const insertFiles = async (files, insertPos) => {
@@ -368,15 +335,16 @@ const LabImageBehavior = Extension.create({
 
       for (const f of files) {
         const data = await uploadImage(f)
-        const url = data.url
-        const filename = data.filename
+        const url = data?.url
+        const filename = data?.filename
+        if (!url) continue
 
         editor
           .chain()
           .focus()
           .insertContentAt(pos, {
             type: 'labImage',
-            attrs: { src: url, filename, alt: f.name || '', width: null },
+            attrs: { src: url, filename: filename || null, alt: f.name || '', width: null },
           })
           .run()
 
@@ -470,9 +438,7 @@ const LabImageBehavior = Extension.create({
 })
 
 function makeUuid() {
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID()
-  }
+  if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID()
   return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
@@ -484,100 +450,132 @@ const Lab = () => {
   const DEFAULT_FONT_SIZE = '16px'
 
   const [admin, setAdmin] = useState(null)
+  const isAdmin = admin === 'admin0106'
+
   const [noteId, setNoteId] = useState(null)
   const [noteTitle, setNoteTitle] = useState('')
   const [noteAncestors, setNoteAncestors] = useState([])
+  const [loadError, setLoadError] = useState(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const saveTimerRef = useRef(null)
+  const activeNoteRef = useRef(null)
+  const loadReqRef = useRef(0)
 
   useEffect(() => {
-    if (routeId) setNoteId(routeId)
-    else setNoteId(HOME_ID)
+    const next = routeId || HOME_ID
+    setNoteId(next)
   }, [routeId])
+
+  useEffect(() => {
+    activeNoteRef.current = noteId
+    setIsLoaded(false)
+    setLoadError(null)
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = null
+    }
+  }, [noteId])
+
+  useEffect(() => {
+    const run = () => {
+      fetchApi('/auth/me', { method: 'GET' })
+        .then(data => {
+          setAdmin(data?.username || null)
+        })
+        .catch(error => {
+          setAdmin(null)
+          console.log(error.message)
+        })
+    }
+    run()
+  }, [])
 
   const scheduleSave = useCallback(
     json => {
-      if (!noteId) return
+      const nid = activeNoteRef.current
+      if (!nid) return
+      if (!isAdmin) return
+      if (!isLoaded) return
+
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
       saveTimerRef.current = setTimeout(() => {
         saveTimerRef.current = null
+        const targetId = activeNoteRef.current
+        if (!targetId) return
+
         fetchApi('/lab/save', {
-          method: "POST",
+          method: 'POST',
           body: JSON.stringify({
-            id: noteId,
+            id: targetId,
             content: json,
-          })
-        }).then((data)=>{
-          
-        }).catch((error)=>{
+          }),
+        }).catch(error => {
           console.log(error.message)
         })
       }, 300)
     },
-    [noteId],
+    [isAdmin, isLoaded],
   )
-
-  useEffect(() => {
-    const run = () => {
-
-      fetchApi('/auth/me', {
-        method: "GET"
-      }).then((data)=>{
-        setAdmin(data.username)
-      }).catch((error)=>{
-        setAdmin(null)
-        console.log(error.message)
-      })
-    }
-    run()
-  }, [])
 
   const editor = useEditor({
     extensions: [StarterKit, TextStyle, FontSize, ChildNote, LabImage, LabImageBehavior],
     content: '',
     editable: false,
     onUpdate({ editor }) {
-      const json = editor.getJSON()
-      scheduleSave(json)
+      scheduleSave(editor.getJSON())
     },
   })
 
   useEffect(() => {
+    if (!editor) return
+    editor.setEditable(isAdmin)
+  }, [editor, isAdmin])
+
+  useEffect(() => {
     if (!editor || !noteId) return
 
-    const run = () => {
-      try {
-        fetchApi(`/lab/${noteId}`, {
-          method: "GET"
-        }).then((data)=>{
-          if (data && data.content) editor.commands.setContent(data.content)
-          else editor.commands.setContent('')
+    const reqId = ++loadReqRef.current
+    setIsLoaded(false)
+    setLoadError(null)
 
-          setNoteTitle(data.title || '')
-          setNoteAncestors(data.ancestors || [])
-        }).catch((error)=>{
-          editor.commands.setContent('')
-          setNoteTitle('')
-          setNoteAncestors([])
-          console.log(error.message)
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    run()
+    fetchApi(`/lab/${noteId}`, { method: 'GET' })
+      .then(data => {
+        if (loadReqRef.current !== reqId) return
+        if (activeNoteRef.current !== noteId) return
+
+        const content = data?.content ?? ''
+        editor.commands.setContent(content, false)
+        setNoteTitle(data?.title || '')
+        setNoteAncestors(data?.ancestors || [])
+        setIsLoaded(true)
+        setLoadError(null)
+      })
+      .catch(error => {
+        if (loadReqRef.current !== reqId) return
+        if (activeNoteRef.current !== noteId) return
+
+        setLoadError(error?.message || 'load failed')
+        setIsLoaded(false)
+      })
   }, [editor, noteId])
 
   useEffect(() => {
-    if (!editor) return
-    editor.setEditable(admin === 'admin0106')
-  }, [editor, admin])
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current)
+        saveTimerRef.current = null
+      }
+    }
+  }, [])
 
-  const canEdit = !!editor && admin === 'admin0106'
+  const canEdit = !!editor && isAdmin
 
   const runIfEditable = fn => {
     if (!editor) return
-    if (admin !== 'admin0106') return
+    if (!isAdmin) return
+    if (!isLoaded) return
     fn()
   }
 
@@ -588,12 +586,13 @@ const Lab = () => {
 
   const handleEditorClick = e => {
     if (!editor) return
+    if (!isLoaded) return
 
     const imgDeleteBtn = e.target.closest('[data-lab-image-delete]')
     if (imgDeleteBtn) {
-      if (admin !== 'admin0106') return
+      if (!isAdmin) return
 
-      const ok = window.confirm("정말 삭제할겨?")
+      const ok = window.confirm('정말 삭제할겨?')
       if (!ok) return
 
       const container = imgDeleteBtn.closest('[data-lab-image]')
@@ -601,18 +600,9 @@ const Lab = () => {
       const filename = container.getAttribute('data-filename')
       if (!filename) return
 
-      try {
-        fetchApi(`/lab/image/delete/${encodeURIComponent(filename)}`, {
-          method: "DELETE"
-        }).then((data)=>{
-          
-        }).catch((error)=>{
-          console.log(error.message)
-        })
-      } catch (err) {
-        console.error(err)
-        return
-      }
+      fetchApi(`/lab/image/delete/${encodeURIComponent(filename)}`, { method: 'DELETE' }).catch(error => {
+        console.log(error.message)
+      })
 
       const pos = editor.view.posAtDOM(container, 0)
       editor.chain().setNodeSelection(pos).deleteSelection().run()
@@ -621,29 +611,19 @@ const Lab = () => {
 
     const deleteBtn = e.target.closest('[data-child-note-delete]')
     if (deleteBtn) {
+      if (!isAdmin) return
 
-      if (admin !== 'admin0106') return
-
-      const ok = window.confirm("정말 삭제할겨?")
+      const ok = window.confirm('정말 삭제할겨?')
       if (!ok) return
-      
+
       const container = deleteBtn.closest('[data-child-note]')
       if (!container) return
       const targetId = container.getAttribute('data-note-id')
       if (!targetId) return
 
-      try {
-        fetchApi(`/lab/delete/${targetId}`, {
-          method: "DELETE"
-        }).then((data)=>{
-          
-        }).catch((error)=>{
-          console.log(error.message)
-        })
-      } catch (err) {
-        console.error(err)
-        return
-      }
+      fetchApi(`/lab/delete/${targetId}`, { method: 'DELETE' }).catch(error => {
+        console.log(error.message)
+      })
 
       const pos = editor.view.posAtDOM(container, 0)
       editor.chain().setNodeSelection(pos).deleteSelection().run()
@@ -659,43 +639,30 @@ const Lab = () => {
 
   const handleCreateChildNote = () => {
     if (!editor || !noteId) return
-    if (admin !== 'admin0106') return
+    if (!isAdmin) return
+    if (!isLoaded) return
 
     const title = window.prompt('새 노트 제목을 입력하세요') || '(제목 없음)'
     const childId = makeUuid()
 
-    const childDoc = {
-      type: 'doc',
-      content: [],
-    }
+    const childDoc = { type: 'doc', content: [] }
 
-    fetchApi(`/lab/save`, {
-      method: "POST",
+    fetchApi('/lab/save', {
+      method: 'POST',
       body: JSON.stringify({
         id: childId,
         parentId: noteId,
         title,
         content: childDoc,
-      })
-    }).then((data)=>{
-      
-    }).catch((error)=>{
+      }),
+    }).catch(error => {
       console.log(error.message)
     })
 
     editor
       .chain()
       .focus()
-      .insertContent([
-        {
-          type: 'childNote',
-          attrs: {
-            noteId: childId,
-            title,
-          }
-        },
-        { type: 'paragraph' }
-      ])
+      .insertContent([{ type: 'childNote', attrs: { noteId: childId, title } }, { type: 'paragraph' }])
       .run()
   }
 
@@ -704,12 +671,11 @@ const Lab = () => {
     openNote(item.id)
   }
 
-  const breadcrumbs = (() => {
+  const breadcrumbs = useMemo(() => {
     if (!noteId) return []
     if (noteId === HOME_ID) return [{ label: 'home', id: HOME_ID }]
 
-    const list = []
-    list.push({ label: 'home', id: HOME_ID })
+    const list = [{ label: 'home', id: HOME_ID }]
 
     ;(noteAncestors || [])
       .filter(a => a.id && a.id !== HOME_ID)
@@ -719,8 +685,7 @@ const Lab = () => {
 
     list.push({ label: noteTitle || '(제목 없음)', id: noteId })
     return list
-  })()
-
+  }, [noteId, noteTitle, noteAncestors])
 
   useEffect(() => {
     if (!editor) return
@@ -731,7 +696,6 @@ const Lab = () => {
     }
 
     syncFontSize()
-
     editor.on('selectionUpdate', syncFontSize)
     editor.on('transaction', syncFontSize)
 
@@ -741,13 +705,8 @@ const Lab = () => {
     }
   }, [editor])
 
-
   return (
-    <div
-      style={{
-        padding: '10px 13px 0 0',
-      }}
-    >
+    <div style={{ padding: '10px 13px 0 0' }}>
       <div
         style={{
           marginBottom: '40px',
@@ -764,10 +723,7 @@ const Lab = () => {
               {isLast ? (
                 <span>{item.label || '(제목 없음)'}</span>
               ) : (
-                <span
-                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => handleBreadcrumbClick(item)}
-                >
+                <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleBreadcrumbClick(item)}>
                   {item.label || '(제목 없음)'}
                 </span>
               )}
@@ -776,64 +732,88 @@ const Lab = () => {
         })}
       </div>
 
+      {loadError ? (
+        <div
+          style={{
+            fontFamily: 'galmuri9',
+            fontSize: 14,
+            color: '#e0e0e0',
+            background: '#111',
+            padding: 12,
+            borderRadius: 8,
+            marginBottom: 10,
+          }}
+        >
+          <div style={{ marginBottom: 10 }}>로드 실패: {String(loadError)}</div>
+          <button
+            type="button"
+            style={{ height: 30, fontFamily: 'galmuri9', padding: 5, cursor: 'pointer' }}
+            onClick={() => {
+              if (!editor || !noteId) return
+              const reqId = ++loadReqRef.current
+              setIsLoaded(false)
+              setLoadError(null)
+              fetchApi(`/lab/${noteId}`, { method: 'GET' })
+                .then(data => {
+                  if (loadReqRef.current !== reqId) return
+                  if (activeNoteRef.current !== noteId) return
+                  editor.commands.setContent(data?.content ?? '', false)
+                  setNoteTitle(data?.title || '')
+                  setNoteAncestors(data?.ancestors || [])
+                  setIsLoaded(true)
+                  setLoadError(null)
+                })
+                .catch(error => {
+                  if (loadReqRef.current !== reqId) return
+                  if (activeNoteRef.current !== noteId) return
+                  setLoadError(error?.message || 'load failed')
+                  setIsLoaded(false)
+                })
+            }}
+          >
+            다시 불러오기
+          </button>
+        </div>
+      ) : null}
+
       <div
         style={{
-          display: canEdit ? 'flex' : 'none',
+          display: canEdit && isLoaded && !loadError ? 'flex' : 'none',
           gap: 8,
           alignItems: 'center',
           marginBottom: 8,
         }}
       >
         <button
-          style={{
-            height: '30px',
-            fontFamily: 'galmuri9',
-            padding: '5px',
-            cursor: 'pointer',
-          }}
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
           type="button"
-          disabled={!canEdit}
+          disabled={!canEdit || !isLoaded}
           onClick={() => runIfEditable(() => editor.chain().focus().toggleBold().run())}
         >
           Bold
         </button>
 
         <button
-          style={{
-            height: '30px',
-            fontFamily: 'galmuri9',
-            padding: '5px',
-            cursor: 'pointer',
-          }}
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
           type="button"
-          disabled={!canEdit}
+          disabled={!canEdit || !isLoaded}
           onClick={() => runIfEditable(() => editor.chain().focus().toggleItalic().run())}
         >
           Italic
         </button>
 
         <button
-          style={{
-            height: '30px',
-            fontFamily: 'galmuri9',
-            padding: '5px',
-            cursor: 'pointer',
-          }}
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
           type="button"
-          disabled={!canEdit}
+          disabled={!canEdit || !isLoaded}
           onClick={() => runIfEditable(() => editor.chain().focus().toggleBulletList().run())}
         >
           Bullet
         </button>
 
         <select
-          style={{
-            height: '30px',
-            fontFamily: 'galmuri9',
-            padding: '5px',
-            cursor: 'pointer',
-          }}
-          disabled={!canEdit}
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
+          disabled={!canEdit || !isLoaded}
           value={fontSizeValue}
           onChange={e => {
             const v = e.target.value
@@ -852,14 +832,9 @@ const Lab = () => {
         </select>
 
         <button
-          style={{
-            height: '30px',
-            fontFamily: 'galmuri9',
-            padding: '5px',
-            cursor: 'pointer',
-          }}
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
           type="button"
-          disabled={!canEdit}
+          disabled={!canEdit || !isLoaded}
           onClick={handleCreateChildNote}
         >
           노트 추가하기
