@@ -132,7 +132,7 @@ router.post('/confirmstandby', async (req, res) => {
   const { username, password, name, nickname } = req.body;
   
   try {
-    await pool.execute('INSERT INTO USERS (username, password, name, nickname) VALUES (?, ?, ?, ?)', [username, password, name, nickname]);
+    await pool.execute('INSERT INTO users (username, password, name, nickname) VALUES (?, ?, ?, ?)', [username, password, name, nickname]);
     await pool.execute('DELETE FROM standby WHERE username = ?', [username]);
     res.status(200).json({ message: "회원가입 승인 완료" });
   } catch (err) {
