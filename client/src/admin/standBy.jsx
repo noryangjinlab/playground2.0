@@ -122,8 +122,8 @@ export default function Standby() {
                 <button onClick={(event)=>{
                   event.preventDefault()
 
-                  fetchApi('/auth/bye', {
-                    method: "POST",
+                  fetchApi('/auth/deleteuser', {
+                    method: "DELETE",
                     body: JSON.stringify({
                       username: e.username
                     })
