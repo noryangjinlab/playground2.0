@@ -4,19 +4,12 @@ import { useState, useEffect } from 'react';
 
 import AudioPlayer from './audioPlayer';
 
-import SignupM from './mobile/routes/signUp';
-import HomeM from './mobile/routes/home';
-import AboutM from './mobile/routes/about';
-import LoginM from './mobile/routes/login';
-import LabM from './mobile/routes/lab';
-import StandbyM from './mobile/admin/standBy';
-
-import SignupP from './pc/routes/signUp';
-import HomeP from './pc/routes/home';
-import AboutP from './pc/routes/about';
-import LoginP from './pc/routes/login';
-import LabP from './pc/routes/lab';
-import StandbyP from './pc/admin/standBy';
+import Signup from './routes/signUp';
+import Home from './routes/home';
+import About from './routes/about';
+import Login from './routes/login';
+import Lab from './routes/lab';
+import Standby from './admin/standBy';
 
 
 const Container = styled.div`
@@ -295,12 +288,12 @@ function App() {
 
         <div className='main-content'>
           <Routes>
-            <Route path="/" element={isMobile ? <HomeM /> : <HomeP />} />
-            <Route path="/about" element={isMobile ? <AboutM /> : <AboutP />} />
-            <Route path="/login" element={isMobile ? <LoginM /> : <LoginP />} />
-            <Route path="/signup" element={isMobile ? <SignupM /> : <SignupP />} />
-            <Route path="/lab/:id" element={isMobile ? <LabM /> : <LabP />} />
-            <Route path="/admin/standby" element={isMobile ? <StandbyM /> : <StandbyP />} />
+            <Route path="/" element={<Home/>} />
+            <Route path="/about" element={<About/>} />
+            <Route path="/login" element={<Login/>} />
+            <Route path="/signup" element={<Signup/>} />
+            <Route path="/lab/:id" element={<Lab/>} />
+            <Route path="/admin/standby" element={<Standby/>} />
           </Routes>
           {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
         </div>

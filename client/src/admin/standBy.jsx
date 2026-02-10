@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { fetchApi } from "../../api";
+import { fetchApi } from "../api";
 
 export default function Standby() {
 
@@ -68,6 +68,23 @@ export default function Standby() {
                   })
 
                 }}>확인</button>
+
+                <button onClick={(event)=>{
+                  event.preventDefault()
+
+                  fetchApi('/auth/deletestandby', {
+                    method: "DELETE",
+                    body: JSON.stringify({
+                      username: e.username
+                    })
+                  }).then((data)=>{
+                    alert(data.message)
+                    window.location.reload()
+                  }).catch((error)=>{
+                    alert(error.message)
+                  })
+
+                }}>삭제</button>
               </p>
             )
           })

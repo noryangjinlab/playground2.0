@@ -9,22 +9,55 @@ router.post('/signup', async (req, res) => {
   if (!username || !password || !name || !nickname) return res.status(400).json({ message: '모든 항목을 입력해주세요' });
 
   try {
-    const [exists] = await pool.execute(`
-      SELECT username FROM (
-        SELECT username FROM users
+    const [dupUser] = await pool.execute(`
+      SELECT 'username' AS field
+      FROM (
+        SELECT username AS v FROM users
         UNION ALL
-        SELECT username FROM standby
-      ) AS merged
-      WHERE username = ?
+        SELECT username AS v FROM standby
+      ) merged
+      WHERE v = ?
+      LIMIT 1
     `, [username]);
-    if (exists.length > 0) return res.status(409).json({ message: '사용중인 아이디입니다' });
+    if (dupUser.length > 0) return res.status(409).json({ message: '사용중인 아이디입니다' });
+
+    const [dupNick] = await pool.execute(
+      `
+      SELECT 'nickname' AS field
+      FROM (
+        SELECT nickname AS v FROM users
+        UNION ALL
+        SELECT nickname AS v FROM standby
+      ) merged
+      WHERE v = ?
+      LIMIT 1
+      `,
+      [nickname]
+    )
+    if (dupNick.length > 0) {
+      return res.status(409).json({ message: '사용중인 닉네임입니다' })
+    }
 
     const hash = await bcrypt.hash(password, 12);
     await pool.execute('INSERT INTO standby (username, password, name, nickname) VALUES (?, ?, ?, ?)', [username, hash, name, nickname]);
     res.status(201).json({ message: '회원가입 신청이 완료되었습니다' });
+    console.log("새 회원가입 요청 /n", {
+      username: JSON.stringify(username),
+      nickname: JSON.stringify(nickname),
+    })
   } catch (err) {
-    res.status(500).json({ message: err });
+    if (err?.code === 'ER_DUP_ENTRY') {
+      // 레이스 컨디션 대비: DB UNIQUE 충돌을 409로 변환
+      if (String(err?.sqlMessage || '').includes('standby.nickname')) {
+        return res.status(409).json({ message: '사용중인 닉네임입니다' })
+      }
+      if (String(err?.sqlMessage || '').includes('standby.username')) {
+        return res.status(409).json({ message: '사용중인 아이디입니다' })
+      }
+      return res.status(409).json({ message: '중복된 값입니다' })
+    }
     console.log(err);
+    res.status(500).json({ message: err });
   }
 });
 
@@ -89,6 +122,7 @@ router.get('/standby', async (req, res) => {
     res.json({ list: rows });
   } catch (err) {
     res.status(500).json({ message: err });
+    console.log(err);
   }
 });
 
@@ -103,7 +137,22 @@ router.post('/confirmstandby', async (req, res) => {
     res.status(200).json({ message: "회원가입 승인 완료" });
   } catch (err) {
     res.status(500).json({ message: err });
+    console.log(err);
   }
+});
+
+router.post('/deletestandby', async (req, res) => {
+  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  
+  const { username } = req.body;
+  try {
+    await pool.execute("DELETE FROM standby WHERE username=?", [username]);
+    res.json({ message: '삭제되었습니다' });
+  } catch (err) {
+    res.json({ message: '삭제 실패' });
+    console.log(err);
+  }
+  
 });
 
 module.exports = router;

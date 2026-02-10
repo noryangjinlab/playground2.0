@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
-import { fetchApi } from "../../api";
+import { fetchApi } from "../api";
 
 
 const LoginContainer = styled.div`

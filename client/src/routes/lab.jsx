@@ -6,7 +6,7 @@ import { Plugin } from 'prosemirror-state'
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { fetchApi } from '../../api'
+import { fetchApi } from '../api'
 
 const TipTapEditor = styled.div`
   .ProseMirror {
