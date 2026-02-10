@@ -214,9 +214,6 @@ router.delete('/deleteuser', async (req, res) => {
   if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   try {
     await pool.execute("DELETE FROM users WHERE username=?", [req.body.username]);
-    req.session.destroy(() => {
-      res.clearCookie('session_id');
-    });
     console.log("사용자 탈퇴 : ", req.body.username);
     res.json({ message: 'adios' });
   } catch (err) {
