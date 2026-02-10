@@ -7,6 +7,7 @@ export default function Standby() {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
   const [standByList, setStandByList] = useState([]);
+  const [usersList, setUsersList] = useState([]);
 
 
   async function getStandBy() {
@@ -16,7 +17,19 @@ export default function Standby() {
     }).then((data)=>{
       setStandByList(data.list)
     }).catch((error)=>{
-      alert("접근 권한이 없습니다")
+      alert(error)
+      navigate("/")
+    })
+  }
+
+  async function getAllUsers() {
+
+    fetchApi('/auth/allusers', {
+      method: "GET",
+    }).then((data)=>{
+      setUsersList(data.users)
+    }).catch((error)=>{
+      alert(error)
       navigate("/")
     })
   }
@@ -28,6 +41,7 @@ export default function Standby() {
     }).then((data)=>{
       setAdmin(data.username)
       getStandBy()
+      getAllUsers()
     }).catch((error)=>{
       alert("접근 권한이 없습니다")
       navigate("/")
@@ -43,7 +57,9 @@ export default function Standby() {
     <>
     {
       admin ? (
+        <>
         <div>
+        <h3>대기 목록</h3>
         {
           standByList.map((e, i)=>{
             return (
@@ -58,7 +74,8 @@ export default function Standby() {
                       username: e.username,
                       password: e.password,
                       name: e.name,
-                      nickname: e.nickname
+                      nickname: e.nickname,
+                      email: e.email
                     })
                   }).then((data)=>{
                     alert(data.message)
@@ -90,6 +107,40 @@ export default function Standby() {
           })
         }
         </div>
+        <hr/>
+        <h3>유저 목록</h3>
+        <div>
+        {
+          usersList.map((e, i)=>{
+            return (
+              <p key={i}>
+                아이디:{e.username}&nbsp;&nbsp;
+                이름:{e.name}&nbsp;&nbsp;
+                닉네임:{e.nickname}&nbsp;&nbsp;
+                이메일:{e.email}&nbsp;&nbsp;
+
+                <button onClick={(event)=>{
+                  event.preventDefault()
+
+                  fetchApi('/auth/bye', {
+                    method: "POST",
+                    body: JSON.stringify({
+                      username: e.username
+                    })
+                  }).then((data)=>{
+                    alert(data.message)
+                    window.location.reload()
+                  }).catch((error)=>{
+                    alert(error.message)
+                  })
+
+                }}>삭제</button>
+              </p>
+            )
+          })
+        }
+        </div>
+        </>
       ) : (
         null
       )

@@ -1,12 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const pool = require('../config/db');
+const { transporter } = require('../config/mail');
 
 const router = express.Router();
 
+
 router.post('/signup', async (req, res) => {
-  const { username, password, name, nickname } = req.body;
-  if (!username || !password || !name || !nickname) return res.status(400).json({ message: '모든 항목을 입력해주세요' });
+  const { username, password, name, nickname, email } = req.body;
+  if (!username || !password || !name || !nickname || !email) return res.status(400).json({ message: '모든 항목을 입력해주세요' });
 
   try {
     const [dupUser] = await pool.execute(`
@@ -39,9 +41,13 @@ router.post('/signup', async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, 12);
-    await pool.execute('INSERT INTO standby (username, password, name, nickname) VALUES (?, ?, ?, ?)', [username, hash, name, nickname]);
+    await pool.execute(
+      'INSERT INTO standby (username, password, name, nickname, email) VALUES (?, ?, ?, ?, ?)',
+      [username, hash, name, nickname, email]
+    )
     res.status(201).json({ message: '회원가입 신청이 완료되었습니다' });
-    console.log("새 회원가입 요청 /n", {
+
+    console.log("새 회원가입 요청 들어옴 : ", {
       username: JSON.stringify(username),
       nickname: JSON.stringify(nickname),
     })
@@ -99,9 +105,11 @@ router.post('/bye', async (req, res) => {
     req.session.destroy(() => {
       res.clearCookie('session_id');
     });
+    console.log("사용자 탈퇴 : ", req.session.username);
     res.json({ message: 'adios' });
   } catch (err) {
     res.status(500).json({ message: err });
+    console.log(err)
   }
 });
 
@@ -129,12 +137,58 @@ router.get('/standby', async (req, res) => {
 router.post('/confirmstandby', async (req, res) => {
   if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   
-  const { username, password, name, nickname } = req.body;
+  const { username, password, name, nickname, email } = req.body;
   
   try {
-    await pool.execute('INSERT INTO users (username, password, name, nickname) VALUES (?, ?, ?, ?)', [username, password, name, nickname]);
+    await pool.execute('INSERT INTO users (username, password, name, nickname, email) VALUES (?, ?, ?, ?, ?)', 
+      [username, password, name, nickname, email]);
     await pool.execute('DELETE FROM standby WHERE username = ?', [username]);
     res.status(200).json({ message: "회원가입 승인 완료" });
+    await transporter.sendMail({
+      from: process.env.MAIL_FROM,
+      to: email,
+      subject: '회원가입 신청이 승인되었습니다 ( °ヮ° )',
+      text: `
+        ${username}님 환영합니다.
+        노량진랩 회원가입 신청이 승인되었습니다.
+        기타 문의사항 : hlawliet113@gmail.com
+        바로가기 : https://noryangjinlab.org/login
+
+
+                                        ..                        
+                          .+#%%%%%%#+.                   
+                        -%%*:       =#%#-                
+                      :*%#-             :+%#=.            
+                    -#%+.                  .+%#+.         
+                  =%#-                        .*%%-       
+                =%#:                             -%%-     
+              #%=                               =%%-     
+              .%%=::                           =%%-       
+                .+%%=                           =%*       
+                .#%-                             :%#:     
+              -%#.                               .##-    
+              =%# .*#####%%####.    .+*++++*#*+*%= .##:   
+            =%*         .#..+:             == -=   :#*.  
+            -##.          .::.                .      =%=  
+          .+%-                                      :#*. 
+          :##.                    .:.               :#%: 
+          :#*.                  -#%*#%+.            :#%. 
+          .*#.                :%%:   .=%=           -%#. 
+            +%:                                     :#%-  
+            :*%=                                  .+%#-   
+              =%%*-.                         .=*#%%#-     
+                .=%%=                        -%%+         
+          .:::::-#%+.                          -*#%%%#+.  
+        *%#***+=:     -##-             .%%#+:      :*%*. 
+        *%=        :*%%%%-     =%#-     +%#+#%%%%%%%#-   
+          :*#%%%%%%%#=:#%-     *%+##:     .#%#-           
+                    -#%+.   .=%%-  *%=      .=#%-         
+                  .#%+.  :+#%#-     -#%*=:. .-*%+         
+                  -#%%%%%*:           :=###*=:           
+                                                          
+
+      `,
+    })
   } catch (err) {
     res.status(500).json({ message: err });
     console.log(err);
@@ -154,5 +208,18 @@ router.post('/deletestandby', async (req, res) => {
   }
   
 });
+
+router.get('/allusers', async (req, res) => {
+  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  
+  try {
+    const [rows] = await pool.execute('SELECT * FROM users');
+    res.json({ users: rows });
+  } catch (err) {
+    res.status(500).json({ message: err });
+    console.log(err);
+  }
+});
+
 
 module.exports = router;

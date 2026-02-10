@@ -5,40 +5,79 @@ import { fetchApi } from "../api";
 
 
 const LoginContainer = styled.div`
-  display: flex;
+  
+display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 
-  .form-child {
-    display: flex;
-    align-items: center;
-    padding: 5px 0 5px 0;
+  @media (min-width: 1000px) {
+    .form-child {
+      display: flex;
+      align-items: center;
+      padding: 5px 0 5px 0;
+    }
+
+    input {
+      font-family: 'galmuri9';
+    }
+
+    .retro-btn {
+      font-family: 'galmuri9';
+      font-weight: 800;
+      font-size: 15px;
+      color: rgba(240, 240, 240, 1);
+      background: rgba(143, 143, 143, 1);
+      border-bottom: 4px inset rgba(0,0,0,.5);
+      border-left: 4px inset rgba(0,0,0,.5);
+      border-right: 4px inset rgba(255,255,255,.5);
+      border-top: 4px inset rgba(255,255,255,.5);
+      padding: 5px 10px;
+      margin: 9px 12px 0 0;
+      cursor: pointer;
+    }
+    .retro-btn:focus, .retro-btn:hover {
+      background: rgba(157, 157, 157, 1);
+    }
+  }
+  
+  @media (max-width: 1000px) {
+    .form-child {
+      display: flex;
+      align-items: center;
+      padding: 5px 0 5px 0;
+    }
+    .form-child > span {
+      font-size: 15px;
+      width: 70px;
+    }
+
+    input {
+      font-family: 'galmuri9';
+      flex: 1;
+    }
+
+    .retro-btn {
+      font-family: 'galmuri9';
+      font-weight: 800;
+      font-size: 15px;
+      color: rgba(240, 240, 240, 1);
+      background: rgba(143, 143, 143, 1);
+      border-bottom: 4px inset rgba(0,0,0,.5);
+      border-left: 4px inset rgba(0,0,0,.5);
+      border-right: 4px inset rgba(255,255,255,.5);
+      border-top: 4px inset rgba(255,255,255,.5);
+      padding: 5px 10px;
+      margin: 9px 12px 0 0;
+      cursor: pointer;
+    }
+    .retro-btn:focus, .retro-btn:hover {
+      background: rgba(157, 157, 157, 1);
+    }
   }
 
-  input {
-    font-family: 'galmuri9';
-  }
-
-  .retro-btn {
-    font-family: 'galmuri9';
-    font-weight: 800;
-    font-size: 15px;
-    color: rgba(240, 240, 240, 1);
-    background: rgba(143, 143, 143, 1);
-    border-bottom: 4px inset rgba(0,0,0,.5);
-    border-left: 4px inset rgba(0,0,0,.5);
-    border-right: 4px inset rgba(255,255,255,.5);
-    border-top: 4px inset rgba(255,255,255,.5);
-    padding: 5px 10px;
-    margin: 9px 12px 0 0;
-    cursor: pointer;
-  }
-  .retro-btn:focus, .retro-btn:hover {
-    background: rgba(157, 157, 157, 1);
-  }
 `
 function Login() {
 
@@ -123,7 +162,7 @@ function Login() {
       <LoginContainer>
       <div>
         <div className="form-child">
-          <span style={{fontSize: '15px'}}>아이디&nbsp;</span>
+          <span>아이디&nbsp;</span>
           <input
             name="username"
             value={form.username}
@@ -131,7 +170,7 @@ function Login() {
           />
         </div>
         <div className="form-child">
-          <span style={{fontSize: '15px'}}>비밀번호&nbsp;</span>
+          <span>비밀번호&nbsp;</span>
           <input
             type="password"
             name="password"

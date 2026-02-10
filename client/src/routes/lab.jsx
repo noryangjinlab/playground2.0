@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { fetchApi } from '../api'
 
+
 const TipTapEditor = styled.div`
   .ProseMirror {
     padding: 1px 5px 1px 5px;

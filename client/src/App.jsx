@@ -31,7 +31,7 @@ const Container = styled.div`
     color: white;
     position: relative;
 
-    background-image: url('/images/sample1.jpg');
+    background-image: url('/images/background/pixel_city_1.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -42,7 +42,7 @@ const Container = styled.div`
     color: white;
     position: relative;
 
-    background-image: url('/images/temp1.png');
+    background-image: url('/images/background/temp1.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -83,7 +83,7 @@ const Navbar = styled.div`
     transition: right 0.3s ease-in-out;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
 
-    background-image: url('/images/temp4.jpg');
+    background-image: url('/images/background/temp4.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
