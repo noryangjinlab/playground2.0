@@ -73,9 +73,9 @@ router.post('/login', async (req, res) => {
 
   try {
     const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
-    if (rows.length === 0) return res.status(401).json({ message: '입력값을 확인해주세요' });
+    if (rows.length === 0) return res.status(401).json({ message: '일치하는 아이디가 없습니다' });
     const match = await bcrypt.compare(password, rows[0].password);
-    if (!match) return res.status(401).json({ message: '입력값을 확인해주세요' });
+    if (!match) return res.status(401).json({ message: '비밀번호가 틀립니다' });
 
     req.session.username = rows[0].username;
     req.session.name = rows[0].name;
@@ -83,6 +83,7 @@ router.post('/login', async (req, res) => {
     res.status(200).json({ message: '로그인 성공', nickname: req.session.nickname });
   } catch (err) {
     res.status(500).json({ message: err });
+    console.log(err)
   }
 });
 
