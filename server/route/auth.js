@@ -136,15 +136,20 @@ router.get('/standby', async (req, res) => {
 });
 
 router.post('/confirmstandby', async (req, res) => {
-  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
-  
-  const { username, password, name, nickname, email } = req.body;
-  
+  if (!(req.session && req.session.username === 'admin0106')) {
+    return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' })
+  }
+
+  const { username, password, name, nickname, email } = req.body
+
   try {
-    await pool.execute('INSERT INTO users (username, password, name, nickname, email) VALUES (?, ?, ?, ?, ?)', 
-      [username, password, name, nickname, email]);
-    await pool.execute('DELETE FROM standby WHERE username = ?', [username]);
-    res.status(200).json({ message: "회원가입 승인 완료" });
+    await pool.execute(
+      'INSERT INTO users (username, password, name, nickname, email) VALUES (?, ?, ?, ?, ?)',
+      [username, password, name, nickname, email],
+    )
+
+    await pool.execute('DELETE FROM standby WHERE username = ?', [username])
+
     await transporter.sendMail({
       from: process.env.MAIL_FROM,
       to: email,
@@ -154,7 +159,6 @@ router.post('/confirmstandby', async (req, res) => {
         노량진랩 회원가입 신청이 승인되었습니다.
         기타 문의사항 : hlawliet113@gmail.com
         바로가기 : https://noryangjinlab.org/login
-
 
                                         ..                        
                           .+#%%%%%%#+.                   
@@ -186,15 +190,16 @@ router.post('/confirmstandby', async (req, res) => {
                     -#%+.   .=%%-  *%=      .=#%-         
                   .#%+.  :+#%#-     -#%*=:. .-*%+         
                   -#%%%%%*:           :=###*=:           
-                                                          
-
       `,
     })
+
+    return res.status(200).json({ message: '회원가입 승인 완료' })
   } catch (err) {
-    res.status(500).json({ message: err });
-    console.log(err);
+    console.log(err)
+    return res.status(500).json({ message: String(err?.message || err) })
   }
-});
+})
+
 
 router.delete('/deletestandby', async (req, res) => {
   if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
