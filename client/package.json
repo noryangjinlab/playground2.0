@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tiptap/core": "^3.15.1",
+    "@tiptap/extension-code-block-lowlight": "^3.20.0",
     "@tiptap/extension-drag-handle": "^3.11.0",
     "@tiptap/extension-dropcursor": "^3.11.0",
     "@tiptap/extension-file-handler": "^3.11.0",
@@ -24,7 +25,9 @@
     "@tiptap/starter-kit": "^3.11.0",
     "audiomotion-analyzer": "^4.5.1",
     "axios": "^1.13.2",
+    "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",
+    "lowlight": "^3.3.0",
     "prosemirror-state": "^1.4.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

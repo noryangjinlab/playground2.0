@@ -29,17 +29,13 @@ const About = () => {
         <h3>MEMBERS</h3>
         <h4>h_lawliet</h4>
         <img src="/images/na.jpg"/>
-        <p>- 주식회사<del style={{fontSize: '12px'}}>아니다</del> 노량진랩 운영</p>
-        <p>- 재료공학과 재학</p>
-        <p>- </p>
-      </div>
+        <p>노량진랩 전자제품 분해 부서 책임자</p>
+        <p>재료공학과 재학</p>
+        <p>만화 삼국지 6회독</p>
 
-      <br/><br/><br/>
-      <div className="character">
-        <h3>MASCOT</h3>
         <img src="/images/mascot.jpg"/>
-        <h4>이름 : 쭈꾸미볶음(진)</h4>
-        <p>언제든 매콤한 요리로 변모할 가능성이 있다.<br/>시니컬한 성격.</p>
+        <h4>쭈꾸미볶음(진)</h4>
+        <p>노량진랩 마케팅 부서 소속</p>
       </div>
     </Container>
   )

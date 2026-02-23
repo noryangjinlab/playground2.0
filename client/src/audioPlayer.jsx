@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { audioData } from './data/audioData';
 
 const Audioplayer = styled.div`
+  z-index: 2;
   position: fixed;
   top: 20px;
   right: 20px;

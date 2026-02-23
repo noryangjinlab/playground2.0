@@ -1,5 +1,5 @@
-const BASE_URL = 'https://noryangjinlab.org/api'
-// const BASE_URL = 'http://localhost:3000/api'
+// const BASE_URL = 'https://noryangjinlab.org/api'
+const BASE_URL = 'http://localhost:3000/api'
 
 export const fetchApi = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`

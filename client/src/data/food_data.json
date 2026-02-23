@@ -1,0 +1,611 @@
+{
+  "categories": [
+    "한식",
+    "일식",
+    "중식",
+    "양식",
+    "기타"
+  ],
+  "items": [
+    {
+      "category": "한식",
+      "name": "김치찌개"
+    },
+    {
+      "category": "한식",
+      "name": "된장찌개"
+    },
+    {
+      "category": "한식",
+      "name": "순두부찌개"
+    },
+    {
+      "category": "한식",
+      "name": "비빔밥"
+    },
+    {
+      "category": "한식",
+      "name": "불고기"
+    },
+    {
+      "category": "한식",
+      "name": "제육볶음"
+    },
+    {
+      "category": "한식",
+      "name": "삼겹살"
+    },
+    {
+      "category": "한식",
+      "name": "갈비탕"
+    },
+    {
+      "category": "한식",
+      "name": "설렁탕"
+    },
+    {
+      "category": "한식",
+      "name": "육개장"
+    },
+    {
+      "category": "한식",
+      "name": "순대국"
+    },
+    {
+      "category": "한식",
+      "name": "감자탕"
+    },
+    {
+      "category": "한식",
+      "name": "부대찌개"
+    },
+    {
+      "category": "한식",
+      "name": "삼계탕"
+    },
+    {
+      "category": "한식",
+      "name": "냉면"
+    },
+    {
+      "category": "한식",
+      "name": "칼국수"
+    },
+    {
+      "category": "한식",
+      "name": "잔치국수"
+    },
+    {
+      "category": "한식",
+      "name": "떡볶이"
+    },
+    {
+      "category": "한식",
+      "name": "김밥"
+    },
+    {
+      "category": "한식",
+      "name": "잡채"
+    },
+    {
+      "category": "한식",
+      "name": "해물파전"
+    },
+    {
+      "category": "한식",
+      "name": "김치전"
+    },
+    {
+      "category": "한식",
+      "name": "보쌈"
+    },
+    {
+      "category": "한식",
+      "name": "족발"
+    },
+    {
+      "category": "한식",
+      "name": "닭갈비"
+    },
+    {
+      "category": "한식",
+      "name": "찜닭"
+    },
+    {
+      "category": "한식",
+      "name": "낙지볶음"
+    },
+    {
+      "category": "한식",
+      "name": "오징어볶음"
+    },
+    {
+      "category": "한식",
+      "name": "간장게장"
+    },
+    {
+      "category": "한식",
+      "name": "양념게장"
+    },
+    {
+      "category": "일식",
+      "name": "초밥"
+    },
+    {
+      "category": "일식",
+      "name": "사시미"
+    },
+    {
+      "category": "일식",
+      "name": "라멘"
+    },
+    {
+      "category": "일식",
+      "name": "우동"
+    },
+    {
+      "category": "일식",
+      "name": "소바"
+    },
+    {
+      "category": "일식",
+      "name": "돈카츠"
+    },
+    {
+      "category": "일식",
+      "name": "가츠동"
+    },
+    {
+      "category": "일식",
+      "name": "규동"
+    },
+    {
+      "category": "일식",
+      "name": "오야코동"
+    },
+    {
+      "category": "일식",
+      "name": "카레라이스"
+    },
+    {
+      "category": "일식",
+      "name": "오코노미야키"
+    },
+    {
+      "category": "일식",
+      "name": "타코야키"
+    },
+    {
+      "category": "일식",
+      "name": "야키소바"
+    },
+    {
+      "category": "일식",
+      "name": "가라아게"
+    },
+    {
+      "category": "일식",
+      "name": "텐동"
+    },
+    {
+      "category": "일식",
+      "name": "텐푸라"
+    },
+    {
+      "category": "일식",
+      "name": "스키야키"
+    },
+    {
+      "category": "일식",
+      "name": "샤브샤브"
+    },
+    {
+      "category": "일식",
+      "name": "나베"
+    },
+    {
+      "category": "일식",
+      "name": "야키토리"
+    },
+    {
+      "category": "일식",
+      "name": "규카츠"
+    },
+    {
+      "category": "일식",
+      "name": "연어덮밥"
+    },
+    {
+      "category": "일식",
+      "name": "해산물덮밥"
+    },
+    {
+      "category": "일식",
+      "name": "장어덮밥"
+    },
+    {
+      "category": "일식",
+      "name": "오므라이스"
+    },
+    {
+      "category": "일식",
+      "name": "모찌"
+    },
+    {
+      "category": "일식",
+      "name": "미소시루"
+    },
+    {
+      "category": "일식",
+      "name": "교자"
+    },
+    {
+      "category": "일식",
+      "name": "에비후라이"
+    },
+    {
+      "category": "일식",
+      "name": "우메보시(절임)"
+    },
+    {
+      "category": "중식",
+      "name": "자장면"
+    },
+    {
+      "category": "중식",
+      "name": "짬뽕"
+    },
+    {
+      "category": "중식",
+      "name": "탕수육"
+    },
+    {
+      "category": "중식",
+      "name": "마파두부"
+    },
+    {
+      "category": "중식",
+      "name": "마라탕"
+    },
+    {
+      "category": "중식",
+      "name": "마라샹궈"
+    },
+    {
+      "category": "중식",
+      "name": "훠궈"
+    },
+    {
+      "category": "중식",
+      "name": "양꼬치"
+    },
+    {
+      "category": "중식",
+      "name": "꿔바로우"
+    },
+    {
+      "category": "중식",
+      "name": "깐풍기"
+    },
+    {
+      "category": "중식",
+      "name": "유린기"
+    },
+    {
+      "category": "중식",
+      "name": "라조기"
+    },
+    {
+      "category": "중식",
+      "name": "깐쇼새우"
+    },
+    {
+      "category": "중식",
+      "name": "칠리새우"
+    },
+    {
+      "category": "중식",
+      "name": "팔보채"
+    },
+    {
+      "category": "중식",
+      "name": "양장피"
+    },
+    {
+      "category": "중식",
+      "name": "유산슬"
+    },
+    {
+      "category": "중식",
+      "name": "고추잡채"
+    },
+    {
+      "category": "중식",
+      "name": "경장육슬"
+    },
+    {
+      "category": "중식",
+      "name": "잡채밥"
+    },
+    {
+      "category": "중식",
+      "name": "볶음밥"
+    },
+    {
+      "category": "중식",
+      "name": "짬뽕밥"
+    },
+    {
+      "category": "중식",
+      "name": "우육면"
+    },
+    {
+      "category": "중식",
+      "name": "딤섬"
+    },
+    {
+      "category": "중식",
+      "name": "샤오롱바오"
+    },
+    {
+      "category": "중식",
+      "name": "하가우"
+    },
+    {
+      "category": "중식",
+      "name": "군만두"
+    },
+    {
+      "category": "중식",
+      "name": "춘권"
+    },
+    {
+      "category": "중식",
+      "name": "중국냉면"
+    },
+    {
+      "category": "중식",
+      "name": "차오미엔"
+    },
+    {
+      "category": "양식",
+      "name": "파스타"
+    },
+    {
+      "category": "양식",
+      "name": "피자"
+    },
+    {
+      "category": "양식",
+      "name": "스테이크"
+    },
+    {
+      "category": "양식",
+      "name": "리조토"
+    },
+    {
+      "category": "양식",
+      "name": "라자냐"
+    },
+    {
+      "category": "양식",
+      "name": "뇨끼"
+    },
+    {
+      "category": "양식",
+      "name": "버거"
+    },
+    {
+      "category": "양식",
+      "name": "샌드위치"
+    },
+    {
+      "category": "양식",
+      "name": "샐러드"
+    },
+    {
+      "category": "양식",
+      "name": "수프"
+    },
+    {
+      "category": "양식",
+      "name": "치킨윙"
+    },
+    {
+      "category": "양식",
+      "name": "피시앤칩스"
+    },
+    {
+      "category": "양식",
+      "name": "오믈렛"
+    },
+    {
+      "category": "양식",
+      "name": "프렌치토스트"
+    },
+    {
+      "category": "양식",
+      "name": "팬케이크"
+    },
+    {
+      "category": "양식",
+      "name": "에그베네딕트"
+    },
+    {
+      "category": "양식",
+      "name": "브런치"
+    },
+    {
+      "category": "양식",
+      "name": "치킨텐더"
+    },
+    {
+      "category": "양식",
+      "name": "바비큐립"
+    },
+    {
+      "category": "양식",
+      "name": "그라탱"
+    },
+    {
+      "category": "양식",
+      "name": "라따뚜이"
+    },
+    {
+      "category": "양식",
+      "name": "맥앤치즈"
+    },
+    {
+      "category": "양식",
+      "name": "치킨파르미지아나"
+    },
+    {
+      "category": "양식",
+      "name": "미트볼"
+    },
+    {
+      "category": "양식",
+      "name": "로스트비프"
+    },
+    {
+      "category": "양식",
+      "name": "프렌치프라이"
+    },
+    {
+      "category": "양식",
+      "name": "어니언링"
+    },
+    {
+      "category": "양식",
+      "name": "핫도그"
+    },
+    {
+      "category": "양식",
+      "name": "클램차우더"
+    },
+    {
+      "category": "양식",
+      "name": "카프레제"
+    },
+    {
+      "category": "기타",
+      "name": "쌀국수"
+    },
+    {
+      "category": "기타",
+      "name": "분짜"
+    },
+    {
+      "category": "기타",
+      "name": "반미"
+    },
+    {
+      "category": "기타",
+      "name": "팟타이"
+    },
+    {
+      "category": "기타",
+      "name": "똠얌꿍"
+    },
+    {
+      "category": "기타",
+      "name": "그린커리"
+    },
+    {
+      "category": "기타",
+      "name": "치킨커리"
+    },
+    {
+      "category": "기타",
+      "name": "버터치킨"
+    },
+    {
+      "category": "기타",
+      "name": "난"
+    },
+    {
+      "category": "기타",
+      "name": "비리야니"
+    },
+    {
+      "category": "기타",
+      "name": "타코"
+    },
+    {
+      "category": "기타",
+      "name": "부리또"
+    },
+    {
+      "category": "기타",
+      "name": "나초"
+    },
+    {
+      "category": "기타",
+      "name": "케밥"
+    },
+    {
+      "category": "기타",
+      "name": "팔라펠"
+    },
+    {
+      "category": "기타",
+      "name": "후무스"
+    },
+    {
+      "category": "기타",
+      "name": "포케"
+    },
+    {
+      "category": "기타",
+      "name": "지중해볼"
+    },
+    {
+      "category": "기타",
+      "name": "타파스"
+    },
+    {
+      "category": "기타",
+      "name": "보르시"
+    },
+    {
+      "category": "기타",
+      "name": "아메리카노"
+    },
+    {
+      "category": "기타",
+      "name": "카페라떼"
+    },
+    {
+      "category": "기타",
+      "name": "레몬에이드"
+    },
+    {
+      "category": "기타",
+      "name": "버블티"
+    },
+    {
+      "category": "기타",
+      "name": "스무디"
+    },
+    {
+      "category": "기타",
+      "name": "치즈케이크"
+    },
+    {
+      "category": "기타",
+      "name": "티라미수"
+    },
+    {
+      "category": "기타",
+      "name": "마카롱"
+    },
+    {
+      "category": "기타",
+      "name": "와플"
+    },
+    {
+      "category": "기타",
+      "name": "빙수"
+    }
+  ]
+}

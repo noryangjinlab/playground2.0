@@ -1,12 +1,34 @@
-import { useEditor, EditorContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
+import { useEditor, EditorContent, NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { TextStyle } from '@tiptap/extension-text-style'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { createLowlight, common } from 'lowlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import typescript from 'highlight.js/lib/languages/typescript'
+import python from 'highlight.js/lib/languages/python'
+import json from 'highlight.js/lib/languages/json'
+import bash from 'highlight.js/lib/languages/bash'
+import cpp from 'highlight.js/lib/languages/cpp'
+import java from 'highlight.js/lib/languages/java'
 import { Extension, Node } from '@tiptap/core'
 import { Plugin } from 'prosemirror-state'
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { fetchApi } from '../api'
+
+
+const lowlight = createLowlight(common)
+
+lowlight.register({
+  javascript,
+  typescript,
+  python,
+  json,
+  bash,
+  cpp,
+  java,
+})
 
 
 const TipTapEditor = styled.div`
@@ -25,6 +47,55 @@ const TipTapEditor = styled.div`
   &.readonly [data-lab-image-resize] {
     display: none;
   }
+
+  .tiptap > p {
+    margin: 12px 0;
+    line-height: 1.6em;
+  }
+
+  .ProseMirror pre {
+    background: #0f0f0f;
+    color: #e6e6e6;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.6em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .ProseMirror pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .ProseMirror .hljs-comment,
+  .ProseMirror .hljs-quote { color: #6a9955; }
+
+  .ProseMirror .hljs-keyword,
+  .ProseMirror .hljs-selector-tag,
+  .ProseMirror .hljs-literal { color: #c586c0; }
+
+  .ProseMirror .hljs-string,
+  .ProseMirror .hljs-regexp,
+  .ProseMirror .hljs-symbol { color: #ce9178; }
+
+  .ProseMirror .hljs-number { color: #b5cea8; }
+
+  .ProseMirror .hljs-title,
+  .ProseMirror .hljs-function,
+  .ProseMirror .hljs-section { color: #dcdcaa; }
+
+  .ProseMirror .hljs-built_in,
+  .ProseMirror .hljs-type { color: #4ec9b0; }
+
+  .ProseMirror .hljs-attr,
+  .ProseMirror .hljs-attribute,
+  .ProseMirror .hljs-name { color: #9cdcfe; }
 `
 
 const HOME_ID = '6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345'
@@ -95,7 +166,16 @@ const ChildNote = Node.create({
         {
           'data-child-note-box': 'true',
           style:
-            'display:inline-block;position:relative;padding:0 5px 0 0;background:#111;cursor:pointer;text-decoration: underline;color: rgba(197, 172, 9, 1);',
+            `
+            display: inline-block;
+            position: relative;
+            background: transparent;
+            cursor: pointer;
+            text-decoration: underline;
+            color: rgb(197, 172, 9);
+            word-break: break-all;
+            line-height: 1.8em;
+            `,
         },
         ['span', { style: 'pointer-events:none;' }, title],
         [
@@ -104,7 +184,23 @@ const ChildNote = Node.create({
             'data-child-note-delete': 'true',
             type: 'button',
             style:
-              'opacity:0.5;position:absolute;top:-3px;right:-3px;width:12px;height:12px;border:none;border-radius:50%;background:#f66;color:#111;font-size:10px;line-height:10px;text-align:center;cursor:pointer;padding:0;',
+              `
+              opacity: 0.5;
+              position: absolute;
+              top: -1px;
+              right: -3px;
+              width: 12px;
+              height: 12px;
+              border: none;
+              border-radius: 50%;
+              background:#f66;
+              color: black;
+              font-size: 10px;
+              line-height: 10px;
+              text-align: center;
+              cursor: pointer;
+              padding: 0;
+              `,
           },
           '×',
         ],
@@ -208,7 +304,7 @@ const LabImageView = props => {
             border: 'none',
             borderRadius: '50%',
             background: '#f66',
-            color: '#111',
+            color: '#000',
             fontSize: 12,
             lineHeight: '12px',
             textAlign: 'center',
@@ -308,7 +404,23 @@ const LabImage = Node.create({
             'data-lab-image-delete': 'true',
             type: 'button',
             style:
-              'opacity:0.6;position:absolute;top:4px;right:4px;width:14px;height:14px;border:none;border-radius:50%;background:#f66;color:#111;font-size:12px;line-height:12px;text-align:center;cursor:pointer;padding:0;',
+              `
+              opacity: 0.5;
+              position: absolute;
+              top: -1px;
+              right: -3px;
+              width: 12px;
+              height: 12px;
+              border: none;
+              border-radius: 50%;
+              background:#f66;
+              color: black;
+              font-size: 10px;
+              line-height: 10px;
+              text-align: center;
+              cursor: pointer;
+              padding: 0;
+              `,
           },
           '×',
         ],
@@ -451,6 +563,51 @@ const LabImageBehavior = Extension.create({
   },
 })
 
+const CodeBlockView = props => {
+  const { node, updateAttributes, editor, extension } = props
+  const canEdit = !!editor && editor.isEditable
+  const current = node.attrs.language || 'plaintext'
+
+  const languages = useMemo(() => {
+    const ll = extension?.options?.lowlight || lowlight
+    const list = ll?.listLanguages?.() || []
+    return ['plaintext', ...list]
+  }, [extension])
+
+  return (
+    <NodeViewWrapper data-codeblock="true" style={{ margin: '12px 0' }}>
+      {canEdit ? (
+        <div style={{ marginBottom: 6, display: 'flex', justifyContent: 'flex-end' }}>
+          <select
+            value={current}
+            onChange={e => {
+              const v = e.target.value
+              updateAttributes({ language: v === 'plaintext' ? null : v })
+            }}
+            style={{ height: 26, fontFamily: 'galmuri9', padding: '0 6px', cursor: 'pointer' }}
+          >
+            {languages.map(l => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
+
+      <pre spellCheck={false}>
+        <NodeViewContent as="code" />
+      </pre>
+    </NodeViewWrapper>
+  )
+}
+
+const CodeBlock = CodeBlockLowlight.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(CodeBlockView)
+  },
+}).configure({ lowlight })
+
 function makeUuid() {
   if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID()
   return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`
@@ -475,6 +632,7 @@ const Lab = () => {
   const saveTimerRef = useRef(null)
   const activeNoteRef = useRef(null)
   const loadReqRef = useRef(0)
+  
 
   useEffect(() => {
     const next = routeId || HOME_ID
@@ -534,7 +692,15 @@ const Lab = () => {
   )
 
   const editor = useEditor({
-    extensions: [StarterKit, TextStyle, FontSize, ChildNote, LabImage, LabImageBehavior],
+    extensions: [
+      StarterKit.configure({ codeBlock: false }),
+      CodeBlock,
+      TextStyle,
+      FontSize,
+      ChildNote,
+      LabImage,
+      LabImageBehavior,
+    ],
     content: '',
     editable: false,
     onUpdate({ editor }) {
@@ -585,6 +751,40 @@ const Lab = () => {
   }, [])
 
   const canEdit = !!editor && isAdmin
+
+  const showToolbar = canEdit && isLoaded && !loadError
+
+  const toolbarRef = useRef(null)
+  const toolbarSentinelRef = useRef(null)
+  const [toolbarFixed, setToolbarFixed] = useState(false)
+  const [toolbarH, setToolbarH] = useState(0)
+
+  useLayoutEffect(() => {
+    if (!showToolbar) return
+    if (!toolbarRef.current) return
+    const el = toolbarRef.current
+    const measure = () => setToolbarH(Math.ceil(el.getBoundingClientRect().height))
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [showToolbar])
+
+  useEffect(() => {
+    if (!showToolbar) return
+    if (!toolbarSentinelRef.current) return
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const next = !entry.isIntersecting && entry.boundingClientRect.top < 0
+        setToolbarFixed(next)
+      },
+      { root: null, threshold: 0 },
+    )
+
+    io.observe(toolbarSentinelRef.current)
+    return () => io.disconnect()
+  }, [showToolbar])
 
   const runIfEditable = fn => {
     if (!editor) return
@@ -735,9 +935,24 @@ const Lab = () => {
             <span key={idx}>
               {idx > 0 && ' > '}
               {isLast ? (
-                <span>{item.label || '(제목 없음)'}</span>
+                <span
+                  style={{
+                    lineHeight: '1.6em',
+                    wordBreak: 'break-all',
+                  }}
+                >
+                  {item.label || '(제목 없음)'}
+                </span>
               ) : (
-                <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleBreadcrumbClick(item)}>
+                <span
+                  style={{
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    lineHeight: '1.6em',
+                    wordBreak: 'break-all',
+                  }}
+                  onClick={() => handleBreadcrumbClick(item)}
+                >
                   {item.label || '(제목 없음)'}
                 </span>
               )}
@@ -790,12 +1005,23 @@ const Lab = () => {
         </div>
       ) : null}
 
+      {showToolbar ? <div ref={toolbarSentinelRef} style={{ height: 1 }} /> : null}
+      {showToolbar && toolbarFixed ? <div style={{ height: toolbarH, marginBottom: 8 }} /> : null}
+
       <div
+        ref={toolbarRef}
         style={{
-          display: canEdit && isLoaded && !loadError ? 'flex' : 'none',
+          display: showToolbar ? 'flex' : 'none',
           gap: 8,
+          flexWrap: 'wrap',
           alignItems: 'center',
-          marginBottom: 8,
+          position: toolbarFixed ? 'fixed' : 'static',
+          top: toolbarFixed ? 0 : undefined,
+          right: toolbarFixed ? 0 : undefined,
+          zIndex: toolbarFixed ? 1 : undefined,
+          background: toolbarFixed ? '#0f0f0f' : undefined,
+          padding: toolbarFixed ? '8px 13px 8px 0' : undefined,
+          boxSizing: toolbarFixed ? 'border-box' : undefined,
         }}
       >
         <button
@@ -852,6 +1078,15 @@ const Lab = () => {
           onClick={handleCreateChildNote}
         >
           노트 추가하기
+        </button>
+
+        <button
+          style={{ height: '30px', fontFamily: 'galmuri9', padding: '5px', cursor: 'pointer' }}
+          type="button"
+          disabled={!canEdit || !isLoaded}
+          onClick={() => runIfEditable(() => editor.chain().focus().setCodeBlock({ language: 'javascript' }).run())}
+        >
+          코드 블록
         </button>
       </div>
 

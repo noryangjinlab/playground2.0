@@ -10,6 +10,8 @@ import About from './routes/about';
 import Login from './routes/login';
 import Lab from './routes/lab';
 import Standby from './admin/standBy';
+import Playground from './routes/playground';
+import Channel from './routes/channel';
 
 
 const Container = styled.div`
@@ -130,8 +132,15 @@ const Contents = styled.div`
     display: flex;
     flex-direction: column;
     z-index: 1;
-    margin: 12px;
+    margin: 25px;
 
+    #slogan {
+      font-weight: 100;
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding-bottom: 2px;
+    }
     #title {
       font-size: 35px;
       font-weight: 800;
@@ -173,8 +182,17 @@ const Contents = styled.div`
       display: flex;
       align-items: center;
     }
+
+    .title-top {
+      flex: 1;
+    }
+    #slogan {
+      font-weight: 100;
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
     #title {
-      flex-grow: 1;
       font-size: calc(16px + 3vw);
       font-weight: 800;
     }
@@ -243,9 +261,9 @@ function App() {
         <Link to="/about" onClick={closeMenu}>About LAB</Link><br/>
         <Link to="/login" onClick={closeMenu}>로그인 / 회원가입</Link><br/>
         <Link to="/lab/6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345" onClick={closeMenu}>연구실</Link><br/>
-        <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/>
+        {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
         <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
-        {/* <Link to="/playground">Playground</Link><br/> */}
+        <Link to="/playground">Playground</Link><br/>
         {
           !isMobile && (audioState === 0 ? 
           <Link onClick={()=>{
@@ -281,7 +299,10 @@ function App() {
       <Contents>
 
         <div className='main-top'>
-          <span id='title'>noryangjinLAB</span>
+          <div className='title-top'>
+            <p id='slogan'>All Manufactured by</p>
+            <span id='title'>noryangjinLAB</span>
+          </div>
           {isMobile && <span id='menu-btn' onClick={toggleMenu}>MENU</span>}
         </div>
         <div id='title-sub'>v2.0.3<hr/></div>
@@ -293,6 +314,8 @@ function App() {
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
             <Route path="/lab/:id" element={<Lab/>} />
+            <Route path="/playground/*" element={<Playground/>} />
+            <Route path="/channel" element={<Channel/>} />
             <Route path="/admin/standby" element={<Standby/>} />
           </Routes>
           {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
