@@ -160,7 +160,9 @@ function Login() {
     {
       !user ? 
       <LoginContainer>
-      <div>
+      <div style={{
+        maxWidth: "90%"
+      }}>
         <div className="form-child">
           <span>아이디&nbsp;</span>
           <input

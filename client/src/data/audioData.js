@@ -101,6 +101,23 @@ export const audioData = [
   ],
   [
     {
+      title: "Giant Steps (Mono)",
+      artist: "John Coltrane",
+      path: "/audio/Giant Steps.mp3"
+    },
+    {
+      title: "Un Poco Loco (Remastered 1998 / Rudy Van Gelder Edition)",
+      artist: "Bud Powell",
+      path: "/audio/Un Poco Loco.mp3"
+    },
+    {
+      title: "N.Y Rush",
+      artist: "The Seatbelts",
+      path: "/audio/N.Y Rush.mp3"
+    },
+  ],
+  [
+    {
       title: "Messages from the Stars",
       artist: "The RAH Band",
       path: "/audio/Messages from the Stars.mp3"
@@ -135,6 +152,7 @@ export const audioData = [
   [
     'Welcome to Our Lab (Default)',
     "'80s / '90s City Pop Collection",
+    "Fast Swings",
     "20th Century Neon Genesis Mix"
   ]
 ]

@@ -102,7 +102,7 @@ const Navbar = styled.div`
       color: inherit;
       text-decoration: none;
       line-height: 50px;
-      z-index: 5;
+      // z-index: 3;
     }
 
     #close-btn {
@@ -263,7 +263,7 @@ function App() {
         <Link to="/lab/6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345" onClick={closeMenu}>연구실</Link><br/>
         {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
         <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
-        <Link to="/playground">Playground</Link><br/>
+        <Link to="/playground" onClick={closeMenu}>Playground</Link><br/>
         {
           !isMobile && (audioState === 0 ? 
           <Link onClick={()=>{

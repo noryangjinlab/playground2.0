@@ -57,6 +57,12 @@ const Audioplayer = styled.div`
     flex-direction: column;
   }
 
+  .audio-content-container {
+    flex: 1;
+
+    padding: 10px 16px 0 16px;
+  }
+
   .win-btn {
     width: 20px;
     height: 20px;
@@ -442,8 +448,9 @@ const Audioplayer = styled.div`
       width: 260px;
       height: 65px;
       padding: 10px;
+      flex: 0;
     }
-
+    
     .channel-summary {
       display: flex;
       align-items: center;
@@ -535,7 +542,7 @@ function AudioPlayer({ onSend, props }) {
 
     const audioMotion = new AudioMotionAnalyzer(containerEl, {
       source: audioEl,
-      height: 85,
+      height: 95,
       width: 368,
     });
 
@@ -581,7 +588,7 @@ function AudioPlayer({ onSend, props }) {
     if (!a) return;
 
     a.setOptions({
-      height: isMobile ? 65 : 85,
+      height: isMobile ? 65 : 95,
       width: isMobile ? 260 : 368,
     });
   }, [isMobile]);
@@ -863,7 +870,7 @@ function AudioPlayer({ onSend, props }) {
               paddingBottom: '10px',
             } : {
               textAlign: 'center',
-              marginTop: 'auto',
+              marginTop: '0px',
               paddingBottom: '12px',
             }
           }
@@ -962,7 +969,8 @@ function AudioPlayer({ onSend, props }) {
             isMobile && 
             <div style={{
               width: 'calc(100% - 20px)',
-              padding: '0 10px'
+              padding: '0 10px',
+              zIndex: 6
             }}>
               <details className="channel-details" ref={detailsRef} style={{
                 backgroundColor: "rgb(255, 255, 255)",
