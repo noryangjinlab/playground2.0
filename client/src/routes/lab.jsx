@@ -32,8 +32,14 @@ lowlight.register({
 
 
 const TipTapEditor = styled.div`
+
+  width: 100%;
+  max-width: 100%;
+
   .ProseMirror {
     padding: 1px 5px 1px 5px;
+    word-break: break-word; 
+    overflow-wrap: break-word;
   }
 
   &.readonly [data-child-note-delete] {
@@ -63,6 +69,8 @@ const TipTapEditor = styled.div`
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 14px;
     margin: 0;
+    max-width: 100%;
+    white-space: pre;
   }
 
   .ProseMirror pre code {
@@ -920,7 +928,7 @@ const Lab = () => {
   }, [editor])
 
   return (
-    <div style={{ padding: '10px 13px 0 0' }}>
+    <div>
       <div
         style={{
           marginBottom: '40px',
