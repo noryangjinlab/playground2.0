@@ -52,11 +52,13 @@ display: flex;
     .form-child > span {
       font-size: 15px;
       width: 70px;
+      flex-shrink: 0;
     }
 
     input {
       font-family: 'galmuri9';
-      flex: 1;
+      flex-shrink: 1;
+      min-width: 100px;
     }
 
     .retro-btn {

@@ -559,8 +559,15 @@ Please change the parent <Route path="${C}"> to <Route path="${C==="/"?"*":`${C}
       font-size: 16px;
     }
     .form-child > span {
-      width: 80px;
+      font-size: 15px;
+      width: 70px;
+      flex-shrink: 0;
     }
+    input {
+      font-family: 'galmuri9';
+      flex-shrink: 1;
+    }
+      
     .email-notice {
       font-size: 12px;
       color: rgb(230, 0, 0);
@@ -576,11 +583,6 @@ Please change the parent <Route path="${C}"> to <Route path="${C==="/"?"*":`${C}
       font-size: 12px;
       color: rgb(230, 0, 0);
       font-weight: 1000;
-    }
-
-    input {
-      font-family: 'galmuri9';
-      flex: 1;
     }
 
     .retro-btn {
@@ -687,11 +689,13 @@ display: flex;
     .form-child > span {
       font-size: 15px;
       width: 70px;
+      flex-shrink: 0;
     }
 
     input {
       font-family: 'galmuri9';
-      flex: 1;
+      flex-shrink: 1;
+      min-width: 100px;
     }
 
     .retro-btn {
@@ -1066,7 +1070,7 @@ https://github.com/highlightjs/highlight.js/issues/2277`),Wt=se,bt=De),Je===void
     color: white;
     position: relative;
 
-    background-image: url('/images/background/pixel_city_1.jpg');
+    background-image: url('/images/background/temp5.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1077,7 +1081,7 @@ https://github.com/highlightjs/highlight.js/issues/2277`),Wt=se,bt=De),Je===void
     color: white;
     position: relative;
 
-    background-image: url('/images/background/temp1.png');
+    background-image: url('/images/background/temp5.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

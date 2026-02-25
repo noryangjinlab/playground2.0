@@ -33,7 +33,7 @@ const Container = styled.div`
     color: white;
     position: relative;
 
-    background-image: url('/images/background/pixel_city_1.jpg');
+    background-image: url('/images/background/temp5.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -44,7 +44,7 @@ const Container = styled.div`
     color: white;
     position: relative;
 
-    background-image: url('/images/background/temp1.png');
+    background-image: url('/images/background/temp5.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

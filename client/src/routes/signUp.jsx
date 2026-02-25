@@ -82,8 +82,15 @@ const SignupContainer = styled.div`
       font-size: 16px;
     }
     .form-child > span {
-      width: 80px;
+      font-size: 15px;
+      width: 70px;
+      flex-shrink: 0;
     }
+    input {
+      font-family: 'galmuri9';
+      flex-shrink: 1;
+    }
+      
     .email-notice {
       font-size: 12px;
       color: rgb(230, 0, 0);
@@ -99,11 +106,6 @@ const SignupContainer = styled.div`
       font-size: 12px;
       color: rgb(230, 0, 0);
       font-weight: 1000;
-    }
-
-    input {
-      font-family: 'galmuri9';
-      flex: 1;
     }
 
     .retro-btn {
