@@ -57,8 +57,9 @@ display: flex;
 
     input {
       font-family: 'galmuri9';
-      flex-shrink: 1;
-      min-width: 100px;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
     }
 
     .retro-btn {

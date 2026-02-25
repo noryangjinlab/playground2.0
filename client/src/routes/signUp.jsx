@@ -88,9 +88,11 @@ const SignupContainer = styled.div`
     }
     input {
       font-family: 'galmuri9';
-      flex-shrink: 1;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
     }
-      
+
     .email-notice {
       font-size: 12px;
       color: rgb(230, 0, 0);
