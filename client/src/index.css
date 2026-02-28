@@ -6,6 +6,15 @@
   font-family: 'galmurimono9';
   src: url('/fonts/GalmuriMono9.woff2') format('woff2');
 }
+@font-face {
+  font-family: 'pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Galmuri14';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2506-1@1.0/Galmuri14.woff2') format('woff2');
+  font-display: swap;
+}
 
 body {
   padding: 0;

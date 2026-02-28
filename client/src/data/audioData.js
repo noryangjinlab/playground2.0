@@ -6,11 +6,11 @@ export const audioData = [
       artist: "Garoad",
       path: "/audio/A Neon Glow Lights the Way.mp3"
     },
-    {
-      title: "Sapphire City (Short ver.)",
-      artist: "Dirty Androids",
-      path: "/audio/Sapphire City.mp3"
-    },
+    // {
+    //   title: "Sapphire City (Short ver.)",
+    //   artist: "Dirty Androids",
+    //   path: "/audio/Sapphire City.mp3"
+    // },
     {
       title: "Welcome to VA-11 Hall-A",
       artist: "Garoad",
@@ -115,6 +115,31 @@ export const audioData = [
       artist: "The Seatbelts",
       path: "/audio/N.Y Rush.mp3"
     },
+    {
+      title: "Ya Gotta Try (Live at Buddy Rich Memorial Concert)",
+      artist: "Vinnie Colaiuta",
+      path: "/audio/ya gotta try.mp3"
+    },
+    {
+      title: "Up (feat. Sonicwonder)",
+      artist: "Hiromi",
+      path: "/audio/up.mp3"
+    },
+    {
+      title: "Countdown (Remastered)",
+      artist: "John Coltrane",
+      path: "/audio/Countdown.mp3"
+    },
+    {
+      title: "Waltz of the Mushroom Hunters (Remastered 2024)",
+      artist: "Buddy Rich",
+      path: "/audio/Waltz of the Mushroom Hunters.mp3"
+    },
+    {
+      title: "Guilty Pleasure",
+      artist: "山中千尋 (Yamanaka Chihiro)",
+      path: "/audio/Guilty Pleasure.mp3"
+    }
   ],
   [
     {
@@ -152,7 +177,7 @@ export const audioData = [
   [
     'Welcome to Our Lab (Default)',
     "'80s / '90s City Pop Collection",
-    "Fast Swings",
+    "Swingin' at Allegro",
     "20th Century Neon Genesis Mix"
   ]
 ]

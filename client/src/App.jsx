@@ -128,6 +128,12 @@ const Contents = styled.div`
   position: relative;
   flex: 1;
 
+  #tm {
+    font-family: 'pretendard';
+    padding-left: 2px;
+    font-weight: 200;
+  }
+
   @media (min-width: 1000px) {
     display: flex;
     flex-direction: column;
@@ -168,6 +174,23 @@ const Contents = styled.div`
     .footer > p {
       font-size: 11px;
     }
+
+    #flex {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      padding-top: 20px;
+    }
+    #flex > div {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    #flex img {
+      width: 23px;
+      padding-right: 7px;
+      cursor: pointer;
+    }
   }
 
 
@@ -197,9 +220,9 @@ const Contents = styled.div`
       font-weight: 800;
     }
     #title-sub {
-      font-size: 17px;
-      font-weight: 800;
-      padding-top: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      padding-top: 5px;
       padding-bottom: 15px;
     }
     hr {
@@ -223,6 +246,23 @@ const Contents = styled.div`
     }
     .footer > p {
       font-size: 11px;
+    }
+
+    #flex {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      padding-top: 20px;
+    }
+    #flex > div {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    #flex img {
+      width: 23px;
+      padding-right: 7px;
+      cursor: pointer;
     }
   }
 `
@@ -301,7 +341,7 @@ function App() {
         <div className='main-top'>
           <div className='title-top'>
             <p id='slogan'>All Manufactured by</p>
-            <span id='title'>noryangjinLAB</span>
+            <span id='title'>noryangjinLAB<span id='tm'>™</span></span>
           </div>
           {isMobile && <span id='menu-btn' onClick={toggleMenu}>MENU</span>}
         </div>
@@ -327,6 +367,18 @@ function App() {
           <p>서울특별시 동작구 노들로2길 7</p>
           <p>No copyright ⓒ 2023 noryangjinlab. All rights not reserved.</p>
           <p>Designed by noryangjinLAB</p>
+
+          <div id='flex'>
+            <div>
+              <img src='/logo/insta_logo.png' onClick={()=>window.open("https://www.instagram.com/noryangjinlab_official/", "_blank", "noopener,noreferrer")}/>
+              noryangjinlab_official
+            </div>
+            <div>
+              <img src='/logo/karahigh.png' onClick={()=>window.open("https://www.instagram.com/karahigh0503/", "_blank", "noopener,noreferrer")}/>
+              カラアゲハイボール
+            </div>
+            
+          </div>
         </div>
 
       </Contents>
