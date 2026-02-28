@@ -27,6 +27,11 @@ export const audioData = [
       path: "/audio/Every Day Is Night.mp3"
     },
     {
+      title: "Technovision (Short ver.)",
+      artist: "いとうかなこ (Itō Kanako)",
+      path: "/audio/technovision.mp3"
+    },
+    {
       title: "Moon",
       artist: "FreeTempo",
       path: "/audio/moon.mp3"
@@ -98,6 +103,16 @@ export const audioData = [
       artist: "백예린",
       path: "/audio/la la la love song.mp3"
     },
+    {
+      title: "WINDY SUMMER",
+      artist: "杏里 (Anri)",
+      path: "/audio/WINDY SUMMER.mp3"
+    },
+    {
+      title: "ESP",
+      artist: "Marlene",
+      path: "/audio/ESP.mp3"
+    },
   ],
   [
     {
@@ -139,6 +154,11 @@ export const audioData = [
       title: "Guilty Pleasure",
       artist: "山中千尋 (Yamanaka Chihiro)",
       path: "/audio/Guilty Pleasure.mp3"
+    },
+    {
+      title: "Airegin (1956 Rudy Van Gelder Remastering)",
+      artist: "The Miles Davis Quintet",
+      path: "/audio/Airegin.mp3"
     }
   ],
   [
@@ -171,6 +191,11 @@ export const audioData = [
       title: "Rydeen (2018 Bob Ludwig Remastering)",
       artist: "Yellow Magic Orchestra",
       path: "/audio/rydeen.mp3"
+    },
+    {
+      title: "Robot Rock",
+      artist: "Daft Punk",
+      path: "/audio/Robot Rock.mp3"
     },
   ],
 

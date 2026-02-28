@@ -12,6 +12,10 @@ const HomeContainer = styled.div`
     font-weight: 100;
     line-height: 23px;
   }
+
+  .grid {
+    display: grid
+  }
 `
 
 function Home() {
@@ -30,7 +34,7 @@ function Home() {
             이에 따라 본 연구실에서 호스팅 중인 서비스들이 일시적으로 중단될 예정입니다.
           </p>
           <p>[라이브 공연 안내] 2026.3.21. 18시 홍대 스윙홀에서 라이브 공연이 진행될 예정입니다.<br/>
-          입장료 : 현장 12000원 | 예매 10000원<br/>
+          입장료 : 현장 15000원 | 예매 10000원<br/>
           &#8251; Electric Fan Harp on LIVE &#8251;</p>
           <br/>
           <p>반응형 웹 제작 문의 --&gt; hlawliet113@gmail.com</p>
