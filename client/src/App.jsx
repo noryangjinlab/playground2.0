@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from 'react-router';
+import { Routes, Route, Link, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 
@@ -12,12 +12,14 @@ import Lab from './routes/lab';
 import Standby from './admin/standBy';
 import Playground from './routes/playground';
 import Channel from './routes/channel';
+import LabMain from './routes/labMain';
+import NotionWish from './components/notionWish';
 
 
 const Container = styled.div`
 
   overflow-x: hidden;
-  min-height: 120vh;
+  min-height: 100vh;
   display: flex;
 
   &::before {
@@ -269,6 +271,9 @@ const Contents = styled.div`
 
 function App() {
 
+  const location = useLocation();
+  const isNotionPage = location.pathname.startsWith('/lab-wish');
+
   const [audioState, setAudioState] = useState(2);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -300,7 +305,7 @@ function App() {
         <Link to="/" onClick={closeMenu}>홈</Link><br/>
         <Link to="/about" onClick={closeMenu}>About LAB</Link><br/>
         <Link to="/login" onClick={closeMenu}>로그인 / 회원가입</Link><br/>
-        <Link to="/lab/6f9b4f4e-9f2a-4eb0-9b0b-2f0fadc12345" onClick={closeMenu}>연구실</Link><br/>
+        <Link to="/labhome" onClick={closeMenu}>연구실</Link><br/>
         {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
         <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
         <Link to="/playground" onClick={closeMenu}>Playground</Link><br/>
@@ -345,7 +350,9 @@ function App() {
           </div>
           {isMobile && <span id='menu-btn' onClick={toggleMenu}>MENU</span>}
         </div>
-        <div id='title-sub'>v2.0.3<hr/></div>
+        {
+          !isNotionPage && <div id='title-sub'>v2.0.3<hr/></div>
+        }
 
         <div className='main-content'>
           <Routes>
@@ -353,6 +360,9 @@ function App() {
             <Route path="/about" element={<About/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
+            <Route path="/labhome" element={<LabMain/>} />
+            <Route path="/lab-wish" element={<NotionWish/>} />
+            <Route path="/lab-wish/:pageId" element={<NotionWish />} />
             <Route path="/lab/:id" element={<Lab/>} />
             <Route path="/playground/*" element={<Playground/>} />
             <Route path="/channel" element={<Channel/>} />
@@ -361,7 +371,7 @@ function App() {
           {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
         </div>
         
-        <div className='footer'>
+        {!isNotionPage && <div className='footer'>
           <p>released on 2023.05.21</p>
           <p>Contact : hlawliet113@gmail.com</p>
           <p>서울특별시 동작구 노들로2길 7</p>
@@ -379,7 +389,7 @@ function App() {
             </div>
             
           </div>
-        </div>
+        </div>}
 
       </Contents>
       

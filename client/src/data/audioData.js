@@ -6,11 +6,6 @@ export const audioData = [
       artist: "Garoad",
       path: "/audio/A Neon Glow Lights the Way.mp3"
     },
-    // {
-    //   title: "Sapphire City (Short ver.)",
-    //   artist: "Dirty Androids",
-    //   path: "/audio/Sapphire City.mp3"
-    // },
     {
       title: "Welcome to VA-11 Hall-A",
       artist: "Garoad",
