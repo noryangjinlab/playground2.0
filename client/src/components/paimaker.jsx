@@ -848,7 +848,7 @@ async function downloadAllImages(arrangements) {
 
 export default function PairMaker() {
   const [names, setNames] = useState('');
-  const [targetCount, setTargetCount] = useState(3);
+  const [targetCount, setTargetCount] = useState("");
   const [allowTrioDuplicates, setAllowTrioDuplicates] = useState(false);
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -880,13 +880,20 @@ export default function PairMaker() {
       return;
     }
 
+    const roundCount = parseInt(targetCount, 10);
+
+    if (!Number.isInteger(roundCount) || roundCount < 1) {
+      setErrorMsg('총 섞을 횟수를 1 이상 입력해 주세요.');
+      return;
+    }
+
     setIsLoading(true);
 
     setTimeout(() => {
       const maker = new OptimizedPairMakerJS();
       const { error, arrangements, fairnessStats } = maker.generateMultipleArrangements(
         peopleList,
-        targetCount,
+        roundCount,
         allowTrioDuplicates
       );
 
@@ -959,7 +966,8 @@ export default function PairMaker() {
             type="number"
             min="1"
             value={targetCount}
-            onChange={(e) => setTargetCount(parseInt(e.target.value, 10) || 1)}
+            onChange={(e) => setTargetCount(e.target.value)}
+            placeholder="횟수를 입력하세요"
           />
 
           <div className="pm-toggle-card">
