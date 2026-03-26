@@ -14,6 +14,7 @@ import Playground from './routes/playground';
 import Channel from './routes/channel';
 import LabMain from './routes/labMain';
 import NotionWish from './components/notionWish';
+import PairMaker from './components/paimaker';
 
 
 const Container = styled.div`
@@ -273,6 +274,7 @@ function App() {
 
   const location = useLocation();
   const isNotionPage = location.pathname.startsWith('/lab-wish');
+  const isHost = location.pathname.startsWith('/host');
 
   const [audioState, setAudioState] = useState(2);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
@@ -297,103 +299,111 @@ function App() {
 
 
   return (
-    <Container>
-      
-      <Navbar isOpen={isMenuOpen}>
-        { isMobile && <div id='close-btn' onClick={closeMenu}>X</div> }
-        { isMobile && <AudioPlayer/>}
-        <Link to="/" onClick={closeMenu}>홈</Link><br/>
-        <Link to="/about" onClick={closeMenu}>About LAB</Link><br/>
-        <Link to="/login" onClick={closeMenu}>로그인 / 회원가입</Link><br/>
-        <Link to="/labhome" onClick={closeMenu}>연구실</Link><br/>
-        {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
-        <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
-        <Link to="/playground" onClick={closeMenu}>Playground</Link><br/>
-        {
-          !isMobile && (audioState === 0 ? 
-          <Link onClick={()=>{
-            setAudioState(2);
-          }}>
-            주크박스 (최소화됨)
-            <div style={{fontSize: 11, lineHeight: 0, color: 'rgba(197, 172, 9, 1)'}}>
-            클릭하여 Jukebox.exe 활성화하기</div>
-          </Link>
-           : (
-            audioState === 1 ? 
+    <>
+    {
+      !isHost ?
+      <Container>
+        <Navbar isOpen={isMenuOpen}>
+          { isMobile && <div id='close-btn' onClick={closeMenu}>X</div> }
+          { isMobile && <AudioPlayer/>}
+          <Link to="/" onClick={closeMenu}>홈</Link><br/>
+          <Link to="/about" onClick={closeMenu}>About LAB</Link><br/>
+          <Link to="/login" onClick={closeMenu}>로그인 / 회원가입</Link><br/>
+          <Link to="/labhome" onClick={closeMenu}>연구실</Link><br/>
+          {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
+          <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
+          <Link to="/playground" onClick={closeMenu}>Playground</Link><br/>
+          {
+            !isMobile && (audioState === 0 ? 
             <Link onClick={()=>{
               setAudioState(2);
             }}>
-              주크박스 (닫힘)
+              주크박스 (최소화됨)
               <div style={{fontSize: 11, lineHeight: 0, color: 'rgba(197, 172, 9, 1)'}}>
               클릭하여 Jukebox.exe 활성화하기</div>
             </Link>
-            :
-            <Link onClick={()=>{
-              setAudioState(0);
-            }}>
-              주크박스 (활성화됨)
-              <div style={{fontSize: 11, lineHeight: 0, color: 'rgba(197, 172, 9, 1)'}}>
-              클릭하여 Jukebox.exe 최소화하기</div>
-            </Link> 
-          ))
-        }
-      </Navbar>
+            : (
+              audioState === 1 ? 
+              <Link onClick={()=>{
+                setAudioState(2);
+              }}>
+                주크박스 (닫힘)
+                <div style={{fontSize: 11, lineHeight: 0, color: 'rgba(197, 172, 9, 1)'}}>
+                클릭하여 Jukebox.exe 활성화하기</div>
+              </Link>
+              :
+              <Link onClick={()=>{
+                setAudioState(0);
+              }}>
+                주크박스 (활성화됨)
+                <div style={{fontSize: 11, lineHeight: 0, color: 'rgba(197, 172, 9, 1)'}}>
+                클릭하여 Jukebox.exe 최소화하기</div>
+              </Link> 
+            ))
+          }
+        </Navbar>
 
-      <Overlay isOpen={isMenuOpen} onClick={closeMenu} />
+        <Overlay isOpen={isMenuOpen} onClick={closeMenu} />
 
-      <Contents>
+        <Contents>
 
-        <div className='main-top'>
-          <div className='title-top'>
-            <p id='slogan'>All Manufactured by</p>
-            <span id='title'>noryangjinLAB<span id='tm'>™</span></span>
+          <div className='main-top'>
+            <div className='title-top'>
+              <p id='slogan'>All Manufactured by</p>
+              <span id='title'>noryangjinLAB<span id='tm'>™</span></span>
+            </div>
+            {isMobile && <span id='menu-btn' onClick={toggleMenu}>MENU</span>}
           </div>
-          {isMobile && <span id='menu-btn' onClick={toggleMenu}>MENU</span>}
-        </div>
-        {
-          !isNotionPage && <div id='title-sub'>v2.0.3<hr/></div>
-        }
+          {
+            !isNotionPage && <div id='title-sub'>v2.0.3<hr/></div>
+          }
 
-        <div className='main-content'>
-          <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/about" element={<About/>} />
-            <Route path="/login" element={<Login/>} />
-            <Route path="/signup" element={<Signup/>} />
-            <Route path="/labhome" element={<LabMain/>} />
-            <Route path="/lab-wish" element={<NotionWish/>} />
-            <Route path="/lab-wish/:pageId" element={<NotionWish />} />
-            <Route path="/lab/:id" element={<Lab/>} />
-            <Route path="/playground/*" element={<Playground/>} />
-            <Route path="/channel" element={<Channel/>} />
-            <Route path="/admin/standby" element={<Standby/>} />
-          </Routes>
-          {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
-        </div>
+          <div className='main-content'>
+            <Routes>
+              <Route path="/" element={<Home/>} />
+              <Route path="/about" element={<About/>} />
+              <Route path="/login" element={<Login/>} />
+              <Route path="/signup" element={<Signup/>} />
+              <Route path="/labhome" element={<LabMain/>} />
+              <Route path="/lab-wish" element={<NotionWish/>} />
+              <Route path="/lab-wish/:pageId" element={<NotionWish />} />
+              <Route path="/lab/:id" element={<Lab/>} />
+              <Route path="/playground/*" element={<Playground/>} />
+              <Route path="/channel" element={<Channel/>} />
+              <Route path="/admin/standby" element={<Standby/>} />
+            </Routes>
+            {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
+          </div>
+          
+          {!isNotionPage && <div className='footer'>
+            <p>released on 2023.05.21</p>
+            <p>Contact : hlawliet113@gmail.com</p>
+            <p>서울특별시 동작구 노들로2길 7</p>
+            <p>No copyright ⓒ 2023 noryangjinlab. All rights not reserved.</p>
+            <p>Designed by noryangjinLAB</p>
+
+            <div id='flex'>
+              <div>
+                <img src='/logo/insta_logo.png' onClick={()=>window.open("https://www.instagram.com/noryangjinlab_official/", "_blank", "noopener,noreferrer")}/>
+                noryangjinlab_official
+              </div>
+              <div>
+                <img src='/logo/karahigh.png' onClick={()=>window.open("https://www.instagram.com/karahigh0503/", "_blank", "noopener,noreferrer")}/>
+                カラアゲハイボール
+              </div>
+              
+            </div>
+          </div>}
+
+        </Contents>
         
-        {!isNotionPage && <div className='footer'>
-          <p>released on 2023.05.21</p>
-          <p>Contact : hlawliet113@gmail.com</p>
-          <p>서울특별시 동작구 노들로2길 7</p>
-          <p>No copyright ⓒ 2023 noryangjinlab. All rights not reserved.</p>
-          <p>Designed by noryangjinLAB</p>
-
-          <div id='flex'>
-            <div>
-              <img src='/logo/insta_logo.png' onClick={()=>window.open("https://www.instagram.com/noryangjinlab_official/", "_blank", "noopener,noreferrer")}/>
-              noryangjinlab_official
-            </div>
-            <div>
-              <img src='/logo/karahigh.png' onClick={()=>window.open("https://www.instagram.com/karahigh0503/", "_blank", "noopener,noreferrer")}/>
-              カラアゲハイボール
-            </div>
-            
-          </div>
-        </div>}
-
-      </Contents>
-      
-    </Container>
+      </Container>
+      :
+      <Routes>
+        <Route path="/host/pairmaker" element={<PairMaker/>} />
+      </Routes>
+    }
+    </>
   );
 }
 
