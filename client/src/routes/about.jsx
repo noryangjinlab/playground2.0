@@ -195,6 +195,11 @@ const About = () => {
           <p>noryangjinLAB™은 CC BY-NC-SA 4.0 라이선스 하에 제공됩니다. 상업적 목적의 판매 및 이용은 금지되며, 수정 및 재배포 시 동일한 라이선스를 적용해야 합니다.</p>
         </div>
       </div>
+
+      <div className="theme">
+        <h3>THEME</h3>
+        
+      </div>
     </Container>
   )
 }

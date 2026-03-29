@@ -14,7 +14,9 @@ import Playground from './routes/playground';
 import Channel from './routes/channel';
 import LabMain from './routes/labMain';
 import NotionWish from './components/notionWish';
-import PairMaker from './components/paimaker';
+import PairMaker from './host/paimaker';
+import Services from './routes/services';
+import Iot from './host/iot';
 
 
 const Container = styled.div`
@@ -313,6 +315,7 @@ function App() {
           {/* <Link to="/cloud" onClick={closeMenu}>아카이브</Link><br/> */}
           <Link to="/channel" onClick={closeMenu}>@ channel</Link><br/>
           <Link to="/playground" onClick={closeMenu}>Playground</Link><br/>
+          <Link to="/services" onClick={closeMenu}>Services</Link><br/>
           {
             !isMobile && (audioState === 0 ? 
             <Link onClick={()=>{
@@ -370,6 +373,7 @@ function App() {
               <Route path="/lab/:id" element={<Lab/>} />
               <Route path="/playground/*" element={<Playground/>} />
               <Route path="/channel" element={<Channel/>} />
+              <Route path="/services" element={<Services/>} />
               <Route path="/admin/standby" element={<Standby/>} />
             </Routes>
             {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
@@ -401,6 +405,7 @@ function App() {
       :
       <Routes>
         <Route path="/host/pairmaker" element={<PairMaker/>} />
+        <Route path="/host/iot" element={<Iot/>} />
       </Routes>
     }
     </>
