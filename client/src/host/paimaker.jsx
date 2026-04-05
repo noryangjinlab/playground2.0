@@ -212,13 +212,17 @@ class OptimizedPairMakerJS {
 
 // ── B. 단체 팀 매칭 엔진 ──
 class OptimizedTeamMakerJS {
-  generateArrangements(peopleList, teamCount, rounds) {
+  generateArrangements(peopleList, teamCount, rounds, leaders = []) {
+    let actualTeamCount = teamCount;
+    if (leaders && leaders.length > 0) actualTeamCount = leaders.length;
+    
     const n = peopleList.length;
-    if (teamCount < 2) return { error: '최소 2팀 이상이어야 합니다.', arrangements: [], dupStats: null };
-    if (teamCount > n) return { error: `팀 수(${teamCount})가 인원수(${n})보다 많을 수 없습니다.`, arrangements: [], dupStats: null };
+    if (actualTeamCount < 2) return { error: '최소 2팀 이상이어야 합니다.', arrangements: [], dupStats: null };
+    if ((!leaders || leaders.length === 0) && actualTeamCount > n) return { error: `팀 수(${actualTeamCount})가 인원수(${n})보다 많을 수 없습니다.`, arrangements: [], dupStats: null };
 
-    const base = Math.floor(n / teamCount), rem = n % teamCount;
-    const sizes = Array.from({ length: teamCount }, (_, i) => base + (i < rem ? 1 : 0));
+    const base = n === 0 ? 0 : Math.floor(n / actualTeamCount);
+    const rem = n === 0 ? 0 : n % actualTeamCount;
+    const sizes = Array.from({ length: actualTeamCount }, (_, i) => base + (i < rem ? 1 : 0));
     const arrangements = [];
     const history = new Set();
     const NUM_SIMS = 1500;
@@ -226,10 +230,15 @@ class OptimizedTeamMakerJS {
     for (let round = 0; round < rounds; round++) {
       let best = null, bestScore = Infinity;
       for (let sim = 0; sim < NUM_SIMS; sim++) {
-        const shuffled = shuffleArray(peopleList);
+        const shuffled = shuffleArray([...peopleList]);
         const candidate = [];
         let idx = 0;
-        for (const sz of sizes) { candidate.push(shuffled.slice(idx, idx + sz)); idx += sz; }
+        for (let i = 0; i < sizes.length; i++) {
+          const sz = sizes[i];
+          const members = shuffled.slice(idx, idx + sz);
+          candidate.push((leaders && leaders.length > i) ? [leaders[i], ...members] : members);
+          idx += sz;
+        }
 
         let score = 0;
         for (const team of candidate)
@@ -413,7 +422,7 @@ function CoupleMatchingView({ names, setNames }) {
 }
 
 // ── B. 단체 팀 매칭 View ──
-function TeamMatchingView({ names, setNames }) {
+function TeamMatchingView({ names, setNames, teamLeaders, setTeamLeaders, isLeaderMode, setIsLeaderMode }) {
   const [teamCount, setTeamCount] = useState('');
   const [targetCount, setTargetCount] = useState('');
   const [result, setResult] = useState(null);
@@ -424,15 +433,27 @@ function TeamMatchingView({ names, setNames }) {
   const run = () => {
     setError(''); setResult(null);
     const list = names.split('\n').map(s => s.trim()).filter(Boolean);
-    if (list.length < 2) { setError('최소 2명 이상 입력해 주세요.'); return; }
-    const teams = parseInt(teamCount, 10);
+    const lList = isLeaderMode ? teamLeaders.split('\n').map(s => s.trim()).filter(Boolean) : [];
+    
+    if (isLeaderMode && lList.length < 2) { setError('조장을 2명 이상 입력해 주세요.'); return; }
+    if (!isLeaderMode && list.length < 2) { setError('최소 2명 이상 입력해 주세요.'); return; }
+    
+    if (isLeaderMode && lList.length > 0 && list.length > 0) {
+      const overlaps = list.filter(n => lList.includes(n));
+      if (overlaps.length > 0) {
+        if (!window.confirm("⚠️ 조장 명단과 일반 참가자 명단에 동일한 이름이 있습니다. 동명이인 입니까?\n\n[확인]을 누르면 이대로 조편성을 진행합니다.")) return;
+      }
+    }
+
+    const teams = isLeaderMode ? lList.length : parseInt(teamCount, 10);
     if (!teams || teams < 2) { setError('팀 수는 2 이상이어야 합니다.'); return; }
-    if (teams > list.length) { setError(`팀 수(${teams})가 인원수(${list.length})보다 많을 수 없습니다.`); return; }
+    if (!isLeaderMode && teams > list.length) { setError(`팀 수(${teams})가 인원수(${list.length})보다 많을 수 없습니다.`); return; }
+
     const rounds = parseInt(targetCount, 10);
     if (!rounds || rounds < 1) { setError('횟수를 1 이상 입력해 주세요.'); return; }
     setLoading(true);
     setTimeout(() => {
-      const { error: e, arrangements, dupStats } = new OptimizedTeamMakerJS().generateArrangements(list, teams, rounds);
+      const { error: e, arrangements, dupStats } = new OptimizedTeamMakerJS().generateArrangements(list, teams, rounds, lList);
       setLoading(false);
       if (e) { setError(e); return; }
       setResult({ arrangements, dupStats }); setRound(0);
@@ -447,16 +468,39 @@ function TeamMatchingView({ names, setNames }) {
   };
 
   const nc = names.split('\n').filter(s => s.trim()).length;
+  const lc = isLeaderMode ? teamLeaders.split('\n').filter(s => s.trim()).length : 0;
   return (
     <div className="pm-layout">
       <div className="pm-card pm-input-card">
-        <div className="pm-step"><span className="pm-step-num">1</span><label>참가자 명단 입력</label></div>
+        <div className="pm-toggle-card" style={{ marginBottom: '1.2rem' }}>
+          <div className="pm-toggle-header">
+            <label className="pm-switch"><input type="checkbox" checked={isLeaderMode} onChange={e => setIsLeaderMode(e.target.checked)} /><span className="pm-switch-track"></span></label>
+            <strong>조장 지정 모드</strong>
+          </div>
+        </div>
+
+        {isLeaderMode && (
+          <>
+            <div className="pm-step"><span className="pm-step-num">👑</span><label>조장 명단 입력</label></div>
+            <div className="pm-textarea-wrap" style={{ marginBottom: '1rem' }}>
+              <textarea className="pm-textarea" value={teamLeaders} onChange={e => setTeamLeaders(e.target.value)} placeholder="조장 이름을 한 줄에 한 명씩 입력하세요" style={{ height: '90px' }} />
+              {lc > 0 && <span className="pm-count-badge">{lc}명 (팀 수 동일)</span>}
+            </div>
+          </>
+        )}
+
+        <div className="pm-step"><span className="pm-step-num">1</span><label>{isLeaderMode ? '일반 참가자 입력' : '참가자 명단 입력'}</label></div>
         <div className="pm-textarea-wrap">
-          <textarea className="pm-textarea" value={names} onChange={e => setNames(e.target.value)} placeholder="한 줄에 한 명씩 입력하세요" />
+          <textarea className="pm-textarea" value={names} onChange={e => setNames(e.target.value)} placeholder="한 줄에 한 명씩 입력하세요" style={{ height: isLeaderMode ? '140px' : '200px' }} />
           {nc > 0 && <span className="pm-count-badge">{nc}명</span>}
         </div>
+
         <div className="pm-step"><span className="pm-step-num">2</span><label>나눌 팀 수</label></div>
-        <input className="pm-num-input" type="number" min="2" value={teamCount} onChange={e => setTeamCount(e.target.value)} placeholder="몇 팀으로 나눌지 입력하세요" />
+        {isLeaderMode ? (
+          <input className="pm-num-input" type="text" value={lc > 0 ? `${lc}팀 (조장 수대로 자동 지정)` : '조장 수에 따라 자동 지정'} disabled style={{ background: 'var(--pm-bg)', color: 'var(--pm-text-muted)' }} />
+        ) : (
+          <input className="pm-num-input" type="number" min="2" value={teamCount} onChange={e => setTeamCount(e.target.value)} placeholder="몇 팀으로 나눌지 입력하세요" />
+        )}
         <div className="pm-step"><span className="pm-step-num">3</span><label>총 섞을 횟수</label></div>
         <input className="pm-num-input" type="number" min="1" value={targetCount} onChange={e => setTargetCount(e.target.value)} placeholder="횟수를 입력하세요" />
         {error && <div className="pm-error">{error}</div>}
@@ -513,6 +557,8 @@ function TeamMatchingView({ names, setNames }) {
 export default function PairMaker() {
   const [tab, setTab] = useState('couple');
   const [names, setNames] = useState('');
+  const [teamLeaders, setTeamLeaders] = useState('');
+  const [isLeaderMode, setIsLeaderMode] = useState(false);
 
   useEffect(() => {
     if (!document.getElementById('pm-styles')) {
@@ -542,7 +588,7 @@ export default function PairMaker() {
 
       {tab === 'couple'
         ? <CoupleMatchingView names={names} setNames={setNames} />
-        : <TeamMatchingView names={names} setNames={setNames} />}
+        : <TeamMatchingView names={names} setNames={setNames} teamLeaders={teamLeaders} setTeamLeaders={setTeamLeaders} isLeaderMode={isLeaderMode} setIsLeaderMode={setIsLeaderMode} />}
     </div>
   );
 }
