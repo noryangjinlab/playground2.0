@@ -11,9 +11,11 @@ export default function Services() {
     <Container>
       <h2>Hosting Services</h2>
       
-      <p><a href="/host/pairmaker" target="_blank">그룹교재 조 편성 사이트 (pairmaker)</a></p>
+      <p><a href="/host/pairmaker" target="_blank">조 짜기 귀찮다 (pairmaker)</a></p>
     
       <p><a href="/host/iot" target="_blank">불끄러가기 귀찮다</a></p>
+
+      <p><a href="/host/sbaqt" target="_blank">qt 범위 찾기 귀찮다</a></p>
     </Container>
   )
 }

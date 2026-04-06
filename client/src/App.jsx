@@ -17,6 +17,7 @@ import NotionWish from './components/notionWish';
 import PairMaker from './host/paimaker';
 import Services from './routes/services';
 import Iot from './host/iot';
+import Sbaqt from './host/sbaqt';
 
 
 const Container = styled.div`
@@ -406,6 +407,7 @@ function App() {
       <Routes>
         <Route path="/host/pairmaker" element={<PairMaker/>} />
         <Route path="/host/iot" element={<Iot/>} />
+        <Route path="/host/sbaqt" element={<Sbaqt/>} />
       </Routes>
     }
     </>

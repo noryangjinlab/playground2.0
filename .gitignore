@@ -2,3 +2,4 @@ node_modules
 package-lock.json
 .env
 /server/labdata/
+/server/public/host/cbf-praylist-11bbf27f1baa.json

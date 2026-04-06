@@ -5,12 +5,15 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
 const sessionStore = require('./config/session');
+
 const authRouter = require('./route/auth');
 const labRouter = require('./route/lab');
+const hostRouter = require('./route/host');
 
 dotenv.config();
 
 const app = express();
+
 
 // nginx에서 서빙 (제거?)
 const clientBuildPath = path.join(__dirname, "..", "client", "dist");
@@ -51,6 +54,8 @@ app.use(session({
 app.use(express.static(clientBuildPath));
 app.use('/api/auth', authRouter);
 app.use('/api/lab', labRouter);
+app.use('/api/host', hostRouter);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
