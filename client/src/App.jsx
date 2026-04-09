@@ -14,7 +14,7 @@ import Playground from './routes/playground';
 import Channel from './routes/channel';
 import LabMain from './routes/labMain';
 import NotionWish from './components/notionWish';
-import PairMaker from './host/paimaker';
+import PairMaker from './host/pairmaker';
 import Services from './routes/services';
 import Iot from './host/iot';
 import Sbaqt from './host/sbaqt';
