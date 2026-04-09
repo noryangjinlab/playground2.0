@@ -290,7 +290,6 @@ function App() {
     setAudioState(data);
   };
 
-
   useEffect(()=>{
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 1000);
