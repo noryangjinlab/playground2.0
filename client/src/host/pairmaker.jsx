@@ -224,21 +224,25 @@ class OptimizedTeamMakerJS {
 
     const base = n === 0 ? 0 : Math.floor(n / actualTeamCount);
     const rem = n === 0 ? 0 : n % actualTeamCount;
-    const sizes = Array.from({ length: actualTeamCount }, (_, i) => base + (i < rem ? 1 : 0));
+    // 팀 크기 템플릿: 매 시뮬레이션마다 셔플 → 어떤 팀이 큰지 랜덤
+    const sizeTemplate = Array.from({ length: actualTeamCount }, (_, i) => base + (i < rem ? 1 : 0));
     const arrangements = [];
-    const history = new Set();           // 전체 만남 쌍 기록 (조장·부조장 포함)
+    const history = new Set();              // 전체 만남 쌍 기록 (조장·부조장 포함)
     const subLeaderTeamHistory = new Set(); // (부조장이름|팀인덱스) 라운드 간 추적
+    const subLeaderPairHistory = new Set(); // (부조장A|부조장B) 같은 팀에 만난 쌍 추적
     const NUM_SIMS = 1500;
 
     for (let round = 0; round < rounds; round++) {
-      // Step 1: 일반 참가자 최적 배치 (history 기반 중복 최소화)
+      // Step 1: 일반 참가자 최적 배치
+      // - sizes도 매 시뮬레이션마다 셔플 → 어떤 팀이 큰지 랜덤
       let best = null, bestScore = Infinity;
       for (let sim = 0; sim < NUM_SIMS; sim++) {
         const shuffled = shuffleArray([...peopleList]);
+        const shuffledSizes = shuffleArray([...sizeTemplate]); // ← 핵심: 팀 크기 랜덤화
         const candidate = [];
         let idx = 0;
-        for (let i = 0; i < sizes.length; i++) {
-          const sz = sizes[i];
+        for (let i = 0; i < shuffledSizes.length; i++) {
+          const sz = shuffledSizes[i];
           const members = shuffled.slice(idx, idx + sz);
           candidate.push((leaders && leaders.length > i) ? [leaders[i], ...members] : members);
           idx += sz;
@@ -253,49 +257,84 @@ class OptimizedTeamMakerJS {
         if (score < bestScore) { bestScore = score; best = candidate; if (score === 0) break; }
       }
 
-      // Step 2: 부조장 배치
-      // - 한 라운드 내: 각 부조장은 최대 1팀에만 배정 (내부 중복 = 0 강제)
-      // - 라운드 간: (부조장, 팀인덱스) 반복 + 전체 만남 history 중복 최소화
+      // Step 2: 부조장 배치 — 완전 재설계
+      //
+      // [부조장 < 팀 수] → 부조장 수만큼만 배정, 어떤 팀에 배정되는지 완전 랜덤
+      //   - 팀 인덱스 배열도 셔플해서 어떤 팀이 미배정인지 랜덤화
+      //
+      // [부조장 > 팀 수] → 모든 부조장을 다 배정, 일부 팀에 2명 이상
+      //   - 1차: 셔플된 팀 순서로 1명씩 배정 (팀 도달까지)
+      //   - 2차: 나머지 부조장을 랜덤 팀에 추가 배정
+      //   - 같은 팀에 들어가는 부조장 쌍의 중복 최소화 (subLeaderPairHistory)
+      //
+      // 공통: 라운드 간 (부조장, 팀인덱스) 반복 + 전체 만남 history 중복 최소화
       if (subLeaders && subLeaders.length > 0) {
         const numTeams = best.length;
-        let bestSubAssignment = Array(numTeams).fill(null);
+        const numSubs = subLeaders.length;
+        let bestSubAssignment = Array.from({ length: numTeams }, () => []); // 팀별 배정 부조장 배열
         let bestSubScore = Infinity;
 
         for (let sim = 0; sim < 1000; sim++) {
           const shuffledSubs = shuffleArray([...subLeaders]);
-          // 한 라운드에 각 부조장은 1번만 등장 → 팀 수만큼 슬라이스
-          const picked = shuffledSubs.slice(0, numTeams);
-          const assignment = Array(numTeams).fill(null);
-          let score = 0;
+          const shuffledTeamIdxs = shuffleArray(Array.from({ length: numTeams }, (_, i) => i));
+          const assignment = Array.from({ length: numTeams }, () => []);
 
-          for (let i = 0; i < picked.length; i++) {
-            assignment[i] = picked[i];
-            // 라운드 간 (부조장, 팀) 중복 페널티 (높은 가중치)
-            if (subLeaderTeamHistory.has(`${picked[i]}|${i}`)) score += 100;
-            // 전체 만남 history 중복 페널티 (일반 참가자와의 조합 포함)
-            for (const m of best[i])
-              if (history.has([picked[i], m].sort().join('|'))) score += 1;
+          if (numSubs <= numTeams) {
+            // 부조장 수 ≤ 팀 수: 각 부조장을 랜덤 팀에 1명씩 배정, 나머지 팀은 미배정
+            for (let i = 0; i < numSubs; i++) {
+              assignment[shuffledTeamIdxs[i]].push(shuffledSubs[i]);
+            }
+          } else {
+            // 부조장 수 > 팀 수: 1차로 셔플된 팀 순서로 1명씩, 나머지는 추가 배정
+            for (let i = 0; i < numTeams; i++) {
+              assignment[shuffledTeamIdxs[i]].push(shuffledSubs[i]);
+            }
+            const extraTeamIdxs = shuffleArray(Array.from({ length: numTeams }, (_, i) => i));
+            for (let i = 0; i < numSubs - numTeams; i++) {
+              assignment[extraTeamIdxs[i % numTeams]].push(shuffledSubs[numTeams + i]);
+            }
+          }
+
+          // 점수 계산
+          let score = 0;
+          for (let i = 0; i < numTeams; i++) {
+            for (const sub of assignment[i]) {
+              // 라운드 간 (부조장, 팀) 중복 페널티
+              if (subLeaderTeamHistory.has(`${sub}|${i}`)) score += 100;
+              // 전체 만남 history 중복 (일반 참가자·조장과 만남)
+              for (const m of best[i])
+                if (history.has([sub, m].sort().join('|'))) score += 1;
+            }
+            // 같은 팀 부조장 쌍 중복 최소화
+            for (let a = 0; a < assignment[i].length; a++)
+              for (let b = a + 1; b < assignment[i].length; b++)
+                if (subLeaderPairHistory.has([assignment[i][a], assignment[i][b]].sort().join('|'))) score += 50;
           }
 
           if (score < bestSubScore) {
             bestSubScore = score;
-            bestSubAssignment = [...assignment];
+            bestSubAssignment = assignment;
             if (score === 0) break;
           }
         }
 
-        // 부조장을 조장 바로 뒤(index 1)에 삽입, 조장 없으면 index 0
+        // 부조장을 조장 바로 뒤에 일괄 삽입
         const insertIdx = (leaders && leaders.length > 0) ? 1 : 0;
         for (let i = 0; i < best.length; i++) {
-          if (bestSubAssignment[i] !== null) {
-            best[i].splice(insertIdx, 0, bestSubAssignment[i]);
-            subLeaderTeamHistory.add(`${bestSubAssignment[i]}|${i}`);
+          if (bestSubAssignment[i].length > 0) {
+            best[i].splice(insertIdx, 0, ...bestSubAssignment[i]);
+            // 히스토리 업데이트
+            for (const sub of bestSubAssignment[i])
+              subLeaderTeamHistory.add(`${sub}|${i}`);
+            for (let a = 0; a < bestSubAssignment[i].length; a++)
+              for (let b = a + 1; b < bestSubAssignment[i].length; b++)
+                subLeaderPairHistory.add([bestSubAssignment[i][a], bestSubAssignment[i][b]].sort().join('|'));
           }
         }
       }
 
       arrangements.push(best);
-      // 전체 멤버 쌍 기록 (조장·부조장 포함, 다음 라운드 배치에 활용)
+      // 전체 멤버 쌍 기록 (조장·부조장 포함)
       for (const team of best)
         for (let i = 0; i < team.length; i++)
           for (let j = i + 1; j < team.length; j++)
