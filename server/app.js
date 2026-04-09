@@ -10,7 +10,6 @@ const authRouter = require('./route/auth');
 const labRouter = require('./route/lab');
 const hostRouter = require('./route/host');
 
-
 dotenv.config();
 
 const app = express();
