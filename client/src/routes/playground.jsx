@@ -1,6 +1,7 @@
 import { Route, Routes, Link } from "react-router"
 import PlaygroundFood from "./playgroundFood"
 import styled from "styled-components"
+import JPopQuizBoard from "../components/jpopquiz"
 
 
 const Container = styled.div`
@@ -33,9 +34,15 @@ const Playground = () => {
             <p>- 음식 카테고리 주기적 업데이트</p>
             <p>- 음식 종류 100가지 이상</p>
           </div>
+
+          <div className="item">
+            <Link to="/playground/1">제2회 가라하이 제이팝퀴즈</Link>
+            <p>- </p>
+          </div>
         </Container>
       }/>
       <Route path="0" element={<PlaygroundFood/>}/>
+      <Route path="1" element={<JPopQuizBoard/>}/>
     </Routes>
   )
 }
