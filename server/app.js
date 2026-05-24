@@ -56,6 +56,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/lab', labRouter);
 app.use('/api/host', hostRouter);
 
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
