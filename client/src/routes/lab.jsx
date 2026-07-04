@@ -40,6 +40,7 @@ const TipTapEditor = styled.div`
     padding: 1px 5px 1px 5px;
     word-break: break-word; 
     overflow-wrap: break-word;
+    font-size: 14px;
   }
 
   &.readonly [data-child-note-delete] {
@@ -57,10 +58,11 @@ const TipTapEditor = styled.div`
   .tiptap > p {
     margin: 12px 0;
     line-height: 1.6em;
+    font-size: inherit;
   }
 
   .ProseMirror pre {
-    background: #0f0f0f;
+    background: #363636;
     color: #e6e6e6;
     padding: 12px;
     border-radius: 8px;
@@ -572,7 +574,7 @@ const LabImageBehavior = Extension.create({
 })
 
 const CodeBlockView = props => {
-  const { node, updateAttributes, editor, extension } = props
+  const { node, updateAttributes, editor, extension, deleteNode } = props
   const canEdit = !!editor && editor.isEditable
   const current = node.attrs.language || 'plaintext'
 
@@ -582,24 +584,105 @@ const CodeBlockView = props => {
     return ['plaintext', ...list]
   }, [extension])
 
+  const handleDelete = e => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!canEdit) return
+
+    const ok = window.confirm('정말 삭제할겨?')
+    if (!ok) return
+
+    deleteNode()
+  }
+
   return (
-    <NodeViewWrapper data-codeblock="true" style={{ margin: '12px 0' }}>
+    <NodeViewWrapper
+      data-codeblock="true"
+      style={{
+        position: 'relative',
+        margin: '12px 0',
+      }}
+    >
       {canEdit ? (
-        <div style={{ marginBottom: 6, display: 'flex', justifyContent: 'flex-end' }}>
-          <select
-            value={current}
-            onChange={e => {
-              const v = e.target.value
-              updateAttributes({ language: v === 'plaintext' ? null : v })
+        <div
+          contentEditable={false}
+          style={{
+            marginBottom: 6,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <div
+            data-drag-handle
+            title="드래그해서 이동"
+            style={{
+              height: 26,
+              minWidth: 34,
+              padding: '0 8px',
+              borderRadius: 6,
+              border: '1px solid #333',
+              background: '#181818',
+              color: '#aaa',
+              fontFamily: 'galmuri9',
+              fontSize: 13,
+              lineHeight: '24px',
+              cursor: 'grab',
+              userSelect: 'none',
+              textAlign: 'center',
             }}
-            style={{ height: 26, fontFamily: 'galmuri9', padding: '0 6px', cursor: 'pointer' }}
           >
-            {languages.map(l => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
+            ⋮⋮
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <select
+              value={current}
+              onChange={e => {
+                const v = e.target.value
+                updateAttributes({ language: v === 'plaintext' ? null : v })
+              }}
+              style={{
+                height: 26,
+                fontFamily: 'galmuri9',
+                padding: '0 6px',
+                cursor: 'pointer',
+              }}
+            >
+              {languages.map(l => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              style={{
+                width: 26,
+                height: 26,
+                border: 'none',
+                borderRadius: 6,
+                background: '#f66',
+                color: '#000',
+                fontSize: 16,
+                lineHeight: '24px',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            >
+              ×
+            </button>
+          </div>
         </div>
       ) : null}
 
@@ -611,6 +694,8 @@ const CodeBlockView = props => {
 }
 
 const CodeBlock = CodeBlockLowlight.extend({
+  draggable: true,
+
   addNodeView() {
     return ReactNodeViewRenderer(CodeBlockView)
   },
@@ -626,7 +711,7 @@ const Lab = () => {
   const navigate = useNavigate()
 
   const [fontSizeValue, setFontSizeValue] = useState('')
-  const DEFAULT_FONT_SIZE = '16px'
+  const DEFAULT_FONT_SIZE = '14px'
 
   const [admin, setAdmin] = useState(null)
   const isAdmin = admin === 'admin0106'

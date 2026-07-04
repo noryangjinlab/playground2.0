@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Now from '../components/now';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 
 const HomeContainer = styled.div`
@@ -14,7 +14,13 @@ const HomeContainer = styled.div`
   }
 
   .grid {
-    display: grid
+    display: grid;
+  }
+
+  a {
+    font-size: 14px;
+    text-decoration: none;
+    color: rgb(197, 172, 9);
   }
 `
 
@@ -46,6 +52,9 @@ function Home() {
           <div>
 
           </div>
+        </div>
+        <div>
+          <Link to='/lab/f4134acb-f0db-4934-9c18-0f90065d4711'>패치노트  바로가기 (Last update 2026.07.04)</Link>
         </div>
       </div>
     </HomeContainer>

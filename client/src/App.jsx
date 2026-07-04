@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation } from 'react-router';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 
@@ -133,6 +133,10 @@ const Contents = styled.div`
 
   position: relative;
   flex: 1;
+
+  .title-top {
+    cursor: pointer;
+  }
 
   #tm {
     font-family: 'pretendard';
@@ -276,6 +280,7 @@ const Contents = styled.div`
 function App() {
 
   const location = useLocation();
+  const navigate = useNavigate();
   const isNotionPage = location.pathname.startsWith('/lab-wish');
   const isHost = location.pathname.startsWith('/host');
 
@@ -351,7 +356,7 @@ function App() {
         <Contents>
 
           <div className='main-top'>
-            <div className='title-top'>
+            <div className='title-top' onClick={()=>navigate("/")}>
               <p id='slogan'>All Manufactured by</p>
               <span id='title'>noryangjinLAB<span id='tm'>™</span></span>
             </div>
