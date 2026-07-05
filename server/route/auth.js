@@ -58,7 +58,7 @@ router.post('/signup', async (req, res) => {
         return res.status(409).json({ message: '사용중인 닉네임입니다' })
       }
       if (String(err?.sqlMessage || '').includes('standby.username')) {
-        return res.status(409).json({ message: '사용중인 아이디입니다' })
+        return res.status(409).json({ message: '사용중인 아이디입니다.' })
       }
       return res.status(409).json({ message: '중복된 값입니다' })
     }
