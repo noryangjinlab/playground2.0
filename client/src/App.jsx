@@ -2,7 +2,7 @@ import { Routes, Route, Link, useLocation, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 
-import AudioPlayer from './audioPlayer';
+import AudioPlayer from './components/AudioPlayer';
 
 import Signup from './routes/signUp';
 import Home from './routes/home';
@@ -312,7 +312,12 @@ function App() {
       <Container>
         <Navbar isOpen={isMenuOpen}>
           { isMobile && <div id='close-btn' onClick={closeMenu}>X</div> }
-          { isMobile && <AudioPlayer/>}
+          {isMobile && (
+            <AudioPlayer
+              onSend={sendFronAudio}
+              props={audioState}
+            />
+          )}
           <Link to="/" onClick={closeMenu}>홈</Link><br/>
           <Link to="/about" onClick={closeMenu}>About LAB</Link><br/>
           <Link to="/login" onClick={closeMenu}>로그인 / 회원가입</Link><br/>
@@ -351,6 +356,13 @@ function App() {
           }
         </Navbar>
 
+        {!isMobile && (
+          <AudioPlayer
+            onSend={sendFronAudio}
+            props={audioState}
+          />
+        )}
+
         <Overlay isOpen={isMenuOpen} onClick={closeMenu} />
 
         <Contents>
@@ -381,7 +393,6 @@ function App() {
               <Route path="/services" element={<Services/>} />
               <Route path="/admin/standby" element={<Standby/>} />
             </Routes>
-            {!isMobile && <AudioPlayer onSend={sendFronAudio} props={audioState}/>}
           </div>
           
           {!isNotionPage && <div className='footer'>
