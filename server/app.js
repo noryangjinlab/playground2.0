@@ -2,7 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const session = require('express-session');
-const dotenv = require('dotenv');
+const { isProduction: isProd } = require('./config/env');
 const path = require('path');
 const sessionStore = require('./config/session');
 
@@ -10,7 +10,6 @@ const authRouter = require('./route/auth');
 const labRouter = require('./route/lab');
 const hostRouter = require('./route/host');
 
-dotenv.config();
 
 const app = express();
 
@@ -28,7 +27,6 @@ app.use(
 );
 app.use(express.json());
 
-const isProd = process.env.NODE_ENV === 'production';
 
 app.use(cors({
   origin: isProd
@@ -39,7 +37,7 @@ app.use(cors({
 
 app.use(session({
   key: 'session_id',
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || (isProd ? undefined : require('crypto').randomBytes(32).toString('hex')),
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
@@ -67,6 +65,6 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, isProd ? '0.0.0.0' : '127.0.0.1', () => {
   console.log(`Server running on port ${PORT}`);
 });

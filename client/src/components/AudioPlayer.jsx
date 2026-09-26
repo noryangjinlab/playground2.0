@@ -1,7 +1,22 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import styled from 'styled-components';
 import { audioData } from '../data/audioData';
+import { AppWindow } from './app-window';
+
+const JukeboxWindow = styled(AppWindow)`
+  && {
+    height: auto;
+    max-height: calc(100dvh - var(--taskbar-height) - 64px);
+  }
+
+  .app-window-content { flex: 0 1 auto; }
+  .app-window-content > * { flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    && { max-height: calc(100dvh - var(--taskbar-height) - 38px); }
+  }
+`;
 
 // Ultra-Smooth Seamless CSS Marquee with 3-second Pause after 1 Rotation
 const MarqueeBox = styled.div`
@@ -110,100 +125,6 @@ function MarqueeText({
     </MarqueeBox>
   );
 }
-
-// Windows 98 Container with Desktop Floating & Mobile Sidebar Docking
-const Win98Container = styled.div`
-  background: #c0c0c0;
-  box-shadow: 
-    inset 1px 1px 0px 1px #ffffff,
-    inset -1px -1px 0px 1px #808080,
-    1px 1px 0px 1px #000000;
-  border: 1px solid #dfdfdf;
-  padding: 3px;
-  font-family: 'galmuri9', 'galmurimono9', 'Tahoma', 'MS Sans Serif', sans-serif;
-  color: #000000;
-  user-select: none;
-  box-sizing: border-box;
-  display: ${(props) => (props.$isOff ? 'none' : 'flex')};
-  flex-direction: column;
-  z-index: 90;
-
-  /* Custom Win98 Scrollbar inside playlist */
-  ::-webkit-scrollbar {
-    width: 14px;
-    height: 14px;
-    background: #dfdfdf;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #c0c0c0;
-    box-shadow: 
-      inset 1px 1px 0px 1px #ffffff,
-      inset -1px -1px 0px 1px #808080,
-      1px 1px 0px 1px #000000;
-  }
-
-  /* Desktop View (> 1000px): Fixed in top right, draggable */
-  @media (min-width: 1001px) {
-    position: ${(props) => (props.$isEmbedded ? 'relative' : 'fixed')};
-    top: ${(props) => (props.$isEmbedded ? 'auto' : '20px')};
-    right: ${(props) => (props.$isEmbedded ? 'auto' : '20px')};
-    width: 520px;
-    max-width: 90vw;
-    will-change: transform;
-  }
-
-  /* Mobile View (<= 1000px): Docked neatly inside sidebar Navbar */
-  @media (max-width: 1000px) {
-    position: relative;
-    top: 0;
-    right: 0;
-    width: 100%;
-    max-width: 270px;
-    margin: 10px auto 16px auto;
-    box-shadow: 
-      inset 1px 1px 0px 1px #ffffff,
-      inset -1px -1px 0px 1px #808080,
-      1px 1px 0px 1px #000000;
-  }
-`;
-
-const TitleBar = styled.div`
-  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
-  padding: 3px 4px 3px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  cursor: ${(props) => (props.$isMobile ? 'default' : 'grab')};
-
-  &:active {
-    cursor: ${(props) => (props.$isMobile ? 'default' : 'grabbing')};
-  }
-
-  .title-content {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .app-icon {
-    width: 14px;
-    height: 14px;
-    image-rendering: pixelated;
-  }
-`;
-
-const WindowControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2px;
-`;
 
 const Win98Btn = styled.button`
   background: #c0c0c0;
@@ -598,7 +519,7 @@ const StatusBar = styled.div`
   }
 `;
 
-export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
+export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }) {
   const containerRef = useRef(null);
   const audioRef = useRef(null);
   const analyzerRef = useRef(null);
@@ -624,14 +545,6 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
   // Window State
   const [isOff, setIsOff] = useState(false);
   const [isSmall, setIsSmall] = useState(false);
-
-  // Dragging coordinates (Desktop only)
-  const boxRef = useRef(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const posRef = useRef({ x: 0, y: 0 });
-  const draggingRef = useRef(false);
-  const startRef = useRef({ px: 0, py: 0, x: 0, y: 0 });
-  const rafRef = useRef(0);
 
   // Playlist & Channel Data
   const channelNames = audioData[audioData.length - 1] || [];
@@ -725,71 +638,6 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
       height: isMobile ? 50 : 75,
     });
   }, [isMobile]);
-
-  // Apply initial position for desktop dragging
-  useEffect(() => {
-    if (isMobile || isEmbedded) return;
-    if (boxRef.current) {
-      boxRef.current.style.transform = `translate(${posRef.current.x}px, ${posRef.current.y}px)`;
-    }
-  }, [isMobile, isEmbedded]);
-
-  // Pointer move & up handlers for smooth dragging (Desktop only)
-  useEffect(() => {
-    if (isMobile || isEmbedded) return;
-
-    const onMove = (e) => {
-      if (!draggingRef.current || !boxRef.current) return;
-
-      const nx = startRef.current.x + (e.clientX - startRef.current.px);
-      const ny = startRef.current.y + (e.clientY - startRef.current.py);
-
-      posRef.current = { x: nx, y: ny };
-
-      if (rafRef.current) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = 0;
-        if (!boxRef.current) return;
-        boxRef.current.style.transform = `translate(${posRef.current.x}px, ${posRef.current.y}px)`;
-      });
-    };
-
-    const onUp = () => {
-      if (!draggingRef.current) return;
-      draggingRef.current = false;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = 0;
-      }
-      setPos(posRef.current);
-    };
-
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    return () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = 0;
-    };
-  }, [isMobile, isEmbedded]);
-
-  const handlePointerDown = (e) => {
-    if (isMobile || isEmbedded) return;
-    if (e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
-
-    e.preventDefault();
-    draggingRef.current = true;
-    startRef.current = {
-      px: e.clientX,
-      py: e.clientY,
-      x: posRef.current.x,
-      y: posRef.current.y,
-    };
-    if (e.currentTarget?.setPointerCapture) {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-  };
 
   // Next / Prev index calculator with robust Shuffle support
   const getNextTrackIndex = (isForward = true) => {
@@ -970,46 +818,10 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
   };
 
   return (
-    <Win98Container
-      ref={boxRef}
-      $isOff={!isMobile && (isOff || isSmall)}
-      $isEmbedded={isEmbedded}
-    >
-      {/* Title Bar (Draggable on Desktop, Buttons deleted on Mobile) */}
-      <TitleBar
-        $isMobile={isMobile}
-        onPointerDown={handlePointerDown}
-      >
-        <div className="title-content">
-          <svg className="app-icon" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="2" width="14" height="12" fill="#c0c0c0" stroke="#ffffff" />
-            <circle cx="8" cy="8" r="4" fill="#000080" />
-            <circle cx="8" cy="8" r="1.5" fill="#ffffff" />
-          </svg>
-          <span>jukebox.exe</span>
-        </div>
-
-        {/* In Mobile mode (<1000px), delete Minimize and Delete/Close buttons as requested */}
-        {!isMobile && (
-          <WindowControls>
-            <Win98Btn
-              className="ctrl-btn"
-              title="Minimize"
-              onClick={handleMinimize}
-            >
-              _
-            </Win98Btn>
-            <Win98Btn
-              className="ctrl-btn"
-              title="Close"
-              onClick={handleClose}
-            >
-              ✕
-            </Win98Btn>
-          </WindowControls>
-        )}
-      </TitleBar>
-
+    <JukeboxWindow title="jukebox.exe" icon="/images/icon/audio_cd.png"
+      width={380} minimized={isOff || isSmall} maximizable={false}
+      onMinimize={handleMinimize} onClose={handleClose}
+      onActivate={onActivate} zIndex={zIndex}>
       {/* Menu Bar (Desktop only) */}
       <MenuBar>
         <div className="menu-item" onClick={togglePlay}><u>P</u>lay</div>
@@ -1079,7 +891,7 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
       </SunkenPanel>
 
       {/* 1. Seek Position Slider Bar */}
-      <SliderWrapper>
+      <SliderWrapper style={{ marginTop: 4 }}>
         <span className="slider-label">pos</span>
         <input
           type="range"
@@ -1095,7 +907,7 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
       </SliderWrapper>
 
       {/* 2. Volume Control Bar (Designed similar to position slider bar) */}
-      <SliderWrapper style={{ paddingTop: 0 }}>
+      <SliderWrapper style={{ paddingTop: 0, marginBottom: 4 }}>
         <span
           className="slider-label"
           style={{ cursor: 'pointer' }}
@@ -1235,6 +1047,6 @@ export default function AudioPlayer98({ onSend, props, isEmbedded = false }) {
           {formatTime(currentTime)}
         </div>
       </StatusBar>
-    </Win98Container>
+    </JukeboxWindow>
   );
 }

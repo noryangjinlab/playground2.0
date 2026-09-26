@@ -1,9 +1,9 @@
 const express = require('express');
 const { google } = require('googleapis');
-const dotenv = require('dotenv');
+require('../config/env');
 
 const router = express.Router();
-dotenv.config();
+
 
 // Google Sheets API 인증 설정
 const auth = new google.auth.GoogleAuth({

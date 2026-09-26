@@ -1,3 +1,4 @@
+const { isAdmin } = require('../config/env');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const pool = require('../config/db');
@@ -118,13 +119,14 @@ router.get('/me', (req, res) => {
   if (!req.session || !req.session.username) return res.status(401).json({ message: '로그인 세션이 존재하지 않습니다' });
   res.json({
     username: req.session.username,
+    isAdmin: isAdmin(req.session),
     name: req.session.name,
     nickname: req.session.nickname
   });
 });
 
 router.get('/standby', async (req, res) => {
-  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  if (!(isAdmin(req.session))) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   
   try {
     const [rows] = await pool.execute('SELECT * FROM standby');
@@ -136,7 +138,7 @@ router.get('/standby', async (req, res) => {
 });
 
 router.post('/confirmstandby', async (req, res) => {
-  if (!(req.session && req.session.username === 'admin0106')) {
+  if (!(isAdmin(req.session))) {
     return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' })
   }
 
@@ -175,7 +177,7 @@ router.post('/confirmstandby', async (req, res) => {
 
 
 router.delete('/deletestandby', async (req, res) => {
-  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  if (!(isAdmin(req.session))) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   
   const { username } = req.body;
   try {
@@ -189,7 +191,7 @@ router.delete('/deletestandby', async (req, res) => {
 });
 
 router.delete('/deleteuser', async (req, res) => {
-  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  if (!(isAdmin(req.session))) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   try {
     await pool.execute("DELETE FROM users WHERE username=?", [req.body.username]);
     console.log("사용자 탈퇴 : ", req.body.username);
@@ -201,7 +203,7 @@ router.delete('/deleteuser', async (req, res) => {
 });
 
 router.get('/allusers', async (req, res) => {
-  if (!(req.session.username == "admin0106")) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
+  if (!(isAdmin(req.session))) return res.status(401).json({ message: '관리자 로그인 세션이 필요합니다' });
   
   try {
     const [rows] = await pool.execute('SELECT * FROM users');

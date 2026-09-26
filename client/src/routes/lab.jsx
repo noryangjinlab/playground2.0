@@ -714,7 +714,7 @@ const Lab = () => {
   const DEFAULT_FONT_SIZE = '14px'
 
   const [admin, setAdmin] = useState(null)
-  const isAdmin = admin === 'admin0106'
+  const isAdmin = admin === true
 
   const [noteId, setNoteId] = useState(null)
   const [noteTitle, setNoteTitle] = useState('')
@@ -746,7 +746,7 @@ const Lab = () => {
     const run = () => {
       fetchApi('/auth/me', { method: 'GET' })
         .then(data => {
-          setAdmin(data?.username || null)
+          setAdmin(data?.isAdmin === true)
         })
         .catch(error => {
           setAdmin(null)
@@ -1190,4 +1190,5 @@ const Lab = () => {
   )
 }
 
+export { CodeBlock, TextStyle, FontSize, ChildNote, LabImage }
 export default Lab

@@ -284,7 +284,7 @@ function App() {
   const isNotionPage = location.pathname.startsWith('/lab-wish');
   const isHost = location.pathname.startsWith('/host');
 
-  const [audioState, setAudioState] = useState(2);
+  const [audioState, setAudioState] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -308,7 +308,9 @@ function App() {
   return (
     <>
     {
-      !isHost ?
+      location.pathname === '/' ?
+      <Home audioState={audioState} onAudioChange={setAudioState} />
+      : !isHost ?
       <Container>
         <Navbar isOpen={isMenuOpen}>
           { isMobile && <div id='close-btn' onClick={closeMenu}>X</div> }
@@ -380,7 +382,6 @@ function App() {
 
           <div className='main-content'>
             <Routes>
-              <Route path="/" element={<Home/>} />
               <Route path="/about" element={<About/>} />
               <Route path="/login" element={<Login/>} />
               <Route path="/signup" element={<Signup/>} />

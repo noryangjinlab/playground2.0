@@ -1,5 +1,4 @@
-const BASE_URL = 'https://noryangjinlab.org/api'
-// const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 export const fetchApi = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`

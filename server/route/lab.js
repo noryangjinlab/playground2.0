@@ -1,3 +1,4 @@
+const { isAdmin } = require('../config/env');
 const express = require('express');
 const path = require('path');
 const fs = require('fs-extra'); // writeJson, readJson, ensureDir 등 사용
@@ -9,6 +10,8 @@ const router = express.Router();
 
 const NOTES_DIR = path.join(__dirname, '..', 'labdata', 'notes');
 const IMAGES_DIR = path.join(__dirname, '..', 'labdata', 'images');
+fs.ensureDirSync(NOTES_DIR);
+fs.ensureDirSync(IMAGES_DIR);
 
 router.use('/images', express.static(IMAGES_DIR));
 
@@ -41,7 +44,7 @@ const upload = multer({
 })
 
 router.post('/image/upload', upload.single('file'), async (req, res) => {
-  if (!(req.session && req.session.username === 'admin0106')) {
+  if (!(isAdmin(req.session))) {
     return res.status(403).json({ message: '권한이 없습니다' });
   }
   if (!req.file) {
@@ -56,7 +59,7 @@ router.post('/image/upload', upload.single('file'), async (req, res) => {
 });
 
 router.delete('/image/delete/:filename', async (req, res) => {
-  if (!(req.session && req.session.username === 'admin0106')) {
+  if (!(isAdmin(req.session))) {
     return res.status(403).json({ message: '권한이 없습니다' });
   }
 
@@ -86,7 +89,7 @@ router.delete('/image/delete/:filename', async (req, res) => {
 // body: { id, parentId?, title?, content: tiptapJSON }
 router.post('/save', async (req, res) => {
   const { id, parentId: parentIdFromBody, title: titleFromBody, content } = req.body;
-  if (!(req.session && req.session.username === "admin0106")) {
+  if (!(isAdmin(req.session))) {
     return res.status(403).json({ message: "권한이 없습니다" });
   }
   if (!id) {
@@ -149,6 +152,22 @@ router.post('/save', async (req, res) => {
 });
 
 
+// Public metadata for the same notes exposed by GET /:id.
+router.get('/tree', async (req, res) => {
+  try {
+    if (!await fs.pathExists(NOTES_DIR)) return res.json([]);
+    const names = (await fs.readdir(NOTES_DIR)).filter(name => name.endsWith('.json'));
+    const notes = await Promise.all(names.map(async name => {
+      const note = await fs.readJson(path.join(NOTES_DIR, name));
+      return { id: note.id || name.slice(0, -5), parentId: note.parentId || null, title: note.title || '(제목 없음)' };
+    }));
+    return res.json(notes);
+  } catch (error) {
+    console.error('파일 목록 읽기 실패:', error);
+    return res.status(500).json({ message: '파일 목록을 불러오지 못했습니다' });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -177,7 +196,7 @@ router.get('/:id', async (req, res) => {
 router.delete('/delete/:id', async (req, res) => {
   const { id } = req.params;
 
-  if (!(req.session && req.session.username === 'admin0106')) {
+  if (!(isAdmin(req.session))) {
     return res.status(403).json({ message: '권한이 없습니다' });
   }
 
