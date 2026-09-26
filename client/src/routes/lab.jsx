@@ -1,6 +1,6 @@
 import { useEditor, EditorContent, NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { TextStyle } from '@tiptap/extension-text-style'
+import { TextStyle, Color } from '@tiptap/extension-text-style'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { createLowlight, common } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -581,7 +581,7 @@ const CodeBlockView = props => {
   const languages = useMemo(() => {
     const ll = extension?.options?.lowlight || lowlight
     const list = ll?.listLanguages?.() || []
-    return ['plaintext', ...list]
+    return [...new Set(['plaintext', ...list])]
   }, [extension])
 
   const handleDelete = e => {
@@ -789,6 +789,7 @@ const Lab = () => {
       StarterKit.configure({ codeBlock: false }),
       CodeBlock,
       TextStyle,
+      Color,
       FontSize,
       ChildNote,
       LabImage,

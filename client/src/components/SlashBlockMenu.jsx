@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 const paragraph = { type: 'paragraph' };
 const blocks = [
   { label: '새 페이지', keywords: 'page new document', action: 'page' },
+  { label: '이미지', keywords: 'image picture photo', action: 'image' },
   { label: '텍스트', keywords: 'text paragraph', node: paragraph },
   { label: '제목 1', keywords: 'heading h1', node: { type: 'heading', attrs: { level: 1 } } },
   { label: '제목 2', keywords: 'heading h2', node: { type: 'heading', attrs: { level: 2 } } },
@@ -13,14 +14,18 @@ const blocks = [
   { label: '구분선', keywords: 'divider horizontal rule', node: { type: 'horizontalRule' } },
 ];
 
-export default function SlashBlockMenu({ editor, enabled, onCreatePage }) {
+export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsertImage }) {
   const [menu, setMenu] = useState(null);
   const current = useRef(null);
   const dismissed = useRef(null);
   const createPage = useRef(onCreatePage);
-  useEffect(() => { createPage.current = onCreatePage; }, [onCreatePage]);
+  const insertImage = useRef(onInsertImage);
+  useLayoutEffect(() => { createPage.current = onCreatePage; insertImage.current = onInsertImage; }, [onCreatePage, onInsertImage]);
 
   function insert(block, active) {
+    if (!active || !editor.isEditable) return;
+    dismissed.current = active.key; current.current = null; setMenu(null);
+    if (block.action === 'image') { dismissed.current = active.key; setMenu(null); insertImage.current?.({ from: active.from, to: active.to }); return; }
     if (block.action === 'page') { setMenu(null); createPage.current?.({ from: active.from, to: active.to }); return; }
     const content = block.action === 'page' ? paragraph : block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
     editor.chain().focus().insertContentAt({ from: active.from, to: active.to }, content).run();
@@ -51,7 +56,9 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage }) {
         event.preventDefault(); event.stopPropagation();
         if (event.key === 'Enter') {
           const block = active.items[active.index];
+          dismissed.current = active.key;
           update(null);
+          if (block.action === 'image') { dismissed.current = active.key; insertImage.current?.({ from: active.from, to: active.to }); return; }
           if (block.action === 'page') { createPage.current?.({ from: active.from, to: active.to }); return; }
           const content = block.action === 'page' ? paragraph : block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
           editor.chain().focus().insertContentAt({ from: active.from, to: active.to }, content).run();
@@ -75,9 +82,14 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage }) {
   return <div className="explorer-slash-menu" role="listbox" aria-label="새 블록 종류">
     <div className="explorer-slash-heading">블록 추가 <small>↑↓ 선택 · Enter 적용 · Esc 닫기</small></div>
     {menu.items.length ? menu.items.map((block, index) => <button key={block.label} type="button" role="option" aria-selected={index === menu.index}
-      onMouseDown={event => event.preventDefault()}
-      onClick={() => {
-        insert(block, menu);
+      onPointerDown={event => {
+        if (event.button !== 0) return;
+        event.preventDefault(); event.stopPropagation();
+        insert(block, current.current);
+      }}
+      onClick={event => {
+        // Keyboard/assistive activation has no preceding pointerdown.
+        if (event.detail === 0) insert(block, current.current);
       }}>{block.label}</button>) : <p>일치하는 블록이 없습니다.</p>}
   </div>;
 }
