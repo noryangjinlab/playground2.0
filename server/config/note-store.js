@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const crypto = require('crypto');
+const { isAdmin } = require('./env');
 
 function failure(status, message) { return Object.assign(new Error(message), { status }); }
 function validateId(id) {
@@ -45,16 +46,38 @@ function createNoteStore(directory) {
     if (node.type === 'childNote' && removed.has(node.attrs?.noteId)) return null;
     return { ...node, ...(Array.isArray(node.content) ? { content: node.content.map(child => stripLinks(child, removed)).filter(Boolean) } : {}) };
   }
+  async function ownerOf(note) {
+    const visited = new Set();
+    while (note && !visited.has(note.id)) {
+      visited.add(note.id);
+      if (note.owner) return note.owner;
+      note = note.parentId ? await read(note.parentId) : null;
+    }
+    return null;
+  }
+  async function authorize(note, actor) {
+    if (isAdmin(actor)) return;
+    if (!actor?.username || !note || await ownerOf(note) !== actor.username) throw failure(403, '이 문서를 편집할 권한이 없습니다');
+  }
   return {
+    ensureUserFolder: username => serial(async () => {
+      const id = `user-${validateId(username)}`;
+      await fs.ensureDir(directory);
+      if (await fs.pathExists(filename(id)) || await fs.pathExists(tombstone(id))) return;
+      await writeAtomic(filename(id), { id, parentId: null, title: username, owner: username, icon: '/images/icon/directory_open_1.png', ancestors: [], content: { type: 'doc', content: [{ type: 'paragraph' }] } });
+    }),
+    assertEditable: (id, actor) => serial(async () => authorize(await read(id), actor)),
     read: id => serial(() => read(id)),
-    list: () => serial(async () => (await all()).map(({ id, parentId, title, icon }) => ({ id, parentId: parentId || null, title: title || '(제목 없음)', icon: icon || null }))),
-    save: input => serial(async () => {
+    list: () => serial(async () => Promise.all((await all()).map(async note => ({ id: note.id, parentId: note.parentId || null, title: note.title || '(제목 없음)', icon: note.icon || null, owner: await ownerOf(note) })))),
+    save: (input, actor) => serial(async () => {
       const { id, content } = input;
       validateId(id);
       if (await fs.pathExists(tombstone(id))) throw failure(409, '삭제된 문서는 저장할 수 없습니다');
       await fs.ensureDir(directory);
       const existing = await fs.pathExists(filename(id)) ? await read(id) : null;
       const parentId = input.parentId !== undefined ? input.parentId : existing?.parentId || null;
+      await authorize(existing || (parentId ? await read(parentId) : null), actor);
+      if (existing && parentId !== existing.parentId && parentId !== (existing.parentId || null) && !isAdmin(actor)) throw failure(403, '상위 문서는 관리자만 변경할 수 있습니다');
       if (parentId === id) throw failure(400, '자기 자신을 상위 문서로 지정할 수 없습니다');
       const title = input.title !== undefined ? input.title : existing?.title || '';
       const icon = input.icon !== undefined ? input.icon : existing?.icon || null;
@@ -66,11 +89,11 @@ function createNoteStore(directory) {
         ancestors = [...(parent.ancestors || []), { id: parentId, title: parent.title || '' }];
         if (ancestors.some(item => item.id === id)) throw failure(400, '순환하는 문서 구조입니다');
       }
-      await writeAtomic(filename(id), { id, parentId, title, icon, ancestors, content });
+      await writeAtomic(filename(id), { id, parentId, title, icon, owner: existing?.owner || null, ancestors, content });
       return { success: true };
     }),
-    deleteTree: id => serial(async () => {
-      await read(id);
+    deleteTree: (id, actor) => serial(async () => {
+      await authorize(await read(id), actor);
       const notes = await all();
       const removed = new Set([id]);
       let changed = true;
@@ -78,6 +101,7 @@ function createNoteStore(directory) {
         changed = false;
         for (const note of notes) if (removed.has(note.parentId) && !removed.has(note.id)) { removed.add(note.id); changed = true; }
       }
+      for (const note of notes.filter(note => removed.has(note.id))) await authorize(note, actor);
       // Remove references from all surviving documents, including cross-links.
       for (const note of notes.filter(note => !removed.has(note.id))) {
         const content = stripLinks(note.content, removed);

@@ -42,7 +42,7 @@ const PageLink = ChildNote.extend({
       HTMLAttributes.title || '(제목 없음)']];
   },
 });
-export default function DocumentsWindow({ onClose, ...windowProps }) {
+export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
   const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
   const [treeVisible, setTreeVisible] = useState(true);
@@ -71,7 +71,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
   const uploadHandler = useRef(null);
   const imageInput = useRef(null);
   const imageTarget = useRef(null);
-  const canEdit = user?.isAdmin === true;
+  const canEdit = user?.isAdmin === true || Boolean(user?.username && notes.find(note => note.id === selection.id)?.owner === user.username);
   const editable = canEdit && loaded && !loading && !leaving && !uploading && !deleting;
   const editor = useEditor({
     extensions: [StarterKit.configure({ codeBlock: false }), ProtectedCodeBlock, TextStyle, Color, FontSize, PageLink, LabImage,
@@ -134,7 +134,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
       for (const file of files) {
         if (!file.type.startsWith('image/')) continue;
         const body = new FormData(); body.append('file', file);
-        const data = await fetchApi('/lab/image/upload', { method: 'POST', body });
+        const data = await fetchApi(`/lab/image/upload?noteId=${encodeURIComponent(id)}`, { method: 'POST', body });
         if (editor.isDestroyed || draft.current?.id !== id) return;
         editor.commands.insertContentAt(target, { type: 'labImage', attrs: { src: data.url, filename: data.filename, alt: file.name, width: null } });
         target = { from: editor.state.selection.to, to: editor.state.selection.to };
@@ -194,7 +194,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
       };
       setMessage('새 페이지를 만드는 중…');
       await fetchApi('/lab/save', { method: 'POST', body: JSON.stringify(page) });
-      setNotes(previous => [...previous, { id: page.id, parentId, title: page.title }]);
+      setNotes(previous => [...previous, { id: page.id, parentId, title: page.title, owner: notes.find(note => note.id === parentId)?.owner || null }]);
       setExpanded(previous => new Set([...previous, 'root', parentId]));
       const inserted = editor.commands.insertContentAt(range, {
         type: 'childPageBlock', attrs: { noteId: page.id, title: page.title },
@@ -327,7 +327,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
   return <AppWindow {...windowProps} title="파일탐색기" icon={folderIcon} className="file-explorer" width={860} height={570}
     maximized={maximized} onMaximizedChange={setMaximized} onClose={closeWindow}
     footer={<div className="explorer-status" role="status"><span>{message}</span><span>{notes.length}개 문서</span><span>{canEdit ? '편집 가능' : '읽기 전용'}</span></div>}>
-    <ExplorerMenuBar canExport={loaded && !loading && selection.id !== 'root'} exporting={exporting} onExport={exportPage}
+    <ExplorerMenuBar onHelp={onHelp} canExport={loaded && !loading && selection.id !== 'root'} exporting={exporting} onExport={exportPage}
       showIcons={canEdit} canChooseIcon={editable && selection.id !== 'root'} selectedIcon={selection.icon} onChooseIcon={changeIcon}
       maximized={maximized} onMaximize={() => setMaximized(true)} onRestore={() => setMaximized(false)} onMinimize={windowProps.onMinimize} onClose={closeWindow}/>
     <div className="explorer-toolbar">

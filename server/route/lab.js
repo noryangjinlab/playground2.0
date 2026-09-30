@@ -43,13 +43,12 @@ const upload = multer({
   },
 })
 
-router.post('/image/upload', (req, res, next) => {
-  if (!isAdmin(req.session)) return res.status(403).json({ message: '권한이 없습니다' });
-  next();
+router.post('/image/upload', async (req, res, next) => {
+  try {
+    if (!isAdmin(req.session)) await notes.assertEditable(req.query.noteId, req.session);
+    next();
+  } catch (error) { res.status(error.status || 500).json({ message: error.message }); }
 }, upload.single('file'), async (req, res) => {
-  if (!(isAdmin(req.session))) {
-    return res.status(403).json({ message: '권한이 없습니다' });
-  }
   if (!req.file) {
     return res.status(400).json({ message: '파일이 없습니다' });
   }
@@ -88,20 +87,18 @@ router.delete('/image/delete/:filename', async (req, res) => {
 
 const { createNoteStore } = require('../config/note-store');
 const notes = createNoteStore(NOTES_DIR);
+const ready = notes.ensureUserFolder('jobs1944');
+ready.catch(error => console.error('사용자 폴더 생성 실패:', error));
 const respond = handler => async (req, res) => {
-  try { res.json(await handler(req)); }
+  try { await ready; res.json(await handler(req)); }
   catch (error) {
     console.error('문서 요청 실패:', error);
     res.status(error.status || 500).json({ message: error.status ? error.message : '문서 처리 중 오류가 발생했습니다' });
   }
 };
-const requireAdmin = (req, res, next) => {
-  if (!isAdmin(req.session)) return res.status(403).json({ message: '권한이 없습니다' });
-  next();
-};
-router.post('/save', requireAdmin, respond(req => notes.save(req.body)));
+router.post('/save', respond(req => notes.save(req.body, req.session)));
 router.get('/tree', respond(() => notes.list()));
 router.get('/:id', respond(req => notes.read(req.params.id)));
-router.delete('/delete/:id', requireAdmin, respond(req => notes.deleteTree(req.params.id)));
+router.delete('/delete/:id', respond(req => notes.deleteTree(req.params.id, req.session)));
 
 module.exports = router;

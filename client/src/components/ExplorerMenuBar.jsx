@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import documentIcons from 'virtual:document-icons';
 
-export default function ExplorerMenuBar({ canExport, exporting, onExport, maximized, onMaximize, onRestore, onMinimize, onClose, showIcons, canChooseIcon, selectedIcon, onChooseIcon }) {
+export default function ExplorerMenuBar({ canExport, exporting, onExport, maximized, onMaximize, onRestore, onMinimize, onClose, showIcons, canChooseIcon, selectedIcon, onChooseIcon, onHelp }) {
   const [open, setOpen] = useState(null);
   const root = useRef(null);
   const id = useId();
@@ -62,6 +62,6 @@ export default function ExplorerMenuBar({ canExport, exporting, onExport, maximi
         </div>)}
       </div>}
     </div>)}
-    <span className="explorer-menu-help">도움말(H)</span>
+    <button type="button" className="explorer-menu-trigger" onClick={() => { setOpen(null); onHelp?.(); }}>도움말(H)</button>
   </div>;
 }
