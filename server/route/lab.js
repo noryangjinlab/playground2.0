@@ -87,7 +87,7 @@ router.delete('/image/delete/:filename', async (req, res) => {
 
 const { createNoteStore } = require('../config/note-store');
 const notes = createNoteStore(NOTES_DIR);
-const ready = notes.ensureUserFolder('jobs1944');
+const ready = Promise.all(['jobs1944', 'khs'].map(username => notes.ensureUserFolder(username)));
 ready.catch(error => console.error('사용자 폴더 생성 실패:', error));
 const respond = handler => async (req, res) => {
   try { await ready; res.json(await handler(req)); }
