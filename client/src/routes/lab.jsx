@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from '@tiptap/react'
+import { useEditor, useEditorState, EditorContent, NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { TextStyle, Color } from '@tiptap/extension-text-style'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -248,11 +248,11 @@ const ChildNote = Node.create({
 
 const LabImageView = props => {
   const { node, updateAttributes, editor } = props
-  const canEdit = !!editor && editor.isEditable
+  const canEdit = useEditorState({ editor, selector: ({ editor: current }) => current.isEditable })
   const startRef = useRef(null)
 
   const onMouseDownHandle = e => {
-    if (!canEdit) return
+    if (!editor.isEditable) return
     e.preventDefault()
     e.stopPropagation()
 
@@ -699,7 +699,7 @@ const CodeBlock = CodeBlockLowlight.extend({
   addNodeView() {
     return ReactNodeViewRenderer(CodeBlockView)
   },
-}).configure({ lowlight })
+}).configure({ lowlight, enableTabIndentation: true, tabSize: 4 })
 
 function makeUuid() {
   if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID()

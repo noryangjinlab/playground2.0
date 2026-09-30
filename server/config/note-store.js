@@ -47,7 +47,7 @@ function createNoteStore(directory) {
   }
   return {
     read: id => serial(() => read(id)),
-    list: () => serial(async () => (await all()).map(({ id, parentId, title }) => ({ id, parentId: parentId || null, title: title || '(제목 없음)' }))),
+    list: () => serial(async () => (await all()).map(({ id, parentId, title, icon }) => ({ id, parentId: parentId || null, title: title || '(제목 없음)', icon: icon || null }))),
     save: input => serial(async () => {
       const { id, content } = input;
       validateId(id);
@@ -57,6 +57,8 @@ function createNoteStore(directory) {
       const parentId = input.parentId !== undefined ? input.parentId : existing?.parentId || null;
       if (parentId === id) throw failure(400, '자기 자신을 상위 문서로 지정할 수 없습니다');
       const title = input.title !== undefined ? input.title : existing?.title || '';
+      const icon = input.icon !== undefined ? input.icon : existing?.icon || null;
+      if (icon !== null && (typeof icon !== 'string' || !/^\/images\/icon\/[^/\\]+\.(png|webp|gif|jpe?g|svg|ico|bmp)$/i.test(icon) || icon.includes('..'))) throw failure(400, '잘못된 아이콘 경로입니다');
       if (typeof title !== 'string' || !content || content.type !== 'doc') throw failure(400, '문서 제목 또는 본문 형식이 올바르지 않습니다');
       let ancestors = [];
       if (parentId) {
@@ -64,7 +66,7 @@ function createNoteStore(directory) {
         ancestors = [...(parent.ancestors || []), { id: parentId, title: parent.title || '' }];
         if (ancestors.some(item => item.id === id)) throw failure(400, '순환하는 문서 구조입니다');
       }
-      await writeAtomic(filename(id), { id, parentId, title, ancestors, content });
+      await writeAtomic(filename(id), { id, parentId, title, icon, ancestors, content });
       return { success: true };
     }),
     deleteTree: id => serial(async () => {

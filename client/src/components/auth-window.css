@@ -1,0 +1,25 @@
+.auth-window .app-window-content { background: #c0c0c0; }
+.auth-banner { display: flex; align-items: center; gap: 16px; padding: 20px; background: linear-gradient(90deg, #000080, #1084d0); color: #fff; flex-shrink: 0; }
+.auth-banner img { width: 40px; height: 40px; object-fit: contain; image-rendering: pixelated; }
+.auth-banner strong { display: block; font-size: 18px; margin-bottom: 8px; }
+.auth-banner span { font-size: 10px; }
+.auth-body { padding: 18px; }
+.auth-body h2 { font-size: 15px; line-height: 1.7; margin: 0 0 12px; overflow-wrap: anywhere; }
+.auth-tabs { display: flex; gap: 2px; border-bottom: 1px solid #808080; margin-bottom: 18px; }
+.auth-tabs button { border: 0; padding: 8px 18px; background: #b4b4b4; color: #222; font: inherit; box-shadow: inset 1px 1px #fff, inset -1px 0 #808080; }
+.auth-tabs button[aria-pressed="true"] { background: #dfdfdf; color: #000080; font-weight: bold; }
+.auth-body fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.auth-body legend { padding: 0; margin-bottom: 14px; font-weight: bold; }
+.auth-field { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: center; gap: 8px; margin-bottom: 10px; }
+.auth-field input { box-sizing: border-box; width: 100%; min-width: 0; border: 0; border-radius: 0; padding: 7px 8px; background: #fff; color: #000; font: inherit; box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, inset 2px 2px #000; }
+.auth-field input:focus-visible { outline: 1px dotted #000080; outline-offset: 2px; }
+.auth-description { font-size: 11px; line-height: 1.8; color: #333; margin: 12px 0; }
+.auth-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
+.auth-actions button { min-width: 92px; }
+.auth-window button:disabled, .auth-window fieldset:disabled button { color: #808080; text-shadow: 1px 1px #fff; cursor: default; }
+.auth-notice { padding: 10px; background: #ffffe1; border: 1px solid #808080; font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
+.auth-notice.is-error { color: #800000; }
+.auth-account { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; padding: 16px; background: #dfdfdf; box-shadow: inset 1px 1px #808080, inset -1px -1px #fff; }
+.auth-account dd { margin: 0; overflow-wrap: anywhere; }
+.auth-status { padding: 4px 6px; font-size: 10px; box-shadow: inset 1px 1px #808080, inset -1px -1px #fff; }
+@media (max-width: 480px) { .auth-body { padding: 14px; } .auth-field { grid-template-columns: 66px minmax(0, 1fr); } }

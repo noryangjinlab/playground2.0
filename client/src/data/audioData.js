@@ -154,7 +154,12 @@ export const audioData = [
       title: "Airegin (1956 Rudy Van Gelder Remastering)",
       artist: "The Miles Davis Quintet",
       path: "/audio/Airegin.mp3"
-    }
+    },
+    {
+      title: "The Collector (Remastered)",
+      artist: "Wayne Shorter",
+      path: "/audio/The Collector (Remastered).mp3"
+    },
   ],
   [
     {

@@ -26,6 +26,8 @@
     "audiomotion-analyzer": "^4.5.1",
     "axios": "^1.13.2",
     "highlight.js": "^11.11.1",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
     "lodash": "^4.17.21",
     "lowlight": "^3.3.0",
     "notion-client": "^7.10.0",

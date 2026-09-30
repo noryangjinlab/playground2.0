@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -12,6 +12,9 @@ import { createDebouncedDocumentSave } from './debouncedDocumentSave';
 import { Color } from '@tiptap/extension-text-style';
 import EditorToolbar from './EditorToolbar';
 import { ExplorerBehavior, ExplorerDragHandle } from './explorerEditorExtensions';
+import { normalizeChildPageBlocks, serializeChildPageBlocks } from './childPageBlocks';
+import ExplorerMenuBar from './ExplorerMenuBar';
+import { exportExplorerDocument } from './exportExplorerDocument';
 
 const folderIcon = '/images/icon/directory_open_1.png';
 const ProtectedCodeBlock = CodeBlock.extend({
@@ -22,16 +25,30 @@ const ProtectedCodeBlock = CodeBlock.extend({
   },
 });
 const PageLink = ChildNote.extend({
+  name: 'childPageBlock',
+  group: 'block',
+  inline: false,
+  draggable: true,
+  addAttributes() {
+    return { ...this.parent?.(), icon: { default: null } };
+  },
+  parseHTML() { return [{ tag: '[data-child-note]' }]; },
   renderHTML({ HTMLAttributes }) {
-    return ['span', {
+    return ['div', {
       'data-child-note': 'true', 'data-note-id': HTMLAttributes.noteId,
       role: 'link', tabindex: '0', contenteditable: 'false',
-    }, ['span', { 'data-child-note-box': 'true' }, HTMLAttributes.title || '(제목 없음)']];
+    }, ['span', { 'data-child-note-box': 'true' },
+      ['img', { 'data-child-note-icon': 'true', src: HTMLAttributes.icon || '/images/icon/file_lines.png', alt: '', draggable: 'false' }],
+      HTMLAttributes.title || '(제목 없음)']];
   },
 });
 export default function DocumentsWindow({ onClose, ...windowProps }) {
   const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
+  const [treeVisible, setTreeVisible] = useState(true);
+  const [maximized, setMaximized] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const exportInProgress = useRef(false);
   const [expanded, setExpanded] = useState(new Set());
   const [selection, setSelection] = useState({ id: 'root', folder: true, title: '파일탐색기' });
   const [user, setUser] = useState(null);
@@ -55,19 +72,20 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
   const imageInput = useRef(null);
   const imageTarget = useRef(null);
   const canEdit = user?.isAdmin === true;
+  const editable = canEdit && loaded && !loading && !leaving && !uploading && !deleting;
   const editor = useEditor({
     extensions: [StarterKit.configure({ codeBlock: false }), ProtectedCodeBlock, TextStyle, Color, FontSize, PageLink, LabImage,
       ExplorerDragHandle, ExplorerBehavior.configure({ onFiles: (files, range) => uploadHandler.current?.(files, range) })],
-    content: '', editable: false,
-    onUpdate: ({ editor: current }) => {
-      if (!current.isEditable || !draft.current) return;
+    content: '', editable,
+    onUpdate: ({ editor: current, transaction }) => {
+      if (!transaction.docChanged || !current.isEditable || !draft.current) return;
       draft.current = { ...draft.current, content: current.getJSON() };
       autosave.current?.enqueue(draft.current);
     },
   });
   useEffect(() => {
     const saver = createDebouncedDocumentSave(
-      snapshot => fetchApi('/lab/save', { method: 'POST', body: JSON.stringify(snapshot) }),
+      snapshot => fetchApi('/lab/save', { method: 'POST', body: JSON.stringify({ ...snapshot, content: serializeChildPageBlocks(snapshot.content) }) }),
       (state, error) => {
         setDirty(state !== 'saved');
         setMessage(state === 'saved' ? '자동 저장되었습니다.' : state === 'saving' ? '자동 저장 중…' : state === 'error' ? `자동 저장 실패: ${error.message} — 변경 내용을 유지했습니다.` : '입력이 끝나면 자동 저장합니다…');
@@ -89,9 +107,10 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
   useEffect(() => {
     const refreshUser = () => fetchApi('/auth/me').then(setUser).catch(() => setUser(null));
     refreshUser(); window.addEventListener('focus', refreshUser);
-    return () => window.removeEventListener('focus', refreshUser);
+    window.addEventListener('auth-changed', refreshUser);
+    return () => { window.removeEventListener('focus', refreshUser); window.removeEventListener('auth-changed', refreshUser); };
   }, []);
-  useEffect(() => { editor?.setEditable(canEdit && loaded && !loading && !leaving && !uploading && !deleting, false); }, [editor, canEdit, loaded, loading, leaving, uploading, deleting]);
+  useLayoutEffect(() => { editor?.setEditable(editable); }, [editor, editable]);
   useEffect(() => {
     if (!dirty && !uploading) return;
     const warn = event => { event.preventDefault(); event.returnValue = ''; };
@@ -104,7 +123,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
     transitioning.current = true; setLeaving(true);
     try { await uploadTask.current; await autosave.current?.wait(); return true; }
     catch { return false; }
-    finally { transitioning.current = false; setLeaving(false); }
+    finally { transitioning.current = false; if (!creating.current) setLeaving(false); }
   }
   async function uploadImages(files, range) {
     if (!canEdit || !loaded || leaving || uploadTask.current || !draft.current) return;
@@ -153,9 +172,18 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
     setNotes(previous => previous.map(note => note.id === id ? { ...note, title } : note));
     autosave.current?.enqueue(draft.current);
   }
+  function changeIcon(icon) {
+    if (!editable || !draft.current) return;
+    draft.current = { ...draft.current, icon };
+    const id = draft.current.id;
+    setSelection(previous => ({ ...previous, icon }));
+    setNotes(previous => previous.map(note => note.id === id ? { ...note, icon } : note));
+    autosave.current?.enqueue(draft.current);
+  }
   async function createChildPage(range) {
     if (!canEdit || !loaded || selection.id === 'root' || creating.current || deletingPage.current) return;
     creating.current = true;
+    setMessage('새 페이지를 만드는 중…');
     const parentId = selection.id;
     try {
       if (!await finishPending()) return;
@@ -168,9 +196,10 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
       await fetchApi('/lab/save', { method: 'POST', body: JSON.stringify(page) });
       setNotes(previous => [...previous, { id: page.id, parentId, title: page.title }]);
       setExpanded(previous => new Set([...previous, 'root', parentId]));
-      editor.commands.insertContentAt(range, {
-        type: 'paragraph', content: [{ type: 'childNote', attrs: { noteId: page.id, title: page.title } }],
+      const inserted = editor.commands.insertContentAt(range, {
+        type: 'childPageBlock', attrs: { noteId: page.id, title: page.title },
       });
+      if (!inserted) throw new Error('하위 페이지 링크를 삽입하지 못했습니다.');
       draft.current = { ...draft.current, content: editor.getJSON() };
       autosave.current.enqueue(draft.current);
       await open({ id: page.id, parentId, title: page.title, folder: false }, false, true);
@@ -194,15 +223,16 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
       // Resolve link labels from the current tree after a child is renamed.
       const resolveTitles = node => {
         if (!node || typeof node !== 'object') return node;
-        const linked = node.type === 'childNote' && notes.find(note => note.id === node.attrs?.noteId);
-        return { ...node, ...(linked ? { attrs: { ...node.attrs, title: linked.title || '(제목 없음)' } } : {}),
+        const linked = ['childNote', 'childPageBlock'].includes(node.type) && notes.find(note => note.id === node.attrs?.noteId);
+        return { ...node, ...(linked ? { attrs: { ...node.attrs, title: linked.title || '(제목 없음)', icon: linked.icon || null } } : {}),
           ...(node.content ? { content: node.content.map(resolveTitles) } : {}) };
       };
-      editor?.commands.setContent(resolveTitles(data.content) || '', { emitUpdate: false });
+      editor?.commands.setContent(normalizeChildPageBlocks(resolveTitles(data.content)) || '', { emitUpdate: false });
       const title = data.title ?? item.title;
-      draft.current = { id: item.id, title, content: editor.getJSON() };
-      setSelection(previous => ({ ...previous, title }));
-      setNotes(previous => previous.map(note => note.id === item.id ? { ...note, title } : note));
+      const icon = data.icon || null;
+      draft.current = { id: item.id, title, icon, content: editor.getJSON() };
+      setSelection(previous => ({ ...previous, title, icon }));
+      setNotes(previous => previous.map(note => note.id === item.id ? { ...note, title, icon } : note));
       // A file has its own undo history; never undo into the previous document.
       if (editor) editor.view.updateState(EditorState.create({
         schema: editor.state.schema, doc: editor.state.doc, plugins: editor.state.plugins,
@@ -264,7 +294,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
     return <div className="explorer-tree-row" style={{ paddingLeft: depth * 16 + 4 }}>
       {expandable ? <button className="explorer-expander" aria-label={`${item.title} ${expanded.has(item.id) ? '접기' : '펼치기'}`} aria-expanded={expanded.has(item.id)} onClick={() => toggle(item.id)}>{expanded.has(item.id) ? '−' : '+'}</button> : <span className="explorer-tree-spacer"/>}
       <button className={`explorer-node${active ? ' selected' : ''}`} onClick={() => open(item, expandable)} aria-expanded={expandable ? expanded.has(item.id) : undefined} title={item.title} aria-current={active ? 'page' : undefined}>
-        <img src={expandable ? folderIcon : '/images/icon/file_lines.png'} alt=""/>
+        <img src={item.id === 'root' ? folderIcon : item.icon || '/images/icon/file_lines.png'} alt=""/>
         <span>{item.title || '(제목 없음)'}</span>
       </button>
     </div>;
@@ -282,26 +312,44 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
       </div>}
     </div>;
   }
-  const editable = canEdit && loaded && !leaving && !uploading && !deleting;
+  async function closeWindow() {
+    if (!creating.current && !deletingPage.current && await finishPending()) onClose();
+  }
+  async function exportPage(format) {
+    if (!loaded || loading || selection.id === 'root' || exportInProgress.current) return;
+    exportInProgress.current = true; setExporting(true); setMessage('문서를 내보내는 중…');
+    try {
+      await exportExplorerDocument(editor?.view.dom, selection.title, format);
+      setMessage(`${format === 'png' ? '이미지' : 'PDF'} 파일을 다운로드했습니다.`);
+    } catch (error) { setMessage(`내보내기 실패: ${error.message}`); }
+    finally { exportInProgress.current = false; setExporting(false); }
+  }
   return <AppWindow {...windowProps} title="파일탐색기" icon={folderIcon} className="file-explorer" width={860} height={570}
-    onClose={async () => { if (!creating.current && !deletingPage.current && await finishPending()) onClose(); }}
+    maximized={maximized} onMaximizedChange={setMaximized} onClose={closeWindow}
     footer={<div className="explorer-status" role="status"><span>{message}</span><span>{notes.length}개 문서</span><span>{canEdit ? '편집 가능' : '읽기 전용'}</span></div>}>
-    <div className="explorer-menubar"><span>파일(F)</span><span>편집(E)</span><span>보기(V)</span><span>도구(T)</span><span>도움말(H)</span></div>
+    <ExplorerMenuBar canExport={loaded && !loading && selection.id !== 'root'} exporting={exporting} onExport={exportPage}
+      showIcons={canEdit} canChooseIcon={editable && selection.id !== 'root'} selectedIcon={selection.icon} onChooseIcon={changeIcon}
+      maximized={maximized} onMaximize={() => setMaximized(true)} onRestore={() => setMaximized(false)} onMinimize={windowProps.onMinimize} onClose={closeWindow}/>
     <div className="explorer-toolbar">
       <div className="explorer-address" title={address}><img src={folderIcon} alt=""/><span>{address}</span></div>
-      <button title="상위 폴더" aria-label="상위 폴더" disabled={selection.id === 'root' || leaving} onClick={() => open(notes.find(note => note.id === selectedNote?.parentId) ? { ...notes.find(note => note.id === selectedNote.parentId), folder: true } : { id: 'root', title: '파일탐색기', folder: true })}>↑</button>
+      <button title={treeVisible ? '탐색 트리 숨기기' : '탐색 트리 보이기'} aria-label={treeVisible ? '탐색 트리 숨기기' : '탐색 트리 보이기'} aria-expanded={treeVisible} aria-controls="explorer-folder-tree" aria-pressed={treeVisible} onClick={() => setTreeVisible(value => !value)}>폴더</button>
       <button title="파일 목록 새로고침" aria-label="파일 목록 새로고침" disabled={loadingTree || leaving} onClick={async () => { if (await finishPending()) loadTree(); }}>↻</button>
       {canEdit && <button type="button" disabled={selection.id === 'root' || !editable} onClick={deleteCurrentPage}>페이지 삭제</button>}
     </div>
-    <div className="explorer-panes">
-      <aside className="explorer-tree" aria-label="폴더 및 파일 탐색">
+    <div className={`explorer-panes${treeVisible ? '' : ' tree-hidden'}`}>
+      <aside id="explorer-folder-tree" className="explorer-tree" aria-label="폴더 및 파일 탐색" hidden={!treeVisible}>
         <div className="explorer-pane-heading">폴더</div>
+        <div className="explorer-tree-scroll">
         {row({ id: 'root', title: '파일탐색기', folder: true }, 0, true)}
         {expanded.has('root') && <>
           {loadingTree ? <p className="explorer-tree-message">불러오는 중…</p> : treeError ? <div className="explorer-tree-message" role="alert">{treeError}<button onClick={loadTree}>다시 시도</button></div> : roots.map(note => branch(note))}
           {!loadingTree && !treeError && !notes.length && <p className="explorer-tree-message">저장된 문서가 없습니다.</p>}
-          <Link className="explorer-external" to="/lab-wish" onClick={async event => { event.preventDefault(); if (!creating.current && !deletingPage.current && await finishPending()) navigate('/lab-wish'); }}><img src={folderIcon} alt=""/>wish ↗</Link>
+          <div className="explorer-tree-row" style={{ paddingLeft: 20 }}>
+            <span className="explorer-tree-spacer" aria-hidden="true"/>
+            <Link className="explorer-node explorer-external" to="/lab-wish" onClick={async event => { event.preventDefault(); if (!creating.current && !deletingPage.current && await finishPending()) navigate('/lab-wish'); }}><img src={folderIcon} alt=""/><span>wish ↗</span></Link>
+          </div>
         </>}
+        </div>
       </aside>
       <section className="explorer-editor-pane" aria-label="문서 편집기" onClick={event => { if (!deleteImage(event)) followChildLink(event); }} onKeyDown={event => { followChildLink(event); if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') event.preventDefault(); }}>
         <input ref={imageInput} type="file" accept="image/*" multiple hidden aria-label="이미지 파일 선택" onChange={event => {
@@ -311,8 +359,7 @@ export default function DocumentsWindow({ onClose, ...windowProps }) {
         }}/>
         <div className="explorer-pane-heading explorer-document-heading"><span>{selection.id === 'root' ? '문서 편집기' : `${selection.title}${dirty ? ' *' : ''}`}</span><span>{selection.id === 'root' ? '' : canEdit ? '온라인 편집' : '읽기 전용'}</span></div>
         {selection.id === 'root' ? <div className="explorer-empty"><span className="explorer-empty-paper" aria-hidden="true">Aa</span><h2>폴더를 선택하세요</h2><p>왼쪽에서 폴더를 펼쳐 문서를 열 수 있습니다.</p><p>선택한 문서는 이곳에서 읽고 편집합니다.</p></div> : <>
-          <EditorToolbar editor={editor} editable={editable}/>
-          {!canEdit && <div className="explorer-readonly">{user ? '이 계정은 읽기 권한만 있습니다.' : <>편집하려면 <Link to="/login">관리자 로그인</Link>이 필요합니다.</>}</div>}
+          {canEdit && <EditorToolbar editor={editor} editable={editable}/>}
           {loading ? <p className="explorer-tree-message">문서를 불러오는 중…</p> : !loaded ? <div className="explorer-tree-message" role="alert">{message}<button onClick={() => open(selection)}>다시 시도</button></div> : <><div className="explorer-title-section"><input aria-label="문서 제목" placeholder="제목 없음" value={selection.title} readOnly={!editable} onChange={event => rename(event.target.value)}/></div><EditorContent className={`explorer-editor ${editable ? 'editable' : 'readonly'}`} editor={editor}/><SlashBlockMenu editor={editor} enabled={editable} onCreatePage={createChildPage} onInsertImage={chooseImage}/></>}
         </>}
       </section>

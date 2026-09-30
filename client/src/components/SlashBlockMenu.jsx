@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { slashCommandRange } from './slashCommandRange';
 
 const paragraph = { type: 'paragraph' };
 const blocks = [
@@ -22,30 +23,28 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsert
   const insertImage = useRef(onInsertImage);
   useLayoutEffect(() => { createPage.current = onCreatePage; insertImage.current = onInsertImage; }, [onCreatePage, onInsertImage]);
 
-  function insert(block, active) {
-    if (!active || !editor.isEditable) return;
+  const insert = useCallback((block, active) => {
+    if (!active || !enabled || !editor || editor.isDestroyed || dismissed.current === active.key) return;
     dismissed.current = active.key; current.current = null; setMenu(null);
-    if (block.action === 'image') { dismissed.current = active.key; setMenu(null); insertImage.current?.({ from: active.from, to: active.to }); return; }
-    if (block.action === 'page') { setMenu(null); createPage.current?.({ from: active.from, to: active.to }); return; }
-    const content = block.action === 'page' ? paragraph : block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
-    editor.chain().focus().insertContentAt({ from: active.from, to: active.to }, content).run();
-    if (block.action === 'page') createPage.current?.();
-  }
+    if (block.action === 'image') { insertImage.current?.({ from: active.from, to: active.to }); return; }
+    if (block.action === 'page') { createPage.current?.(active.blockRange); return; }
+    const content = block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
+    editor.chain().focus().insertContentAt(active.blockRange, content).run();
+  }, [editor, enabled]);
 
   useEffect(() => {
     if (!editor || !enabled) return;
     const update = next => { current.current = next; setMenu(next); };
     const sync = () => {
-      const { $from, empty } = editor.state.selection;
-      const text = $from.parent.textContent;
-      const key = `${$from.pos}:${text}`;
-      if (!editor.isEditable || !empty || $from.parent.type.name !== 'paragraph' || !/^\/[^/\s]*$/.test(text)) {
+      const command = slashCommandRange(editor.state.selection);
+      if (!command) {
         dismissed.current = null; update(null); return;
       }
+      const { key } = command;
       if (dismissed.current === key) { update(null); return; }
-      const query = text.slice(1).toLowerCase();
+      const query = command.query.toLowerCase();
       const items = blocks.filter(block => `${block.label} ${block.keywords}`.toLowerCase().includes(query));
-      update({ from: $from.before(), to: $from.after(), key, items, index: current.current?.key === key ? current.current.index : 0 });
+      update({ ...command, items, index: current.current?.key === key ? current.current.index : 0 });
     };
     const keydown = event => {
       const active = current.current;
@@ -55,14 +54,7 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsert
       } else if (['ArrowDown', 'ArrowUp', 'Enter'].includes(event.key) && active.items.length) {
         event.preventDefault(); event.stopPropagation();
         if (event.key === 'Enter') {
-          const block = active.items[active.index];
-          dismissed.current = active.key;
-          update(null);
-          if (block.action === 'image') { dismissed.current = active.key; insertImage.current?.({ from: active.from, to: active.to }); return; }
-          if (block.action === 'page') { createPage.current?.({ from: active.from, to: active.to }); return; }
-          const content = block.action === 'page' ? paragraph : block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
-          editor.chain().focus().insertContentAt({ from: active.from, to: active.to }, content).run();
-          if (block.action === 'page') createPage.current?.();
+          insert(active.items[active.index], active);
         } else {
           update({ ...active, index: (active.index + (event.key === 'ArrowDown' ? 1 : -1) + active.items.length) % active.items.length });
         }
@@ -75,8 +67,9 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsert
       editor.off('transaction', sync);
       editor.view.dom.removeEventListener('keydown', keydown, true);
       current.current = null;
+      dismissed.current = null;
     };
-  }, [editor, enabled]);
+  }, [editor, enabled, insert]);
 
   if (!enabled || !menu) return null;
   return <div className="explorer-slash-menu" role="listbox" aria-label="새 블록 종류">
@@ -85,11 +78,12 @@ export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsert
       onPointerDown={event => {
         if (event.button !== 0) return;
         event.preventDefault(); event.stopPropagation();
-        insert(block, current.current);
       }}
+      onMouseDown={event => { event.preventDefault(); event.stopPropagation(); }}
       onClick={event => {
-        // Keyboard/assistive activation has no preceding pointerdown.
-        if (event.detail === 0) insert(block, current.current);
+        // Use the displayed command's range, not a ref that focus transactions can clear.
+        event.preventDefault(); event.stopPropagation();
+        insert(block, menu);
       }}>{block.label}</button>) : <p>일치하는 블록이 없습니다.</p>}
   </div>;
 }

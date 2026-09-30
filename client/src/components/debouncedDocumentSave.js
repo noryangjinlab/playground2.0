@@ -26,7 +26,7 @@ export function createDebouncedDocumentSave(write, status, delay = 600) {
       else { clearTimeout(timer); timer = null; settle(error); }
     } finally {
       running = false;
-      if (!disposed && pending && !timer && failures <= 2) schedule();
+      if (!disposed && pending && !timer && failures <= 2) schedule(waiters.length ? 0 : delay);
       if (!pending && !running) settle();
     }
   }
@@ -34,8 +34,11 @@ export function createDebouncedDocumentSave(write, status, delay = 600) {
     enqueue(snapshot) { pending = snapshot; failures = 0; status('pending'); schedule(); },
     wait() {
       if (!pending && !running) return Promise.resolve();
-      if (pending && !timer && !running) { failures = 0; schedule(); }
-      return new Promise((resolve, reject) => waiters.push({ resolve, reject }));
+      // Explicit navigation/creation should flush edits instead of waiting for typing to stop.
+      const finished = new Promise((resolve, reject) => waiters.push({ resolve, reject }));
+      clearTimeout(timer); timer = null;
+      if (!running) { failures = 0; run(); }
+      return finished;
     },
     dispose() { disposed = true; clearTimeout(timer); },
   };

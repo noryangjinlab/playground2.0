@@ -14,12 +14,19 @@ export default function AppWindow({
   title, icon, children, footer, onClose, onMinimize, onActivate,
   zIndex = 10, minimized = false, draggable = true, maximizable = true,
   minimizable = true, closable = true,
+  maximized: controlledMaximized, onMaximizedChange,
   width = 720, height = 460, taskbarHeight = 36, className = '',
 }) {
   const titleId = useId();
   const windowRef = useRef(null);
   const dragRef = useRef(null);
-  const [maximized, setMaximized] = useState(false);
+  const [internalMaximized, setInternalMaximized] = useState(false);
+  const maximized = controlledMaximized ?? internalMaximized;
+  const setMaximized = value => {
+    const next = typeof value === 'function' ? value(maximized) : value;
+    if (controlledMaximized === undefined) setInternalMaximized(next);
+    onMaximizedChange?.(next);
+  };
   const [position, setPosition] = useState(null);
 
   const startDrag = event => {

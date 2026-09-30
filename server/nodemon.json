@@ -1,0 +1,5 @@
+{
+  "watch": ["app.js", "route", "config"],
+  "ext": "js,cjs,mjs,json",
+  "ignore": ["labdata/**", "public/**", "**/*.test.js"]
+}

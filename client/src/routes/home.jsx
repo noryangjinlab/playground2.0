@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import AudioPlayer from '../components/AudioPlayer';
 import DocumentsWindow from '../components/DocumentsWindow';
+import AuthWindow from '../components/AuthWindow';
 import { AppWindow, useWindowStack } from '../components/app-window';
 import '../style/desktop.css';
 
@@ -19,10 +20,12 @@ function Icon({ type }) {
 export default function Home({ audioState, onAudioChange }) {
   const [welcomeState, setWelcomeState] = useState('closed');
   const [documentsState, setDocumentsState] = useState('closed');
-  const { bringToFront, windowLayer, getActiveWindow } = useWindowStack(['welcome', 'documents', 'music']);
-  const activeWindow = getActiveWindow(id => id === 'welcome' ? welcomeState === 'open' : id === 'documents' ? documentsState === 'open' : audioState === 2);
+  const [authState, setAuthState] = useState('closed');
+  const { bringToFront, windowLayer, getActiveWindow } = useWindowStack(['welcome', 'documents', 'music', 'auth']);
+  const activeWindow = getActiveWindow(id => id === 'welcome' ? welcomeState === 'open' : id === 'documents' ? documentsState === 'open' : id === 'auth' ? authState === 'open' : audioState === 2);
   const openWelcome = () => { setWelcomeState('open'); bringToFront('welcome'); };
   const openDocuments = () => { setDocumentsState('open'); bringToFront('documents'); };
+  const openAuth = () => { setAuthState('open'); bringToFront('auth'); };
   const [now, setNow] = useState(() => new Date());
   const [selected, setSelected] = useState([]);
   const [selectionBox, setSelectionBox] = useState(null);
@@ -75,8 +78,8 @@ export default function Home({ audioState, onAudioChange }) {
       <button data-desktop-icon="computer" className={iconClass('computer')} onClick={event => selectIcon(event, 'computer', openWelcome)}><Icon type="computer"/><span>내 컴퓨터</span></button>
       <button data-desktop-icon="folder" className={iconClass('folder')} onClick={event => selectIcon(event, 'folder', openDocuments)}><Icon type="folder"/><span>파일탐색기</span></button>
       <button data-desktop-icon="music" className={iconClass('music')} onClick={event => selectIcon(event, 'music', openMusic)}><Icon type="music"/><span>jukebox</span></button>
-      <button data-desktop-icon="net" className={iconClass('net')} onClick={event => selectIcon(event, 'music', openMusic)}><Icon type="net"/><span>@ explorer</span></button>
-      <button data-desktop-icon="login" className={iconClass('login')} onClick={event => selectIcon(event, 'music', openMusic)}><Icon type="login"/><span>로그인 체계</span></button>
+      <button data-desktop-icon="net" className={iconClass('net')} onClick={event => selectIcon(event, 'net', openMusic)}><Icon type="net"/><span>@ explorer</span></button>
+      <button data-desktop-icon="login" className={iconClass('login')} onClick={event => selectIcon(event, 'login', openAuth)}><Icon type="login"/><span>로그인 체계</span></button>
     </nav>
     <div className="desktop-workspace">
       {welcomeState !== 'closed' && <AppWindow title="noryangjinLAB — Welcome" icon="/images/icon/my_computer.png" height={560} minimized={welcomeState === 'minimized'} zIndex={windowLayer('welcome')} onActivate={() => bringToFront('welcome')} onMinimize={() => setWelcomeState('minimized')} onClose={() => setWelcomeState('closed')}>
@@ -111,7 +114,9 @@ export default function Home({ audioState, onAudioChange }) {
     </div>
     <AudioPlayer props={audioState} onSend={onAudioChange} zIndex={windowLayer('music')} onActivate={() => bringToFront('music')}/>
     {documentsState !== 'closed' && <DocumentsWindow minimized={documentsState === 'minimized'} zIndex={windowLayer('documents')} onActivate={() => bringToFront('documents')} onMinimize={() => setDocumentsState('minimized')} onClose={() => setDocumentsState('closed')}/>}
+    {authState !== 'closed' && <AuthWindow minimized={authState === 'minimized'} zIndex={windowLayer('auth')} onActivate={() => bringToFront('auth')} onMinimize={() => setAuthState('minimized')} onClose={() => setAuthState('closed')}/>}
     <footer className="win98-taskbar">
+      {authState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'auth' ? 'pressed' : ''}`} onClick={() => activeWindow === 'auth' ? setAuthState('minimized') : openAuth()}><Icon type="login"/><span>로그인 체계</span></button>}
       {documentsState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'documents' ? 'pressed' : ''}`} onClick={() => activeWindow === 'documents' ? setDocumentsState('minimized') : openDocuments()}><Icon type="folder"/><span>파일탐색기</span></button>}
       {welcomeState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'welcome' ? 'pressed' : ''}`} onClick={() => activeWindow === 'welcome' ? setWelcomeState('minimized') : openWelcome()}><Icon type="computer"/><span>Welcome</span></button>}
       {audioState !== 1 && <button className={`win98-button task-button music-task ${activeWindow === 'music' ? 'pressed' : ''}`} onClick={() => activeWindow === 'music' ? onAudioChange(0) : openMusic()}><Icon type="music"/><span>Jukebox.exe</span></button>}
