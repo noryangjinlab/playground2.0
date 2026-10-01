@@ -15,6 +15,7 @@ import { ExplorerBehavior, ExplorerDragHandle } from './explorerEditorExtensions
 import { normalizeChildPageBlocks, serializeChildPageBlocks } from './childPageBlocks';
 import ExplorerMenuBar from './ExplorerMenuBar';
 import { exportExplorerDocument } from './exportExplorerDocument';
+import { AttachmentBlock } from './AttachmentBlock';
 
 const folderIcon = '/images/icon/directory_open_1.png';
 const ProtectedCodeBlock = CodeBlock.extend({
@@ -71,11 +72,22 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
   const uploadHandler = useRef(null);
   const imageInput = useRef(null);
   const imageTarget = useRef(null);
+  const fileInput = useRef(null);
+  const fileDialog = useRef(null);
+  const [queuedFiles, setQueuedFiles] = useState(null);
+  const queuedBytes = (queuedFiles || []).reduce((total, file) => total + file.size, 0);
+  const queueOverLimit = queuedBytes > 1 * 1024 ** 3 || (queuedFiles?.length || 0) > 100;
+  useEffect(() => {
+    if (queuedFiles !== null && !fileDialog.current?.open) fileDialog.current?.showModal();
+    if (queuedFiles === null && fileDialog.current?.open) fileDialog.current.close();
+  }, [queuedFiles]);
+  const fileTarget = useRef(null);
+  const attachmentHandler = useRef(null);
   const canEdit = user?.isAdmin === true || Boolean(user?.username && notes.find(note => note.id === selection.id)?.owner === user.username);
   const editable = canEdit && loaded && !loading && !leaving && !uploading && !deleting;
   const editor = useEditor({
-    extensions: [StarterKit.configure({ codeBlock: false }), ProtectedCodeBlock, TextStyle, Color, FontSize, PageLink, LabImage,
-      ExplorerDragHandle, ExplorerBehavior.configure({ onFiles: (files, range) => uploadHandler.current?.(files, range) })],
+    extensions: [StarterKit.configure({ codeBlock: false }), ProtectedCodeBlock, TextStyle, Color, FontSize, PageLink, LabImage, AttachmentBlock,
+      ExplorerDragHandle, ExplorerBehavior.configure({ onFiles: (files, range) => uploadHandler.current?.(files, range), onAttachments: (files, range) => attachmentHandler.current?.(files, range) })],
     content: '', editable,
     onUpdate: ({ editor: current, transaction }) => {
       if (!transaction.docChanged || !current.isEditable || !draft.current) return;
@@ -148,11 +160,49 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
     finally { uploadTask.current = null; setUploading(false); }
   }
   useEffect(() => { uploadHandler.current = uploadImages; });
+  async function uploadFiles(files, range) {
+    if (!editable || uploadTask.current || !draft.current || !files.length) return;
+    if (files.length > 100 || files.reduce((total, file) => total + file.size, 0) > 1 * 1024 ** 3) {
+      setMessage('1회 업로드는 총 1GB, 최대 100개 파일까지 가능합니다.'); return;
+    }
+    const id = draft.current.id;
+    setUploading(true); setMessage('파일을 업로드하는 중… 완료될 때까지 기다려 주세요.');
+    const task = (async () => {
+      const body = new FormData();
+      files.forEach(file => body.append('files', file));
+      const result = await fetchApi(`/lab/file/upload?noteId=${encodeURIComponent(id)}`, { method: 'POST', body });
+      if (editor.isDestroyed || draft.current?.id !== id) return;
+      const inserted = editor.commands.insertContentAt(range, result.files.map(file => ({ type: 'attachmentBlock', attrs: { url: file.url, name: file.name, size: file.size } })));
+      if (!inserted) throw new Error('파일 블록을 삽입하지 못했습니다.');
+      draft.current = { ...draft.current, content: editor.getJSON() };
+      autosave.current.enqueue(draft.current);
+    })();
+    uploadTask.current = task;
+    try { await task; }
+    catch (error) { setMessage(`파일 업로드 실패: ${error.message}`); }
+    finally { uploadTask.current = null; setUploading(false); }
+  }
+  useEffect(() => { attachmentHandler.current = uploadFiles; });
+  function chooseFile(range) {
+    fileTarget.current = { id: selection.id, range };
+    setQueuedFiles([]);
+  }
   function chooseImage(range) {
     imageTarget.current = { id: selection.id, range };
     imageInput.current?.click();
   }
   function deleteImage(event) {
+    const attachmentButton = event.target.closest('[data-attachment-delete]');
+    if (attachmentButton) {
+      event.preventDefault(); event.stopPropagation();
+      if (!editor?.isEditable) return true;
+      let position = null;
+      editor.state.doc.descendants((node, pos) => {
+        if (node.type.name === 'attachmentBlock' && editor.view.nodeDOM(pos)?.contains(attachmentButton)) { position = pos; return false; }
+      });
+      if (position !== null) deleteAttachment(editor.state.doc.nodeAt(position)?.attrs);
+      return true;
+    }
     const button = event.target.closest('[data-lab-image-delete]');
     if (!button || !editor?.isEditable) return false;
     event.preventDefault(); event.stopPropagation();
@@ -163,6 +213,31 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
     if (position !== null) editor.chain().focus().setNodeSelection(position).deleteSelection().run();
     // Retain the uploaded asset so undo and other references continue working.
     return true;
+  }
+  async function deleteAttachment(attrs) {
+    if (!editable || deletingPage.current || !attrs?.url) return;
+    if (!window.confirm(`“${attrs.name || '파일'}”을(를) 영구 삭제할까요?\n이 작업은 복구할 수 없습니다.`)) return;
+    const match = attrs.url.match(/^\/api\/lab\/file\/([a-f0-9-]{36})$/);
+    if (!match) return;
+    deletingPage.current = true; setDeleting(true);
+    try {
+      if (!await finishPending()) return;
+      await fetchApi(`/lab/file/${match[1]}`, { method: 'DELETE' });
+      const ranges = [];
+      editor.state.doc.descendants((node, pos) => {
+        if (node.type.name === 'attachmentBlock' && node.attrs.url === attrs.url) ranges.push({ from: pos, to: pos + node.nodeSize });
+      });
+      const transaction = editor.state.tr;
+      ranges.reverse().forEach(({ from, to }) => transaction.delete(from, to));
+      editor.view.dispatch(transaction);
+      draft.current = { ...draft.current, content: editor.getJSON() };
+      autosave.current.enqueue(draft.current);
+      // Deleted server files cannot be restored by undoing a document edit.
+      editor.view.updateState(EditorState.create({ schema: editor.state.schema, doc: editor.state.doc, plugins: editor.state.plugins }));
+      await autosave.current.wait();
+      setMessage('첨부와 서버 원본 파일을 삭제했습니다.');
+    } catch (error) { setMessage(`파일 삭제 처리 실패: ${error.message}`); }
+    finally { deletingPage.current = false; setDeleting(false); }
   }
   function rename(title) {
     if (!canEdit || !loaded || leaving || uploading || deleting || !draft.current) return;
@@ -352,6 +427,24 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
         </div>
       </aside>
       <section className="explorer-editor-pane" aria-label="문서 편집기" onClick={event => { if (!deleteImage(event)) followChildLink(event); }} onKeyDown={event => { followChildLink(event); if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') event.preventDefault(); }}>
+        <input ref={fileInput} type="file" multiple hidden aria-label="첨부 파일 선택" onChange={event => {
+          const files = Array.from(event.target.files || []); event.target.value = '';
+          if (fileTarget.current?.id === selection.id) setQueuedFiles(previous => previous === null ? null : [...previous, ...files]);
+        }}/>
+        <dialog ref={fileDialog} className="explorer-file-dialog" aria-labelledby="attachment-dialog-title" onCancel={() => setQueuedFiles(null)}>
+          <h2 id="attachment-dialog-title">파일 첨부</h2>
+          <button type="button" onClick={() => fileInput.current?.click()}>파일 선택</button>
+          <ul>{(queuedFiles || []).map((file, index) => <li key={index}><span>{file.name} · {(file.size / 1024 ** 2).toFixed(2)} MB</span><button type="button" aria-label={`${file.name} 선택 해제`} onClick={() => setQueuedFiles(previous => previous.filter((_, i) => i !== index))}>제외</button></li>)}</ul>
+          <p aria-live="polite">{queuedFiles?.length || 0}개 선택 · 합계 {(queuedBytes / 1024 ** 2).toFixed(2)} MB / 1024.00 MB</p>
+          {queueOverLimit && <p role="alert">합계 1GB, 최대 100개까지 선택할 수 있습니다. 일부 파일을 제외하세요.</p>}
+          <div className="explorer-file-actions"><button type="button" onClick={() => setQueuedFiles(null)}>취소</button><button type="button" disabled={!editable || !queuedFiles?.length || queueOverLimit} onClick={() => {
+            const target = fileTarget.current;
+            if (target?.id !== selection.id) return;
+            const files = queuedFiles;
+            setQueuedFiles(null);
+            uploadFiles(files, target.range);
+          }}>업로드</button></div>
+        </dialog>
         <input ref={imageInput} type="file" accept="image/*" multiple hidden aria-label="이미지 파일 선택" onChange={event => {
           const files = Array.from(event.target.files || []); event.target.value = '';
           const target = imageTarget.current;
@@ -360,7 +453,7 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
         <div className="explorer-pane-heading explorer-document-heading"><span>{selection.id === 'root' ? '문서 편집기' : `${selection.title}${dirty ? ' *' : ''}`}</span><span>{selection.id === 'root' ? '' : canEdit ? '온라인 편집' : '읽기 전용'}</span></div>
         {selection.id === 'root' ? <div className="explorer-empty"><span className="explorer-empty-paper" aria-hidden="true">Aa</span><h2>폴더를 선택하세요</h2><p>왼쪽에서 폴더를 펼쳐 문서를 열 수 있습니다.</p><p>선택한 문서는 이곳에서 읽고 편집합니다.</p></div> : <>
           {canEdit && <EditorToolbar editor={editor} editable={editable}/>}
-          {loading ? <p className="explorer-tree-message">문서를 불러오는 중…</p> : !loaded ? <div className="explorer-tree-message" role="alert">{message}<button onClick={() => open(selection)}>다시 시도</button></div> : <><div className="explorer-title-section"><input aria-label="문서 제목" placeholder="제목 없음" value={selection.title} readOnly={!editable} onChange={event => rename(event.target.value)}/></div><EditorContent className={`explorer-editor ${editable ? 'editable' : 'readonly'}`} editor={editor}/><SlashBlockMenu editor={editor} enabled={editable} onCreatePage={createChildPage} onInsertImage={chooseImage}/></>}
+          {loading ? <p className="explorer-tree-message">문서를 불러오는 중…</p> : !loaded ? <div className="explorer-tree-message" role="alert">{message}<button onClick={() => open(selection)}>다시 시도</button></div> : <><div className="explorer-title-section"><input aria-label="문서 제목" placeholder="제목 없음" value={selection.title} readOnly={!editable} onChange={event => rename(event.target.value)}/></div><EditorContent className={`explorer-editor ${editable ? 'editable' : 'readonly'}`} editor={editor}/><SlashBlockMenu editor={editor} enabled={editable} onCreatePage={createChildPage} onInsertImage={chooseImage} onInsertFile={chooseFile}/></>}
         </>}
       </section>
     </div>

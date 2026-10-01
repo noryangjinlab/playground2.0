@@ -16,10 +16,11 @@ export const ExplorerDragHandle = DragHandle.configure({
 
 export const ExplorerBehavior = Extension.create({
   name: 'explorerBehavior', priority: 1000,
-  addOptions() { return { onFiles: () => {} }; },
+  addOptions() { return { onFiles: () => {}, onAttachments: () => {} }; },
   addProseMirrorPlugins() {
     const editor = this.editor;
     const onFiles = this.options.onFiles;
+    const onAttachments = this.options.onAttachments;
     return [new Plugin({ props: {
       handleKeyDown(view, event) {
         if (!editor.isEditable || !['Backspace', 'Delete'].includes(event.key)) return false;
@@ -42,11 +43,11 @@ export const ExplorerBehavior = Extension.create({
       },
       handleDrop(view, event, _slice, moved) {
         if (!editor.isEditable || moved) return false;
-        const files = Array.from(event.dataTransfer?.files || []).filter(file => file.type.startsWith('image/'));
+        const files = Array.from(event.dataTransfer?.files || []);
         if (!files.length) return false;
         event.preventDefault();
         const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos ?? view.state.selection.from;
-        onFiles(files, { from: pos, to: pos }); return true;
+        onAttachments(files, { from: pos, to: pos }); return true;
       },
     } })];
   },

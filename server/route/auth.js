@@ -152,23 +152,36 @@ router.post('/confirmstandby', async (req, res) => {
 
     await pool.execute('DELETE FROM standby WHERE username = ?', [username])
 
-    await transporter.sendMail({
+    try {
+      const recipient = typeof email === 'string' ? email.trim() : '';
+      if (!/^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(recipient)) throw new Error('수신 이메일 주소 형식이 올바르지 않습니다');
+      await transporter.sendMail({
       from: process.env.MAIL_FROM,
-      to: email,
+      to: { address: recipient, name: '' },
       subject: '회원가입 신청이 승인되었습니다 ( °ヮ° )',
       text: `
         ${username}님 환영합니다.
 
         노량진랩 회원가입 신청이 승인되었습니다.
+        ( ¯﹃¯ )zzz
+
         기타 문의사항 : hlawliet113@gmail.com
-        바로가기 : https://noryangjinlab.org/login
+        바로가기 : https://noryangjinlab.org
 
         
         Best regards, H Lawliet
       `,
-    })
+      });
+    } catch (mailError) {
+      console.error('회원가입 승인 완료, 알림 메일 발송 실패:', {
+        code: mailError.code, command: mailError.command,
+        responseCode: mailError.responseCode, response: mailError.response,
+        message: mailError.message,
+      });
+      return res.status(200).json({ message: '회원가입은 승인되었습니다. 알림 이메일 발송에 실패했지만 해당 계정으로 로그인할 수 있습니다.', mailSent: false });
+    }
 
-    return res.status(200).json({ message: '회원가입 승인 완료' })
+    return res.status(200).json({ message: '회원가입 승인 완료', mailSent: true })
   } catch (err) {
     console.log(err)
     return res.status(500).json({ message: String(err?.message || err) })

@@ -20,6 +20,7 @@ export async function exportExplorerDocument(editorElement, title, format) {
   body.className = 'explorer-editor readonly';
   const clone = editorElement.cloneNode(true);
   clone.removeAttribute('contenteditable');
+  clone.querySelectorAll('[data-attachment-delete]').forEach(element => element.remove());
   clone.querySelectorAll('[data-lab-image-delete], [data-lab-image-resize], [data-child-note-delete], .explorer-block-handle, .ProseMirror-separator, .ProseMirror-trailingBreak').forEach(element => element.remove());
   // Images themselves are drag targets; removing those elements erases document content.
   clone.querySelectorAll('[data-drag-handle]').forEach(element => element.removeAttribute('data-drag-handle'));

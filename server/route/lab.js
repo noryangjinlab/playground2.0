@@ -87,6 +87,55 @@ router.delete('/image/delete/:filename', async (req, res) => {
 
 const { createNoteStore } = require('../config/note-store');
 const notes = createNoteStore(NOTES_DIR);
+const FILES_DIR = path.join(__dirname, '..', 'labdata', 'files');
+const uploadAttachments = require('../config/attachment-upload')(FILES_DIR);
+router.post('/file/upload', async (req, res) => {
+  try { await notes.assertEditable(req.query.noteId, req.session); }
+  catch (error) { return res.status(error.status || 500).json({ message: error.message }); }
+  uploadAttachments(req, res, async error => {
+    const files = req.files || [];
+    try {
+      if (error) throw error;
+      if (!files.length) return res.status(400).json({ message: '파일을 선택하세요.' });
+      // Ownership may have changed while a large upload was in progress.
+      await notes.assertEditable(req.query.noteId, req.session);
+      const results = [];
+      for (const file of files) {
+        const name = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        const data = { id: file.filename, name, size: file.size, noteId: req.query.noteId };
+        await fs.writeJson(path.join(FILES_DIR, `${file.filename}.json`), data);
+        results.push({ ...data, url: `/api/lab/file/${file.filename}` });
+      }
+      res.json({ files: results });
+    } catch (failure) {
+      await Promise.all(files.flatMap(file => [fs.remove(file.path), fs.remove(path.join(FILES_DIR, `${file.filename}.json`))]));
+      res.status(failure.status || (failure instanceof multer.MulterError ? 413 : 500)).json({ message: failure instanceof multer.MulterError ? '1회 업로드는 총 1GB, 최대 100개 파일까지 가능합니다.' : failure.message });
+    }
+  });
+});
+router.get('/file/:id', async (req, res) => {
+  if (!/^[a-f0-9-]{36}$/.test(req.params.id)) return res.sendStatus(404);
+  try {
+    const data = await fs.readJson(path.join(FILES_DIR, `${req.params.id}.json`));
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.download(path.join(FILES_DIR, req.params.id), data.name, error => {
+      if (error && !res.headersSent) res.sendStatus(404);
+    });
+  } catch { res.sendStatus(404); }
+});
+router.delete('/file/:id', async (req, res) => {
+  if (!/^[a-f0-9-]{36}$/.test(req.params.id)) return res.sendStatus(404);
+  try {
+    const metadata = path.join(FILES_DIR, `${req.params.id}.json`);
+    const data = await fs.readJson(metadata);
+    await notes.assertEditable(data.noteId, req.session);
+    await fs.remove(path.join(FILES_DIR, req.params.id));
+    await fs.remove(metadata);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(error.status || (error.code === 'ENOENT' ? 404 : 500)).json({ message: error.status ? error.message : error.code === 'ENOENT' ? '이미 삭제되었거나 존재하지 않는 파일입니다.' : '파일 삭제에 실패했습니다.' });
+  }
+});
 const ready = Promise.all(['jobs1944', 'khs'].map(username => notes.ensureUserFolder(username)));
 ready.catch(error => console.error('사용자 폴더 생성 실패:', error));
 const respond = handler => async (req, res) => {

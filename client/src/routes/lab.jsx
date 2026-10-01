@@ -16,6 +16,7 @@ import { useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect } fr
 import { useParams, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { fetchApi } from '../api'
+import { AttachmentBlock } from '../components/AttachmentBlock'
 
 
 const lowlight = createLowlight(common)
@@ -793,6 +794,7 @@ const Lab = () => {
       FontSize,
       ChildNote,
       LabImage,
+      AttachmentBlock,
       LabImageBehavior,
     ],
     content: '',

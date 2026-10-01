@@ -64,7 +64,7 @@ export default function Standby() {
           standByList.map((e, i)=>{
             return (
               <p key={i}>
-                아이디:{e.username}&nbsp;&nbsp;이름:{e.name}&nbsp;&nbsp;
+                아이디:{e.username}&nbsp;&nbsp;이름:{e.name}&nbsp;&nbsp;닉네임:{e.nickname}&nbsp;&nbsp;이메일:{e.email}&nbsp;&nbsp;
                 <button onClick={(event)=>{
                   event.preventDefault()
 

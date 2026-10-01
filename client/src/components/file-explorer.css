@@ -120,3 +120,21 @@
 .explorer-icon-menu button[aria-checked="true"] { background: #000080; color: white; }
 .explorer-icon-menu button > span { min-width: 28px; }
 
+
+.explorer-editor [data-attachment] { display: block; padding: 10px; margin: 4px 0; border: 1px solid #ddd; background: #f4f4f4; }
+.explorer-editor [data-attachment] a { display: block; color: #000080; overflow-wrap: anywhere; text-decoration: none; }
+.explorer-editor [data-attachment] a:hover { text-decoration: underline; }
+.explorer-editor [data-attachment] small { color: #666; font-size: 11px; }
+.explorer-editor [data-attachment-delete] { display: none; margin-top: 6px; cursor: pointer; }
+.explorer-editor.editable [data-attachment-delete] { display: inline-block; }
+
+
+.explorer-file-dialog { width: min(480px, 85vw); max-height: 80vh; overflow: auto; background: #c0c0c0; border: 2px outset #eee; padding: 16px; color: #000; }
+.explorer-file-dialog::backdrop { background: #0006; }
+.explorer-file-dialog h2 { font-size: 16px; margin: 0 0 12px; }
+.explorer-file-dialog p { font-size: 12px; line-height: 1.6; }
+.explorer-file-dialog ul { max-height: 240px; overflow: auto; background: white; padding: 8px; list-style: none; }
+.explorer-file-dialog li { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.explorer-file-dialog li span { flex: 1; overflow-wrap: anywhere; min-width: 0; font-size: 12px; }
+.explorer-file-actions { display: flex; justify-content: flex-end; gap: 8px; }
+

@@ -5,6 +5,7 @@ const paragraph = { type: 'paragraph' };
 const blocks = [
   { label: '새 페이지', keywords: 'page new document', action: 'page' },
   { label: '이미지', keywords: 'image picture photo', action: 'image' },
+  { label: '파일', keywords: 'file attachment upload 첨부', action: 'file' },
   { label: '텍스트', keywords: 'text paragraph', node: paragraph },
   { label: '제목 1', keywords: 'heading h1', node: { type: 'heading', attrs: { level: 1 } } },
   { label: '제목 2', keywords: 'heading h2', node: { type: 'heading', attrs: { level: 2 } } },
@@ -15,18 +16,21 @@ const blocks = [
   { label: '구분선', keywords: 'divider horizontal rule', node: { type: 'horizontalRule' } },
 ];
 
-export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsertImage }) {
+export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsertImage, onInsertFile }) {
   const [menu, setMenu] = useState(null);
   const current = useRef(null);
   const dismissed = useRef(null);
   const createPage = useRef(onCreatePage);
   const insertImage = useRef(onInsertImage);
+  const insertFile = useRef(onInsertFile);
+  useLayoutEffect(() => { insertFile.current = onInsertFile; }, [onInsertFile]);
   useLayoutEffect(() => { createPage.current = onCreatePage; insertImage.current = onInsertImage; }, [onCreatePage, onInsertImage]);
 
   const insert = useCallback((block, active) => {
     if (!active || !enabled || !editor || editor.isDestroyed || dismissed.current === active.key) return;
     dismissed.current = active.key; current.current = null; setMenu(null);
     if (block.action === 'image') { insertImage.current?.({ from: active.from, to: active.to }); return; }
+    if (block.action === 'file') { insertFile.current?.(active.blockRange); return; }
     if (block.action === 'page') { createPage.current?.(active.blockRange); return; }
     const content = block.node.type === 'horizontalRule' ? [block.node, paragraph] : block.node;
     editor.chain().focus().insertContentAt(active.blockRange, content).run();
