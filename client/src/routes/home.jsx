@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import AudioPlayer from '../components/AudioPlayer';
-import DocumentsWindow from '../components/DocumentsWindow';
+import DocumentWindow from '../components/document/DocumentWindow';
 import AuthWindow from '../components/AuthWindow';
-import ExplorerHelpWindow from '../components/ExplorerHelpWindow';
+import BrowserWindow from '../components/browser/BrowserWindow';
 import { AppWindow, useWindowStack } from '../components/app-window';
 import '../style/desktop.css';
 
@@ -22,10 +22,12 @@ export default function Home({ audioState, onAudioChange }) {
   const [welcomeState, setWelcomeState] = useState('closed');
   const [documentsState, setDocumentsState] = useState('closed');
   const [authState, setAuthState] = useState('closed');
-  const [explorerState, setExplorerState] = useState('closed');
-  const { bringToFront, windowLayer, getActiveWindow } = useWindowStack(['welcome', 'documents', 'music', 'auth', 'explorer']);
-  const activeWindow = getActiveWindow(id => id === 'welcome' ? welcomeState === 'open' : id === 'documents' ? documentsState === 'open' : id === 'auth' ? authState === 'open' : id === 'explorer' ? explorerState === 'open' : audioState === 2);
-  const openExplorer = () => { setExplorerState('open'); bringToFront('explorer'); };
+  const [browserState, setBrowserState] = useState('closed');
+  const [browserPage, setBrowserPage] = useState('home');
+  const { bringToFront, windowLayer, getActiveWindow } = useWindowStack(['welcome', 'documents', 'music', 'auth', 'browser']);
+  const activeWindow = getActiveWindow(id => id === 'welcome' ? welcomeState === 'open' : id === 'documents' ? documentsState === 'open' : id === 'auth' ? authState === 'open' : id === 'browser' ? browserState === 'open' : audioState === 2);
+  const activateBrowser = () => { setBrowserState('open'); bringToFront('browser'); };
+  const openBrowser = (page = 'home') => { setBrowserPage(page); activateBrowser(); };
   const openWelcome = () => { setWelcomeState('open'); bringToFront('welcome'); };
   const openDocuments = () => { setDocumentsState('open'); bringToFront('documents'); };
   const openAuth = () => { setAuthState('open'); bringToFront('auth'); };
@@ -81,7 +83,7 @@ export default function Home({ audioState, onAudioChange }) {
       <button data-desktop-icon="computer" className={iconClass('computer')} onClick={event => selectIcon(event, 'computer', openWelcome)}><Icon type="computer"/><span>내 컴퓨터</span></button>
       <button data-desktop-icon="folder" className={iconClass('folder')} onClick={event => selectIcon(event, 'folder', openDocuments)}><Icon type="folder"/><span>파일탐색기</span></button>
       <button data-desktop-icon="music" className={iconClass('music')} onClick={event => selectIcon(event, 'music', openMusic)}><Icon type="music"/><span>jukebox</span></button>
-      <button data-desktop-icon="net" className={iconClass('net')} onClick={event => selectIcon(event, 'net', openExplorer)}><Icon type="net"/><span>@ explorer</span></button>
+      <button data-desktop-icon="net" className={iconClass('net')} onClick={event => selectIcon(event, 'net', openBrowser)}><Icon type="net"/><span>@explorer</span></button>
       <button data-desktop-icon="login" className={iconClass('login')} onClick={event => selectIcon(event, 'login', openAuth)}><Icon type="login"/><span>로그인 체계</span></button>
     </nav>
     <div className="desktop-workspace">
@@ -116,11 +118,11 @@ export default function Home({ audioState, onAudioChange }) {
       </AppWindow>}
     </div>
     <AudioPlayer props={audioState} onSend={onAudioChange} zIndex={windowLayer('music')} onActivate={() => bringToFront('music')}/>
-    {documentsState !== 'closed' && <DocumentsWindow onHelp={openExplorer} minimized={documentsState === 'minimized'} zIndex={windowLayer('documents')} onActivate={() => bringToFront('documents')} onMinimize={() => setDocumentsState('minimized')} onClose={() => setDocumentsState('closed')}/>}
-    {explorerState !== 'closed' && <ExplorerHelpWindow minimized={explorerState === 'minimized'} zIndex={windowLayer('explorer')} onActivate={() => bringToFront('explorer')} onMinimize={() => setExplorerState('minimized')} onClose={() => setExplorerState('closed')}/>}
+    {documentsState !== 'closed' && <DocumentWindow onHelp={() => openBrowser('help')} minimized={documentsState === 'minimized'} zIndex={windowLayer('documents')} onActivate={() => bringToFront('documents')} onMinimize={() => setDocumentsState('minimized')} onClose={() => setDocumentsState('closed')}/>}
+    {browserState !== 'closed' && <BrowserWindow pageId={browserPage} onPageChange={setBrowserPage} minimized={browserState === 'minimized'} zIndex={windowLayer('browser')} onActivate={() => bringToFront('browser')} onMinimize={() => setBrowserState('minimized')} onClose={() => setBrowserState('closed')}/>}
     {authState !== 'closed' && <AuthWindow minimized={authState === 'minimized'} zIndex={windowLayer('auth')} onActivate={() => bringToFront('auth')} onMinimize={() => setAuthState('minimized')} onClose={() => setAuthState('closed')}/>}
     <footer className="win98-taskbar">
-      {explorerState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'explorer' ? 'pressed' : ''}`} onClick={() => activeWindow === 'explorer' ? setExplorerState('minimized') : openExplorer()}><Icon type="net"/><span>@ explorer — 도움말</span></button>}
+      {browserState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'browser' ? 'pressed' : ''}`} onClick={() => activeWindow === 'browser' ? setBrowserState('minimized') : activateBrowser()}><Icon type="net"/><span>@explorer</span></button>}
       {authState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'auth' ? 'pressed' : ''}`} onClick={() => activeWindow === 'auth' ? setAuthState('minimized') : openAuth()}><Icon type="login"/><span>로그인 체계</span></button>}
       {documentsState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'documents' ? 'pressed' : ''}`} onClick={() => activeWindow === 'documents' ? setDocumentsState('minimized') : openDocuments()}><Icon type="folder"/><span>파일탐색기</span></button>}
       {welcomeState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'welcome' ? 'pressed' : ''}`} onClick={() => activeWindow === 'welcome' ? setWelcomeState('minimized') : openWelcome()}><Icon type="computer"/><span>Welcome</span></button>}

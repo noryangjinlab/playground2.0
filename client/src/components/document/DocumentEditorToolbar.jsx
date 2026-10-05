@@ -7,7 +7,7 @@ function colorHex(value) {
   return rgb ? '#' + rgb.slice(1).map(n => Number(n).toString(16).padStart(2, '0')).join('') : '#000000';
 }
 
-export default function EditorToolbar({ editor, editable }) {
+export default function DocumentEditorToolbar({ editor, editable }) {
   const state = useEditorState({ editor, selector: ({ editor: current }) => {
     const style = current?.getAttributes('textStyle') || {};
     return {

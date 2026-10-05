@@ -48,6 +48,6 @@ function Desktop() {
   Disabling `maximizable` also disables title-bar double-click maximization.
   `className` can style feature content without duplicating
   frame rules. `footer` is optional and stays outside the scrolling content.
-- Current migrations: DocumentsWindow, the welcome app and AudioPlayer.
+- Current migrations: DocumentWindow, the welcome app and AudioPlayer.
   AudioPlayer stays mounted while hidden to retain its audio element and analyzer;
   minimizing preserves playback and closing pauses it.

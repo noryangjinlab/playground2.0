@@ -1,6 +1,6 @@
-.file-explorer .app-window-titlebar { background: #000080; }
-.file-explorer .app-window-content { overflow: hidden; }
-.file-explorer button, .file-explorer select { font: inherit; color: #000; border-radius: 0; }
+.document-window .app-window-titlebar { background: #000080; }
+.document-window .app-window-content { overflow: hidden; }
+.document-window button, .document-window select { font: inherit; color: #000; border-radius: 0; }
 .explorer-menubar { position: relative; z-index: 10; display: flex; gap: 2px; padding: 2px 3px; border-bottom: 1px solid #808080; box-shadow: 0 1px #fff; flex-shrink: 0; }
 .explorer-menu { position: relative; }
 .explorer-menu-trigger { border: 1px solid transparent; padding: 3px 7px; background: transparent; }
@@ -16,10 +16,10 @@
 .explorer-toolbar { display: flex; align-items: center; gap: 4px; padding: 5px 3px; flex-shrink: 0; }
 .explorer-toolbar button, .explorer-formatbar button, .explorer-tree-message button { border: 0; background: #c0c0c0; box-shadow: inset 1px 1px #fff, inset -1px -1px #000, inset -2px -2px #808080; min-width: 25px; height: 25px; padding: 2px 7px; }
 .explorer-toolbar button:active:not(:disabled), .explorer-formatbar button:active:not(:disabled) { box-shadow: inset 1px 1px #000, inset 2px 2px #808080; }
-.file-explorer button:disabled { color: #808080; text-shadow: 1px 1px #fff; }
+.document-window button:disabled { color: #808080; text-shadow: 1px 1px #fff; }
 .explorer-address { display: flex; align-items: center; gap: 5px; background: #fff; min-width: 0; flex: 1; height: 25px; padding: 2px 5px; box-sizing: border-box; box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, inset 2px 2px #000; }
 .explorer-address span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.file-explorer .explorer-address img, .file-explorer .explorer-tree img { width: 16px; height: 16px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
+.document-window .explorer-address img, .document-window .explorer-tree img { width: 16px; height: 16px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
 .explorer-separator { height: 23px; border-left: 1px solid #808080; border-right: 1px solid #fff; margin: 0 3px; }
 .explorer-panes { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 4px; min-height: 0; flex: 1; padding: 0 1px 3px; }
 .explorer-tree, .explorer-editor-pane { min-width: 0; min-height: 0; background: #fff; border: 1px solid; border-color: #808080 #fff #fff #808080; box-shadow: inset 1px 1px #000; }
@@ -30,7 +30,7 @@
 .explorer-pane-heading { background: #c0c0c0; box-shadow: inset 1px 1px #fff, inset -1px -1px #808080; padding: 3px 6px; font-size: 11px; min-height: 20px; box-sizing: border-box; flex-shrink: 0; }
 .explorer-tree > .explorer-pane-heading { width: 100%; }
 .explorer-tree-row { display: grid; grid-template-columns: 16px max-content; align-items: center; min-width: max-content; height: 23px; }
-.file-explorer .explorer-expander { box-sizing: border-box; width: 11px; min-width: 0; height: 11px; min-height: 0; padding: 0; border: 1px solid #808080; background: #fff; font: 11px/8px Tahoma, sans-serif !important; margin: 0; }
+.document-window .explorer-expander { box-sizing: border-box; width: 11px; min-width: 0; height: 11px; min-height: 0; padding: 0; border: 1px solid #808080; background: #fff; font: 11px/8px Tahoma, sans-serif !important; margin: 0; }
 .explorer-tree-spacer { width: 16px; height: 1px; }
 .explorer-node { display: flex; align-items: center; gap: 4px; border: 0; padding: 2px 3px; background: transparent; white-space: nowrap; cursor: default; }
 .explorer-node.selected { background: #000080; color: #fff; }
@@ -95,7 +95,7 @@
 .explorer-editor .hljs-variable, .explorer-editor .hljs-template-variable { color: #a66c00; }
 .explorer-editor.readonly [data-lab-image-delete], .explorer-editor.readonly [data-lab-image-resize] { display: none; }
 .explorer-editor.readonly [data-codeblock] > div[contenteditable="false"] { display: none !important; }
-.explorer-export-host { position: fixed; left: -10000px; top: 0; width: 800px; pointer-events: none; }
+.document-export-host { position: fixed; left: -10000px; top: 0; width: 800px; pointer-events: none; }
 .explorer-export-page { box-sizing: border-box; width: 800px; padding: 32px; background: #fff; color: #111; font: 14px/1.8 'galmuri9', sans-serif; }
 .explorer-export-page > h1 { margin: 0 0 20px; padding-bottom: 16px; border-bottom: 1px solid #b8b8b8; font-size: 24px; line-height: 1.5; overflow-wrap: anywhere; }
 .explorer-export-page .explorer-editor { overflow: visible; }

@@ -109,6 +109,25 @@ export const audioData = [
       path: "/audio/ESP.mp3"
     },
   ],
+
+  [
+    {
+      title: "Can't Let Go",
+      artist: "Earth, Wind & Fire",
+      path: "/audio/Cant Let Go.mp3"
+    },
+    {
+      title: "Runaway",
+      artist: "Jamiroquai",
+      path: "/audio/Runaway.mp3"
+    },
+    {
+      title: "Little L (Dave Lee Reblend)",
+      artist: "Jamiroquai",
+      path: "/audio/Little L (Dave Lee Reblend).mp3"
+    },
+  ],
+
   [
     {
       title: "Giant Steps (Mono)",
@@ -202,6 +221,7 @@ export const audioData = [
   [
     'Welcome to Our Lab (Default)',
     "'80s / '90s City Pop Collection",
+    "D I S C O",
     "Swingin' at Allegro",
     "20th Century Neon Genesis Mix"
   ]

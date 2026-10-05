@@ -6,12 +6,12 @@ function download(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-export async function exportExplorerDocument(editorElement, title, format) {
+export async function exportDocument(editorElement, title, format) {
   if (!editorElement) throw new Error('내보낼 문서가 없습니다.');
   const filename = Array.from(title || '제목 없음', character => character.charCodeAt(0) < 32 ? '_' : character).join('').replace(/[<>:"/\\|?*]/g, '_').replace(/[. ]+$/, '').slice(0, 120) || '문서';
   // Snapshot before loading libraries so switching documents cannot change the export.
   const host = document.createElement('div');
-  host.className = 'file-explorer explorer-export-host';
+  host.className = 'document-window document-export-host';
   const page = document.createElement('article');
   page.className = 'explorer-export-page';
   const heading = document.createElement('h1');

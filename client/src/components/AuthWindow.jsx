@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { AppWindow } from './app-window';
 import { fetchApi } from '../api';
-import './auth-window.css';
+import '../style/auth-window.css';
 
 const emptyForm = { username: '', password: '', name: '', nickname: '', email: '' };
 

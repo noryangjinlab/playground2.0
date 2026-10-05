@@ -3,7 +3,7 @@ import { Plugin } from '@tiptap/pm/state';
 import DragHandle from '@tiptap/extension-drag-handle';
 import { protectsCodeBlock } from './protectCodeBlock';
 
-export const ExplorerDragHandle = DragHandle.configure({
+export const DocumentDragHandle = DragHandle.configure({
   render: () => {
     const handle = document.createElement('div');
     handle.className = 'explorer-block-handle';
@@ -14,8 +14,8 @@ export const ExplorerDragHandle = DragHandle.configure({
   computePositionConfig: { placement: 'left-start', strategy: 'absolute' },
 });
 
-export const ExplorerBehavior = Extension.create({
-  name: 'explorerBehavior', priority: 1000,
+export const DocumentBehavior = Extension.create({
+  name: 'documentBehavior', priority: 1000,
   addOptions() { return { onFiles: () => {}, onAttachments: () => {} }; },
   addProseMirrorPlugins() {
     const editor = this.editor;
@@ -37,9 +37,21 @@ export const ExplorerBehavior = Extension.create({
       },
       handlePaste(view, event) {
         if (!editor.isEditable) return false;
-        const files = Array.from(event.clipboardData?.files || []).filter(file => file.type.startsWith('image/'));
-        if (!files.length) return false;
-        event.preventDefault(); onFiles(files, { from: view.state.selection.from, to: view.state.selection.to }); return true;
+        const clipboard = event.clipboardData;
+        const files = Array.from(clipboard?.files || []).filter(file => file.type.startsWith('image/'));
+        if (files.length) {
+          event.preventDefault(); onFiles(files, { from: view.state.selection.from, to: view.state.selection.to }); return true;
+        }
+        const { $from } = view.state.selection;
+        const html = clipboard?.getData('text/html') || '';
+        if ($from.parent.isTextblock && $from.parent.type.name !== 'codeBlock' && /<pre\b/i.test(html)) {
+          const text = clipboard?.getData('text/plain') || '';
+          if (!text) return false;
+          event.preventDefault();
+          view.dispatch(view.state.tr.insertText(text).scrollIntoView());
+          return true;
+        }
+        return false;
       },
       handleDrop(view, event, _slice, moved) {
         if (!editor.isEditable || moved) return false;

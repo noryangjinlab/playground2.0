@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import documentIcons from 'virtual:document-icons';
 
-export default function ExplorerMenuBar({ canExport, exporting, onExport, maximized, onMaximize, onRestore, onMinimize, onClose, showIcons, canChooseIcon, selectedIcon, onChooseIcon, onHelp }) {
+export default function DocumentMenuBar({ canExport, exporting, onExport, maximized, onMaximize, onRestore, onMinimize, onClose, showIcons, canChooseIcon, selectedIcon, onChooseIcon, onHelp }) {
   const [open, setOpen] = useState(null);
   const root = useRef(null);
   const id = useId();

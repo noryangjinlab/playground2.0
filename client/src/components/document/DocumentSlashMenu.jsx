@@ -16,7 +16,7 @@ const blocks = [
   { label: '구분선', keywords: 'divider horizontal rule', node: { type: 'horizontalRule' } },
 ];
 
-export default function SlashBlockMenu({ editor, enabled, onCreatePage, onInsertImage, onInsertFile }) {
+export default function DocumentSlashMenu({ editor, enabled, onCreatePage, onInsertImage, onInsertFile }) {
   const [menu, setMenu] = useState(null);
   const current = useRef(null);
   const dismissed = useRef(null);

@@ -14,6 +14,21 @@
 .app-window-controls button:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
 .app-window-content { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: auto; }
 .app-window-footer { flex-shrink: 0; }
+.app-window-resize-handles { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.app-window-resize-handle { position: absolute; display: block; pointer-events: auto; touch-action: none; }
+.app-window-resize-handle.edge-n, .app-window-resize-handle.edge-s { left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.app-window-resize-handle.edge-n { top: -3px; }
+.app-window-resize-handle.edge-s { bottom: -3px; }
+.app-window-resize-handle.edge-e, .app-window-resize-handle.edge-w { top: 8px; bottom: 8px; width: 6px; cursor: ew-resize; }
+.app-window-resize-handle.edge-e { right: -3px; }
+.app-window-resize-handle.edge-w { left: -3px; }
+.app-window-resize-handle.edge-ne, .app-window-resize-handle.edge-nw, .app-window-resize-handle.edge-se, .app-window-resize-handle.edge-sw { width: 12px; height: 12px; }
+.app-window-resize-handle.edge-ne, .app-window-resize-handle.edge-sw { cursor: nesw-resize; }
+.app-window-resize-handle.edge-nw, .app-window-resize-handle.edge-se { cursor: nwse-resize; }
+.app-window-resize-handle.edge-ne { top: -3px; right: -3px; }
+.app-window-resize-handle.edge-nw { top: -3px; left: -3px; }
+.app-window-resize-handle.edge-se { bottom: -3px; right: -3px; }
+.app-window-resize-handle.edge-sw { bottom: -3px; left: -3px; }
 @media (max-width: 600px) {
   .app-window.win98-window { top: 16px; width: min(var(--app-width), calc(100vw - 20px)); height: min(var(--app-height), calc(100dvh - var(--taskbar-height) - 38px)); }
 }

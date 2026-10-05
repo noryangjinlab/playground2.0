@@ -3,19 +3,19 @@ import { Link, useNavigate } from 'react-router';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { EditorState } from 'prosemirror-state';
-import { AppWindow } from './app-window';
-import { CodeBlock, TextStyle, FontSize, ChildNote, LabImage } from '../routes/lab';
-import { fetchApi } from '../api';
-import './file-explorer.css';
-import SlashBlockMenu from './SlashBlockMenu';
-import { createDebouncedDocumentSave } from './debouncedDocumentSave';
+import { AppWindow } from '../app-window';
+import { CodeBlock, TextStyle, FontSize, ChildNote, LabImage } from '../../routes/lab';
+import { fetchApi } from '../../api';
+import '../../style/document.css';
+import DocumentSlashMenu from './DocumentSlashMenu';
+import { createDebouncedDocumentSave } from './documentAutosave';
 import { Color } from '@tiptap/extension-text-style';
-import EditorToolbar from './EditorToolbar';
-import { ExplorerBehavior, ExplorerDragHandle } from './explorerEditorExtensions';
-import { normalizeChildPageBlocks, serializeChildPageBlocks } from './childPageBlocks';
-import ExplorerMenuBar from './ExplorerMenuBar';
-import { exportExplorerDocument } from './exportExplorerDocument';
-import { AttachmentBlock } from './AttachmentBlock';
+import DocumentEditorToolbar from './DocumentEditorToolbar';
+import { DocumentBehavior, DocumentDragHandle } from './documentEditorExtensions';
+import { normalizeChildPageBlocks, serializeChildPageBlocks } from './documentPageBlocks';
+import DocumentMenuBar from './DocumentMenuBar';
+import { exportDocument } from './exportDocument';
+import { AttachmentBlock } from '../AttachmentBlock';
 
 const folderIcon = '/images/icon/directory_open_1.png';
 const ProtectedCodeBlock = CodeBlock.extend({
@@ -43,7 +43,7 @@ const PageLink = ChildNote.extend({
       HTMLAttributes.title || '(제목 없음)']];
   },
 });
-export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
+export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
   const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
   const [treeVisible, setTreeVisible] = useState(true);
@@ -87,7 +87,7 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
   const editable = canEdit && loaded && !loading && !leaving && !uploading && !deleting;
   const editor = useEditor({
     extensions: [StarterKit.configure({ codeBlock: false }), ProtectedCodeBlock, TextStyle, Color, FontSize, PageLink, LabImage, AttachmentBlock,
-      ExplorerDragHandle, ExplorerBehavior.configure({ onFiles: (files, range) => uploadHandler.current?.(files, range), onAttachments: (files, range) => attachmentHandler.current?.(files, range) })],
+      DocumentDragHandle, DocumentBehavior.configure({ onFiles: (files, range) => uploadHandler.current?.(files, range), onAttachments: (files, range) => attachmentHandler.current?.(files, range) })],
     content: '', editable,
     onUpdate: ({ editor: current, transaction }) => {
       if (!transaction.docChanged || !current.isEditable || !draft.current) return;
@@ -394,15 +394,15 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
     if (!loaded || loading || selection.id === 'root' || exportInProgress.current) return;
     exportInProgress.current = true; setExporting(true); setMessage('문서를 내보내는 중…');
     try {
-      await exportExplorerDocument(editor?.view.dom, selection.title, format);
+      await exportDocument(editor?.view.dom, selection.title, format);
       setMessage(`${format === 'png' ? '이미지' : 'PDF'} 파일을 다운로드했습니다.`);
     } catch (error) { setMessage(`내보내기 실패: ${error.message}`); }
     finally { exportInProgress.current = false; setExporting(false); }
   }
-  return <AppWindow {...windowProps} title="파일탐색기" icon={folderIcon} className="file-explorer" width={860} height={570}
+  return <AppWindow {...windowProps} title="파일탐색기" icon={folderIcon} className="document-window" width={860} height={570}
     maximized={maximized} onMaximizedChange={setMaximized} onClose={closeWindow}
     footer={<div className="explorer-status" role="status"><span>{message}</span><span>{notes.length}개 문서</span><span>{canEdit ? '편집 가능' : '읽기 전용'}</span></div>}>
-    <ExplorerMenuBar onHelp={onHelp} canExport={loaded && !loading && selection.id !== 'root'} exporting={exporting} onExport={exportPage}
+    <DocumentMenuBar onHelp={onHelp} canExport={loaded && !loading && selection.id !== 'root'} exporting={exporting} onExport={exportPage}
       showIcons={canEdit} canChooseIcon={editable && selection.id !== 'root'} selectedIcon={selection.icon} onChooseIcon={changeIcon}
       maximized={maximized} onMaximize={() => setMaximized(true)} onRestore={() => setMaximized(false)} onMinimize={windowProps.onMinimize} onClose={closeWindow}/>
     <div className="explorer-toolbar">
@@ -452,8 +452,8 @@ export default function DocumentsWindow({ onClose, onHelp, ...windowProps }) {
         }}/>
         <div className="explorer-pane-heading explorer-document-heading"><span>{selection.id === 'root' ? '문서 편집기' : `${selection.title}${dirty ? ' *' : ''}`}</span><span>{selection.id === 'root' ? '' : canEdit ? '온라인 편집' : '읽기 전용'}</span></div>
         {selection.id === 'root' ? <div className="explorer-empty"><span className="explorer-empty-paper" aria-hidden="true">Aa</span><h2>폴더를 선택하세요</h2><p>왼쪽에서 폴더를 펼쳐 문서를 열 수 있습니다.</p><p>선택한 문서는 이곳에서 읽고 편집합니다.</p></div> : <>
-          {canEdit && <EditorToolbar editor={editor} editable={editable}/>}
-          {loading ? <p className="explorer-tree-message">문서를 불러오는 중…</p> : !loaded ? <div className="explorer-tree-message" role="alert">{message}<button onClick={() => open(selection)}>다시 시도</button></div> : <><div className="explorer-title-section"><input aria-label="문서 제목" placeholder="제목 없음" value={selection.title} readOnly={!editable} onChange={event => rename(event.target.value)}/></div><EditorContent className={`explorer-editor ${editable ? 'editable' : 'readonly'}`} editor={editor}/><SlashBlockMenu editor={editor} enabled={editable} onCreatePage={createChildPage} onInsertImage={chooseImage} onInsertFile={chooseFile}/></>}
+          {canEdit && <DocumentEditorToolbar editor={editor} editable={editable}/>}
+          {loading ? <p className="explorer-tree-message">문서를 불러오는 중…</p> : !loaded ? <div className="explorer-tree-message" role="alert">{message}<button onClick={() => open(selection)}>다시 시도</button></div> : <><div className="explorer-title-section"><input aria-label="문서 제목" placeholder="제목 없음" value={selection.title} readOnly={!editable} onChange={event => rename(event.target.value)}/></div><EditorContent className={`explorer-editor ${editable ? 'editable' : 'readonly'}`} editor={editor}/><DocumentSlashMenu editor={editor} enabled={editable} onCreatePage={createChildPage} onInsertImage={chooseImage} onInsertFile={chooseFile}/></>}
         </>}
       </section>
     </div>

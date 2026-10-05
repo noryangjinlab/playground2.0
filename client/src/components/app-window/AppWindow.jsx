@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import './app-window.css';
+import '../../style/app-window.css';
 
 function ControlIcon({ type }) {
   return <svg className="app-window-control-icon" viewBox="0 0 10 10" aria-hidden="true" focusable="false" shapeRendering="crispEdges">
@@ -20,6 +20,7 @@ export default function AppWindow({
   const titleId = useId();
   const windowRef = useRef(null);
   const dragRef = useRef(null);
+  const resizeRef = useRef(null);
   const [internalMaximized, setInternalMaximized] = useState(false);
   const maximized = controlledMaximized ?? internalMaximized;
   const setMaximized = value => {
@@ -28,6 +29,45 @@ export default function AppWindow({
     onMaximizedChange?.(next);
   };
   const [position, setPosition] = useState(null);
+  const [size, setSize] = useState(null);
+
+  const startResize = event => {
+    const edge = event.target.dataset.resizeEdge;
+    if (!edge || maximized || event.button !== 0) return;
+    const rect = windowRef.current.getBoundingClientRect();
+    resizeRef.current = { edge, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const moveResize = event => {
+    const start = resizeRef.current;
+    if (!start) return;
+    const minWidth = 320;
+    const minHeight = 180;
+    const maxWidth = window.innerWidth;
+    const maxHeight = window.innerHeight - taskbarHeight;
+    let nextWidth = start.width;
+    let nextHeight = start.height;
+    let left = start.left;
+    let top = start.top;
+    if (start.edge.includes('e')) nextWidth = Math.min(maxWidth - start.left, Math.max(minWidth, start.width + event.clientX - start.x));
+    if (start.edge.includes('s')) nextHeight = Math.min(maxHeight - start.top, Math.max(minHeight, start.height + event.clientY - start.y));
+    if (start.edge.includes('w')) {
+      nextWidth = Math.min(start.left + start.width, Math.max(minWidth, start.width - event.clientX + start.x));
+      left = start.left + start.width - nextWidth;
+    }
+    if (start.edge.includes('n')) {
+      nextHeight = Math.min(start.top + start.height, Math.max(minHeight, start.height - event.clientY + start.y));
+      top = start.top + start.height - nextHeight;
+    }
+    setSize({ width: nextWidth, height: nextHeight });
+    setPosition({ left, top });
+  };
+  const stopResize = event => {
+    resizeRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
 
   const startDrag = event => {
     if (!draggable || maximized || event.button !== 0 || event.target.closest('button')) return;
@@ -56,8 +96,9 @@ export default function AppWindow({
   return (
     <section ref={windowRef} className={`app-window win98-window ${className}${maximized ? ' is-maximized' : ''}`}
       hidden={minimized}
-      style={{ '--app-width': `${width}px`, '--app-height': `${height}px`, '--taskbar-height': `${taskbarHeight}px`, ...(!maximized && position ? { ...position, transform: 'none' } : {}), zIndex }}
-      onPointerDownCapture={onActivate} onFocusCapture={onActivate} role="dialog" aria-labelledby={titleId} tabIndex={-1}>
+      style={{ '--app-width': `${size?.width ?? width}px`, '--app-height': `${size?.height ?? height}px`, '--taskbar-height': `${taskbarHeight}px`, ...(!maximized && position ? { ...position, transform: 'none' } : {}), zIndex }}
+      onPointerDownCapture={event => { onActivate?.(); startResize(event); }} onPointerMove={moveResize} onPointerUp={stopResize} onPointerCancel={stopResize} onLostPointerCapture={stopResize}
+      onFocusCapture={onActivate} role="dialog" aria-labelledby={titleId} tabIndex={-1}>
       <header className="app-window-titlebar" onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag} onLostPointerCapture={stopDrag}
         onDoubleClick={event => { if (maximizable && !event.target.closest('button')) setMaximized(value => !value); }}>
         <span className="app-window-title" id={titleId}>{icon && <img src={icon} alt="" draggable={false}/>}<span>{title}</span></span>
@@ -69,6 +110,9 @@ export default function AppWindow({
       </header>
       <div className="app-window-content">{children}</div>
       {footer && <footer className="app-window-footer">{footer}</footer>}
+      {!maximized && <div className="app-window-resize-handles" aria-hidden="true">
+        {['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map(edge => <span key={edge} data-resize-edge={edge} className={`app-window-resize-handle edge-${edge}`} onPointerDown={startResize}/>) }
+      </div>}
     </section>
   );
 }
