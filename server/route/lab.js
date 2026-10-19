@@ -8,8 +8,8 @@ const crypto = require('crypto')
 
 const router = express.Router();
 
-const NOTES_DIR = path.join(__dirname, '..', 'labdata', 'notes');
-const IMAGES_DIR = path.join(__dirname, '..', 'labdata', 'images');
+const NOTES_DIR = path.join(__dirname, '..', 'data', 'labdata', 'notes');
+const IMAGES_DIR = path.join(__dirname, '..', 'data', 'labdata', 'images');
 fs.ensureDirSync(NOTES_DIR);
 fs.ensureDirSync(IMAGES_DIR);
 
@@ -87,7 +87,7 @@ router.delete('/image/delete/:filename', async (req, res) => {
 
 const { createNoteStore } = require('../config/note-store');
 const notes = createNoteStore(NOTES_DIR);
-const FILES_DIR = path.join(__dirname, '..', 'labdata', 'files');
+const FILES_DIR = path.join(__dirname, '..', 'data', 'labdata', 'files');
 const uploadAttachments = require('../config/attachment-upload')(FILES_DIR);
 router.post('/file/upload', async (req, res) => {
   try { await notes.assertEditable(req.query.noteId, req.session); }

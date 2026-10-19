@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import AudioPlayer from '../components/AudioPlayer';
+import AudioPlayer from '../components/jukebox/AudioPlayer';
 import DocumentWindow from '../components/document/DocumentWindow';
 import AuthWindow from '../components/AuthWindow';
 import BrowserWindow from '../components/browser/BrowserWindow';

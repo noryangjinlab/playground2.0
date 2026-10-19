@@ -2,7 +2,7 @@ import { Routes, Route, Link, useLocation, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 
-import AudioPlayer from './components/AudioPlayer';
+import AudioPlayer from './components/jukebox/AudioPlayer';
 
 import Signup from './routes/signUp';
 import Home from './routes/home';

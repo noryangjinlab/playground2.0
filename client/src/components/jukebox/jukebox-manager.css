@@ -1,0 +1,52 @@
+.jukebox-manager { color: #171717; }
+.jukebox-manager:not(.is-maximized) { top: min(6vh, 40px); }
+.jukebox-manager button, .jukebox-manager input { font: inherit; border-radius: 0; }
+.jukebox-manager button { cursor: pointer; padding: 5px 8px; }
+.jukebox-manager button:disabled { cursor: default; }
+.jukebox-manager button:focus-visible, .jukebox-manager input:focus-visible { outline: 2px solid #000080; outline-offset: 2px; }
+.jm-heading { padding: 14px 12px; border-bottom: 1px solid #808080; display: grid; gap: 5px; }
+.jm-heading strong { font-size: 16px; }
+.jm-heading span, .jm-hint { color: #444; font-size: 11px; line-height: 1.6; }
+.jm-columns { display: grid; grid-template-columns: 1.1fr .8fr 1.2fr; gap: 8px; padding: 8px; flex: 1; min-height: 0; }
+.jm-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; border: 1px solid #808080; background: #e8e8e8; }
+.jm-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 9px 8px; border-bottom: 1px solid #aaa; min-height: 49px; box-sizing: border-box; }
+.jm-panel-heading h2 { font-size: 12px; margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
+.jm-panel-heading small { display: inline-block; margin-left: 6px; font-weight: normal; color: #555; }
+.jm-panel-heading > button { white-space: nowrap; flex-shrink: 0; font-size: 11px; }
+.jm-search { display: grid; gap: 5px; padding: 8px; font-size: 11px; }
+.jm-search input { min-width: 0; width: 100%; padding: 6px; box-sizing: border-box; }
+.jm-hint { margin: 0; padding: 7px 8px; overflow-wrap: anywhere; }
+.jm-list { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; background: white; min-height: 90px; }
+.jm-track { display: flex; align-items: center; gap: 7px; padding: 9px 8px; border-bottom: 1px solid #e3e3e3; min-height: 48px; box-sizing: border-box; }
+.jm-track-info { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.jm-track-info strong { font-size: 11px; font-weight: normal; overflow-wrap: anywhere; line-height: 1.5; }
+.jm-track-info > span { font-size: 10px; color: #666; overflow-wrap: anywhere; }
+.jm-music-icon { color: #000080; font-size: 20px; }
+.jm-add { flex-shrink: 0; min-width: 28px; }
+.jm-playlist-button { width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: left; border: 0; background: white; box-shadow: none; border-bottom: 1px solid #ddd; padding: 12px 9px !important; overflow-wrap: anywhere; }
+.jm-playlist-button small { color: #666; }
+.jm-playlist-button.is-selected, .jm-playlist-button.is-selected:disabled { background: #000080; color: white; }
+.jm-playlist-button.is-selected small { color: #ddd; }
+.jm-sortable { cursor: grab; }
+.jm-sortable:active { cursor: grabbing; }
+.jm-sortable.is-dragging { opacity: .45; }
+.jm-sortable.is-drop-target { box-shadow: inset 0 3px #000080; background: #eef1ff; }
+.jukebox-manager .jm-grip { color: #777; font-size: 20px; padding: 2px; min-width: 18px; border: 0; background: transparent; box-shadow: none; cursor: grab; touch-action: none; }
+.jm-number { color: #666; font-size: 10px; min-width: 14px; }
+.jm-move { display: flex; gap: 2px; }
+.jm-move button { padding: 4px; min-width: 23px; }
+.jm-form { padding: 8px; border-bottom: 1px solid #aaa; }
+.jm-form fieldset { min-width: 0; margin: 0; padding: 8px; }
+.jm-form label { display: grid; gap: 4px; margin-bottom: 9px; font-size: 11px; }
+.jm-form input { width: 100%; min-width: 0; box-sizing: border-box; padding: 4px; }
+.jm-form-actions { display: flex; justify-content: flex-end; gap: 5px; }
+.jm-empty { padding: 22px 14px; color: #666; font-size: 12px; line-height: 1.8; text-align: center; }
+.jm-status { border: 1px inset white; margin: 2px; padding: 6px 8px; font-size: 11px; line-height: 1.5; }
+.jm-status.is-error { color: #a00000; }
+@media (max-width: 760px) {
+  .jm-columns { display: flex; flex-direction: column; min-height: auto; }
+  .jm-panel { flex-shrink: 0; }
+  .jm-library-list { max-height: 230px; }
+  .jm-playlists .jm-list { max-height: 150px; }
+  .jm-order .jm-list { max-height: 300px; }
+}

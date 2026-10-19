@@ -53,6 +53,7 @@ app.use(express.static(clientBuildPath));
 app.use('/api/auth', authRouter);
 app.use('/api/lab', labRouter);
 app.use('/api/host', hostRouter);
+app.use('/api/jukebox', require('./route/jukebox')());
 
 app.use((req, res, next) => {
 

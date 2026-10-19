@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import styled from 'styled-components';
-import { audioData } from '../data/audioData';
-import { AppWindow } from './app-window';
+import { fetchApi } from '../../api';
+import JukeboxManager from './JukeboxManager';
+import { AppWindow } from '../app-window';
 
 const JukeboxWindow = styled(AppWindow)`
   && {
@@ -547,9 +548,30 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
   const [isSmall, setIsSmall] = useState(false);
 
   // Playlist & Channel Data
-  const channelNames = audioData[audioData.length - 1] || [];
-  const currentPlaylist = audioData[channel] || [];
+  const [playlists, setPlaylists] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [catalogError, setCatalogError] = useState('');
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const channelNames = playlists.map(item => item.name);
+  const currentPlaylist = playlists[channel]?.tracks || [];
   const currTrack = currentPlaylist[index] || null;
+  const trackPath = currTrack?.path;
+  const playingRef = useRef(isPlaying);
+  useLayoutEffect(() => { playingRef.current = isPlaying; }, [isPlaying]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchApi('/jukebox', { signal: controller.signal }).then(data => setPlaylists(data.playlists))
+      .catch(error => { if (!controller.signal.aborted) setCatalogError(error.message); })
+      .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false); });
+    const checkAuth = () => fetchApi('/auth/me', { signal: controller.signal })
+      .then(user => setIsAdmin(Boolean(user.isAdmin))).catch(() => { if (!controller.signal.aborted) setIsAdmin(false); });
+    checkAuth();
+    window.addEventListener('auth-changed', checkAuth);
+    window.addEventListener('focus', checkAuth);
+    return () => { controller.abort(); window.removeEventListener('auth-changed', checkAuth); window.removeEventListener('focus', checkAuth); };
+  }, []);
 
   // Window resize listener
   useEffect(() => {
@@ -658,6 +680,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
 
   // Next / Prev actions (ensuring isPlaying remains true so playback never halts)
   const handlePrev = () => {
+    if (!currTrack) return;
     setIsPlaying(true);
     const prevIdx = getNextTrackIndex(false);
     if (prevIdx === index && audioRef.current) {
@@ -669,6 +692,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
   };
 
   const handleNext = () => {
+    if (!currTrack) return;
     setIsPlaying(true);
     const nextIdx = getNextTrackIndex(true);
     if (nextIdx === index && audioRef.current) {
@@ -681,11 +705,13 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
 
   // Audio track change & automatic playback
   useEffect(() => {
-    if (!audioRef.current || !currTrack) return;
+    if (!audioRef.current) return;
     audioRef.current.load();
     setCurrentTime(0);
+    setDuration(0);
+    if (!trackPath) { setIsPlaying(false); return; }
 
-    if (isPlaying) {
+    if (playingRef.current) {
       const p = audioRef.current.play();
       if (p !== undefined) {
         p.catch((err) => {
@@ -693,7 +719,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
         });
       }
     }
-  }, [channel, index]);
+  }, [trackPath]);
 
   // Audio event listeners
   useEffect(() => {
@@ -764,6 +790,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
 
   // Playback Control Handlers
   const togglePlay = () => {
+    if (!currTrack) return;
     if (!audioRef.current) return;
     if (audioRef.current.paused) {
       audioRef.current.play().catch(() => {});
@@ -817,7 +844,16 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
     }
   };
 
-  return (
+  const updateCatalog = data => {
+    const activePlaylistId = playlists[channel]?.id;
+    const nextChannel = data.playlists.findIndex(item => item.id === activePlaylistId);
+    const nextTrackIndex = data.playlists[nextChannel]?.tracks.findIndex(track => track.path === currTrack?.path);
+    setPlaylists(data.playlists);
+    setChannel(nextChannel < 0 ? 0 : nextChannel);
+    setIndex(nextTrackIndex >= 0 ? nextTrackIndex : 0);
+  };
+
+  return (<>
     <JukeboxWindow title="jukebox.exe" icon="/images/icon/audio_cd.png"
       width={380} minimized={isOff || isSmall} maximizable={false}
       onMinimize={handleMinimize} onClose={handleClose}
@@ -827,13 +863,20 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
         <div className="menu-item" onClick={togglePlay}><u>P</u>lay</div>
         <div className="menu-item" onClick={handleMinimize}><u>V</u>iew</div>
         <div className="menu-item" onClick={() => alert('Jukebox v2.4\nnoryangjinLAB Media Player\nLast update on 2026-09-21')}><u>H</u>elp</div>
+        {isAdmin && <button type="button" className="menu-item" style={{ border: 0, background: 'transparent', font: 'inherit', color: 'inherit' }} onClick={() => setEditing(true)}>Edit</button>}
       </MenuBar>
+      {catalogLoading && <p role="status">음악 목록을 불러오는 중…</p>}
+      {catalogError && <p role="alert">{catalogError} <button onClick={() => {
+        setCatalogError(''); setCatalogLoading(true);
+        fetchApi('/jukebox').then(data => setPlaylists(data.playlists)).catch(error => setCatalogError(error.message)).finally(() => setCatalogLoading(false));
+      }}>다시 시도</button></p>}
 
       {/* Audio Tag */}
       <audio
         ref={audioRef}
         src={currTrack ? currTrack.path : undefined}
         preload="metadata"
+        crossOrigin="use-credentials"
       />
 
       {/* VFD Digital Display Panel */}
@@ -1015,6 +1058,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
               </tr>
             </thead>
             <tbody>
+              {!currentPlaylist.length && <tr><td colSpan={3}>등록된 곡이 없습니다.</td></tr>}
               {currentPlaylist.map((track, i) => (
                 <tr
                   key={i}
@@ -1048,5 +1092,7 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
         </div>
       </StatusBar>
     </JukeboxWindow>
+    {isAdmin && editing && <JukeboxManager onCatalogChange={updateCatalog} onClose={() => setEditing(false)} onActivate={onActivate} zIndex={zIndex + 1} />}
+    </>
   );
 }
