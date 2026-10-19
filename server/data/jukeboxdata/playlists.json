@@ -1,0 +1,546 @@
+{
+  "tracks": [
+    {
+      "title": "A Neon Glow Lights the Way",
+      "artist": "Garoad",
+      "path": "/api/jukebox/media/A%20Neon%20Glow%20Lights%20the%20Way.mp3",
+      "id": "64b82cb6bc2a6b8f9439a970cef12a963f121de74a04818b5eeb63f28e33d128"
+    },
+    {
+      "title": "Welcome to VA-11 Hall-A",
+      "artist": "Garoad",
+      "path": "/api/jukebox/media/Welcome%20to%20VA-11%20Hall-A.mp3",
+      "id": "99276b42fe54cd4b92b00e7c52fd65863aa0c0f9cd288e616b1febf6c9a2ea4f"
+    },
+    {
+      "title": "Voyager",
+      "artist": "Daft Punk",
+      "path": "/api/jukebox/media/voyager.mp3",
+      "id": "39ddf190b5af26632e2cef199b05263f367108d07cdd4fba6bfbf34383312b65"
+    },
+    {
+      "title": "Every Day Is Night",
+      "artist": "Garoad",
+      "path": "/api/jukebox/media/Every%20Day%20Is%20Night.mp3",
+      "id": "0f4b89555f9977aeda5c3d348c083bcfda7bc9498c2555ceca8daa4e33218b36"
+    },
+    {
+      "title": "Technovision (Short ver.)",
+      "artist": "いとうかなこ (Itō Kanako)",
+      "path": "/api/jukebox/media/technovision.mp3",
+      "id": "b5ba14a58e1aaca631788266511b2cfce80b6288aa1825d6f1a9bfde0711a189"
+    },
+    {
+      "title": "Moon",
+      "artist": "FreeTempo",
+      "path": "/api/jukebox/media/moon.mp3",
+      "id": "50facda8050f843fe288bfea49af718afb6fb8c66d905bd1f7fb8c4981f66182"
+    },
+    {
+      "title": "Online Shopping",
+      "artist": "ダンメイソン (Dan Mason)",
+      "path": "/api/jukebox/media/Online%20Shopping.mp3",
+      "id": "0d4db5186792a17348a3f8c6f632b975c55a0a6bbd165431b8f099ed9fa385f0"
+    },
+    {
+      "title": "頬に夜の灯",
+      "artist": "吉田美奈子 (Yoshida Minako)",
+      "path": "/api/jukebox/media/Hoho%20Ni%20Yoru%20No%20Hi.mp3",
+      "id": "8dff01cf369f29a52d50e0654e781288707c1080a61335df97507150fc9330be"
+    },
+    {
+      "title": "夢の続き (Yume No Tsuzuki, '89 CD Single Mix)",
+      "artist": "竹内まりや (Takeuchi Mariya)",
+      "path": "/api/jukebox/media/yume%20no%20tsuzuki.mp3",
+      "id": "87c01d14ab2d67d7070e81326b18f4ffcf33060d9bb2697bdcbfeea521b0f0e5"
+    },
+    {
+      "title": "Driving My Love",
+      "artist": "杏里 (Anri)",
+      "path": "/api/jukebox/media/Driving%20my%20love.mp3",
+      "id": "7c86c81280bb41c25d22ec574578fc808184f1f4c4f852c837309f48e762417d"
+    },
+    {
+      "title": "Plastic Love (fan edit ver.)",
+      "artist": "竹内まりや (Takeuchi Mariya)",
+      "path": "/api/jukebox/media/plastic%20love.mp3",
+      "id": "953f6ebf5f6df21847dafe25fc37164f6d8599228d0b7522caf8036386214706"
+    },
+    {
+      "title": "Remember Summer Days (MACROSS 82-99 unofficial remix)",
+      "artist": "杏里 (Anri)",
+      "path": "/api/jukebox/media/Remember%20Summer%20Days.mp3",
+      "id": "014a747d1227462322439cb7a8c86331ffdbfff40970e05369022cda5820755c"
+    },
+    {
+      "title": "(You And Me Still Keep On) Fall In Love",
+      "artist": "山根麻衣 (Yamane Mai)",
+      "path": "/api/jukebox/media/%28You%20And%20Me%20Still%20Keep%20On%29%20Fall%20In%20Love.mp3",
+      "id": "e363393409ad440cf098545a37213be7c6f39c8347bff00c3ae43de02c4b7453"
+    },
+    {
+      "title": "Morning Glory",
+      "artist": "山下達郎 (Yamashita Tatsuro)",
+      "path": "/api/jukebox/media/Morning%20Glory.mp3",
+      "id": "6528a205dd86f1c3b292b99266fc5d466dda5d94b3b7b0f17aafe9b210f6ce1e"
+    },
+    {
+      "title": "空に虹が浮かんでも",
+      "artist": "宇都美慶子 (Utsumi Keiko)",
+      "path": "/api/jukebox/media/%E7%A9%BA%E3%81%AB%E8%99%B9%E3%81%8C%E6%B5%AE%E3%81%8B%E3%82%93%E3%81%A7%E3%82%82.mp3",
+      "id": "e632c22ee7730572ebad3f019ff083a109cad2f6d7a72833d12327ad6422ca5e"
+    },
+    {
+      "title": "4:00A.M.",
+      "artist": "大貫 妙子 (Onuki Taeko)",
+      "path": "/api/jukebox/media/4am.mp3",
+      "id": "740915fed340154e6f7db20d004dd06e9fd99d12314ab62a9696e37139f4b5aa"
+    },
+    {
+      "title": "Oh No, Oh Yes",
+      "artist": "竹内まりや (Takeuchi Mariya)",
+      "path": "/api/jukebox/media/ohnoohyes.mp3",
+      "id": "3abb64c301391a7fbc96a61ef80298abb8e1d867317b508fbf6e0ca4da565493"
+    },
+    {
+      "title": "Ride on Time ('82 Album Version)",
+      "artist": "山下達郎 (Yamashita Tatsuro)",
+      "path": "/api/jukebox/media/RideOnTime.mp3",
+      "id": "1de9926a047b5420f43b4456c7d0dbbc5202a1cb662904c238c429d17d1bd8df"
+    },
+    {
+      "title": "la la la love song (cover)",
+      "artist": "백예린",
+      "path": "/api/jukebox/media/la%20la%20la%20love%20song.mp3",
+      "id": "ef901badc4ba51281e9f39892f01e1b26063776685099562b752074d508f416f"
+    },
+    {
+      "title": "WINDY SUMMER",
+      "artist": "杏里 (Anri)",
+      "path": "/api/jukebox/media/WINDY%20SUMMER.mp3",
+      "id": "c04f051045a4c5a5bc72684688c7048c6c5a7e7d0de157b0368bc4a5fef4e615"
+    },
+    {
+      "title": "ESP",
+      "artist": "Marlene",
+      "path": "/api/jukebox/media/ESP.mp3",
+      "id": "3c08f3e0de590e0788f222e228af5734162925513017deadb953ab4aaebc82f6"
+    },
+    {
+      "title": "Can't Let Go",
+      "artist": "Earth, Wind & Fire",
+      "path": "/api/jukebox/media/Cant%20Let%20Go.mp3",
+      "id": "dfdf30a97793a563ffed658753f55fa01eaa85fdda0fe30eee42738fa1876a2a"
+    },
+    {
+      "title": "Runaway",
+      "artist": "Jamiroquai",
+      "path": "/api/jukebox/media/Runaway.mp3",
+      "id": "075443dcd54df7e0080c85e87a3568a86830516d086c2ae7b917954f1b7a9e59"
+    },
+    {
+      "title": "Little L (Dave Lee Reblend)",
+      "artist": "Jamiroquai",
+      "path": "/api/jukebox/media/Little%20L%20%28Dave%20Lee%20Reblend%29.mp3",
+      "id": "4e66a1645804efd826b950d17e2cea7c3db17b34c023f08cc1d6171a817caa55"
+    },
+    {
+      "title": "Giant Steps (Mono)",
+      "artist": "John Coltrane",
+      "path": "/api/jukebox/media/Giant%20Steps.mp3",
+      "id": "f3409a327ed5761c52188b382b5afc2de5d30688eaf221901c8a32db858523c5"
+    },
+    {
+      "title": "Un Poco Loco (Remastered 1998 / Rudy Van Gelder Edition)",
+      "artist": "Bud Powell",
+      "path": "/api/jukebox/media/Un%20Poco%20Loco.mp3",
+      "id": "55ae90d4080e0f01ba2516ef2dd537aacce9e604eb6cd799903955ea41af9204"
+    },
+    {
+      "title": "N.Y Rush",
+      "artist": "The Seatbelts",
+      "path": "/api/jukebox/media/N.Y%20Rush.mp3",
+      "id": "7eb69ea49eebef125f07360542963e5a493f095cf78ad64aebbd83419973e7c2"
+    },
+    {
+      "title": "Ya Gotta Try (Live at Buddy Rich Memorial Concert)",
+      "artist": "Vinnie Colaiuta",
+      "path": "/api/jukebox/media/ya%20gotta%20try.mp3",
+      "id": "4f77bdd82d1697c4a75fd4db9664bac50d5f48e45f1443c616e6816ab57a4260"
+    },
+    {
+      "title": "Up (feat. Sonicwonder)",
+      "artist": "Hiromi",
+      "path": "/api/jukebox/media/up.mp3",
+      "id": "b608a79b65928736d9011451d016418b35e5fc2e5da8dd77367caae30aeedf1e"
+    },
+    {
+      "title": "Countdown (Remastered)",
+      "artist": "John Coltrane",
+      "path": "/api/jukebox/media/Countdown.mp3",
+      "id": "0d28996f8e76e9b18fe7bdf814171e58c1b4317fc9869bbbe7bd8c0beb914456"
+    },
+    {
+      "title": "Waltz of the Mushroom Hunters (Remastered 2024)",
+      "artist": "Buddy Rich",
+      "path": "/api/jukebox/media/Waltz%20of%20the%20Mushroom%20Hunters.mp3",
+      "id": "668c6f505acd92c1f7a70aa490be47b7ca47729137f52b614bf1116a292ccc5a"
+    },
+    {
+      "title": "Guilty Pleasure",
+      "artist": "山中千尋 (Yamanaka Chihiro)",
+      "path": "/api/jukebox/media/Guilty%20Pleasure.mp3",
+      "id": "92f6991c62d38f27856d16b9c38afdb5deebc9f37901bd187abd996f3dd10cd9"
+    },
+    {
+      "title": "Airegin (1956 Rudy Van Gelder Remastering)",
+      "artist": "The Miles Davis Quintet",
+      "path": "/api/jukebox/media/Airegin.mp3",
+      "id": "489566e7ee8e3da34cbf6471dde646822fad1575720217a7ea18d21eb0b008f7"
+    },
+    {
+      "title": "The Collector (Remastered)",
+      "artist": "Wayne Shorter",
+      "path": "/api/jukebox/media/The%20Collector%20%28Remastered%29.mp3",
+      "id": "12af3da2265aec50c4144f1fb88b7a76985b3086f3cda9b276b3c10947a7d584"
+    },
+    {
+      "title": "Messages from the Stars",
+      "artist": "The RAH Band",
+      "path": "/api/jukebox/media/Messages%20from%20the%20Stars.mp3",
+      "id": "e7907111cf577f9943640a25f24a26356beddcc349e5917439b2f3eca283b9b0"
+    },
+    {
+      "title": "Yellow Magic (Tong Poo) (2018 Bob Ludwig Remastering)",
+      "artist": "Yellow Magic Orchestra",
+      "path": "/api/jukebox/media/Tong%20Poo%20%282018%20Bob%20Ludwig%20Remastering%29.mp3",
+      "id": "18bb839321b91231dd49b417b16645f6c4fecaa2563a6285a8cd3ac42278318e"
+    },
+    {
+      "title": "Rockit",
+      "artist": "Herbie Hancock",
+      "path": "/api/jukebox/media/Rockit.mp3",
+      "id": "e5f0a3077669f3998f664e58a4b45a4681884e95eac450a85cfd7c945239a2a4"
+    },
+    {
+      "title": "Autodrive",
+      "artist": "Herbie Hancock",
+      "path": "/api/jukebox/media/Autodrive.mp3",
+      "id": "68153e8fcf7d02a4aa49a27107a4a992c16609b3cea16e27275ca1721d0ffa56"
+    },
+    {
+      "title": "Pocket Calculator (2009 Remaster)",
+      "artist": "Kraftwerk",
+      "path": "/api/jukebox/media/Pocket%20Calculator%20%282009%20Remaster%29.mp3",
+      "id": "2070e1851d2cd331aa71bb9f4eb23f1678c2e6ccc1c00a03a1b873d06f9e7c43"
+    },
+    {
+      "title": "Rydeen (2018 Bob Ludwig Remastering)",
+      "artist": "Yellow Magic Orchestra",
+      "path": "/api/jukebox/media/rydeen.mp3",
+      "id": "18588e1392eeca4f4679f911f64f47eecae135c15118619ee20949ebf456eff5"
+    },
+    {
+      "title": "Robot Rock",
+      "artist": "Daft Punk",
+      "path": "/api/jukebox/media/Robot%20Rock.mp3",
+      "id": "a24b58fcbf4f2b6a7d6233b21ddf6f5fab650708887d9d08e8f1cbc2f2ec0881"
+    },
+    {
+      "id": "9d9f63bd-ade0-4c6e-8785-58d45649f57b",
+      "title": "Psychological Counterpoint",
+      "artist": "Nujabes",
+      "path": "/api/jukebox/media/f3f5c620-142b-4eab-be9e-269b4f0cee66.mp3"
+    }
+  ],
+  "playlists": [
+    {
+      "id": "9c04de79-1275-4b33-a8ab-b6edcb54b8ea",
+      "name": "Welcome to Our Lab (Default)",
+      "tracks": [
+        {
+          "title": "A Neon Glow Lights the Way",
+          "artist": "Garoad",
+          "path": "/api/jukebox/media/A%20Neon%20Glow%20Lights%20the%20Way.mp3",
+          "id": "64b82cb6bc2a6b8f9439a970cef12a963f121de74a04818b5eeb63f28e33d128"
+        },
+        {
+          "title": "Welcome to VA-11 Hall-A",
+          "artist": "Garoad",
+          "path": "/api/jukebox/media/Welcome%20to%20VA-11%20Hall-A.mp3",
+          "id": "99276b42fe54cd4b92b00e7c52fd65863aa0c0f9cd288e616b1febf6c9a2ea4f"
+        },
+        {
+          "title": "Voyager",
+          "artist": "Daft Punk",
+          "path": "/api/jukebox/media/voyager.mp3",
+          "id": "39ddf190b5af26632e2cef199b05263f367108d07cdd4fba6bfbf34383312b65"
+        },
+        {
+          "title": "Every Day Is Night",
+          "artist": "Garoad",
+          "path": "/api/jukebox/media/Every%20Day%20Is%20Night.mp3",
+          "id": "0f4b89555f9977aeda5c3d348c083bcfda7bc9498c2555ceca8daa4e33218b36"
+        },
+        {
+          "title": "Technovision (Short ver.)",
+          "artist": "いとうかなこ (Itō Kanako)",
+          "path": "/api/jukebox/media/technovision.mp3",
+          "id": "b5ba14a58e1aaca631788266511b2cfce80b6288aa1825d6f1a9bfde0711a189"
+        },
+        {
+          "title": "Moon",
+          "artist": "FreeTempo",
+          "path": "/api/jukebox/media/moon.mp3",
+          "id": "50facda8050f843fe288bfea49af718afb6fb8c66d905bd1f7fb8c4981f66182"
+        },
+        {
+          "title": "Online Shopping",
+          "artist": "ダンメイソン (Dan Mason)",
+          "path": "/api/jukebox/media/Online%20Shopping.mp3",
+          "id": "0d4db5186792a17348a3f8c6f632b975c55a0a6bbd165431b8f099ed9fa385f0"
+        }
+      ]
+    },
+    {
+      "id": "935820f0-0d62-4cc7-a8b9-7b4f4ab98d7e",
+      "name": "'80s / '90s City Pop Collection",
+      "tracks": [
+        {
+          "title": "夢の続き (Yume No Tsuzuki, '89 CD Single Mix)",
+          "artist": "竹内まりや (Takeuchi Mariya)",
+          "path": "/api/jukebox/media/yume%20no%20tsuzuki.mp3",
+          "id": "87c01d14ab2d67d7070e81326b18f4ffcf33060d9bb2697bdcbfeea521b0f0e5"
+        },
+        {
+          "title": "頬に夜の灯",
+          "artist": "吉田美奈子 (Yoshida Minako)",
+          "path": "/api/jukebox/media/Hoho%20Ni%20Yoru%20No%20Hi.mp3",
+          "id": "8dff01cf369f29a52d50e0654e781288707c1080a61335df97507150fc9330be"
+        },
+        {
+          "title": "Driving My Love",
+          "artist": "杏里 (Anri)",
+          "path": "/api/jukebox/media/Driving%20my%20love.mp3",
+          "id": "7c86c81280bb41c25d22ec574578fc808184f1f4c4f852c837309f48e762417d"
+        },
+        {
+          "title": "Plastic Love (fan edit ver.)",
+          "artist": "竹内まりや (Takeuchi Mariya)",
+          "path": "/api/jukebox/media/plastic%20love.mp3",
+          "id": "953f6ebf5f6df21847dafe25fc37164f6d8599228d0b7522caf8036386214706"
+        },
+        {
+          "title": "Remember Summer Days (MACROSS 82-99 unofficial remix)",
+          "artist": "杏里 (Anri)",
+          "path": "/api/jukebox/media/Remember%20Summer%20Days.mp3",
+          "id": "014a747d1227462322439cb7a8c86331ffdbfff40970e05369022cda5820755c"
+        },
+        {
+          "title": "(You And Me Still Keep On) Fall In Love",
+          "artist": "山根麻衣 (Yamane Mai)",
+          "path": "/api/jukebox/media/%28You%20And%20Me%20Still%20Keep%20On%29%20Fall%20In%20Love.mp3",
+          "id": "e363393409ad440cf098545a37213be7c6f39c8347bff00c3ae43de02c4b7453"
+        },
+        {
+          "title": "Morning Glory",
+          "artist": "山下達郎 (Yamashita Tatsuro)",
+          "path": "/api/jukebox/media/Morning%20Glory.mp3",
+          "id": "6528a205dd86f1c3b292b99266fc5d466dda5d94b3b7b0f17aafe9b210f6ce1e"
+        },
+        {
+          "title": "空に虹が浮かんでも",
+          "artist": "宇都美慶子 (Utsumi Keiko)",
+          "path": "/api/jukebox/media/%E7%A9%BA%E3%81%AB%E8%99%B9%E3%81%8C%E6%B5%AE%E3%81%8B%E3%82%93%E3%81%A7%E3%82%82.mp3",
+          "id": "e632c22ee7730572ebad3f019ff083a109cad2f6d7a72833d12327ad6422ca5e"
+        },
+        {
+          "title": "4:00A.M.",
+          "artist": "大貫 妙子 (Onuki Taeko)",
+          "path": "/api/jukebox/media/4am.mp3",
+          "id": "740915fed340154e6f7db20d004dd06e9fd99d12314ab62a9696e37139f4b5aa"
+        },
+        {
+          "title": "Oh No, Oh Yes",
+          "artist": "竹内まりや (Takeuchi Mariya)",
+          "path": "/api/jukebox/media/ohnoohyes.mp3",
+          "id": "3abb64c301391a7fbc96a61ef80298abb8e1d867317b508fbf6e0ca4da565493"
+        },
+        {
+          "title": "Ride on Time ('82 Album Version)",
+          "artist": "山下達郎 (Yamashita Tatsuro)",
+          "path": "/api/jukebox/media/RideOnTime.mp3",
+          "id": "1de9926a047b5420f43b4456c7d0dbbc5202a1cb662904c238c429d17d1bd8df"
+        },
+        {
+          "title": "la la la love song (cover)",
+          "artist": "백예린",
+          "path": "/api/jukebox/media/la%20la%20la%20love%20song.mp3",
+          "id": "ef901badc4ba51281e9f39892f01e1b26063776685099562b752074d508f416f"
+        },
+        {
+          "title": "WINDY SUMMER",
+          "artist": "杏里 (Anri)",
+          "path": "/api/jukebox/media/WINDY%20SUMMER.mp3",
+          "id": "c04f051045a4c5a5bc72684688c7048c6c5a7e7d0de157b0368bc4a5fef4e615"
+        },
+        {
+          "title": "ESP",
+          "artist": "Marlene",
+          "path": "/api/jukebox/media/ESP.mp3",
+          "id": "3c08f3e0de590e0788f222e228af5734162925513017deadb953ab4aaebc82f6"
+        }
+      ]
+    },
+    {
+      "id": "8c0bd52b-4378-4207-b3e7-82960f4a2cd0",
+      "name": "D I S C O",
+      "tracks": [
+        {
+          "title": "Can't Let Go",
+          "artist": "Earth, Wind & Fire",
+          "path": "/api/jukebox/media/Cant%20Let%20Go.mp3",
+          "id": "dfdf30a97793a563ffed658753f55fa01eaa85fdda0fe30eee42738fa1876a2a"
+        },
+        {
+          "title": "Runaway",
+          "artist": "Jamiroquai",
+          "path": "/api/jukebox/media/Runaway.mp3",
+          "id": "075443dcd54df7e0080c85e87a3568a86830516d086c2ae7b917954f1b7a9e59"
+        },
+        {
+          "title": "Little L (Dave Lee Reblend)",
+          "artist": "Jamiroquai",
+          "path": "/api/jukebox/media/Little%20L%20%28Dave%20Lee%20Reblend%29.mp3",
+          "id": "4e66a1645804efd826b950d17e2cea7c3db17b34c023f08cc1d6171a817caa55"
+        }
+      ]
+    },
+    {
+      "id": "b34845c1-3d41-428e-b33d-eda3a3db77b2",
+      "name": "Swingin' at Allegro",
+      "tracks": [
+        {
+          "title": "Giant Steps (Mono)",
+          "artist": "John Coltrane",
+          "path": "/api/jukebox/media/Giant%20Steps.mp3",
+          "id": "f3409a327ed5761c52188b382b5afc2de5d30688eaf221901c8a32db858523c5"
+        },
+        {
+          "title": "Un Poco Loco (Remastered 1998 / Rudy Van Gelder Edition)",
+          "artist": "Bud Powell",
+          "path": "/api/jukebox/media/Un%20Poco%20Loco.mp3",
+          "id": "55ae90d4080e0f01ba2516ef2dd537aacce9e604eb6cd799903955ea41af9204"
+        },
+        {
+          "title": "N.Y Rush",
+          "artist": "The Seatbelts",
+          "path": "/api/jukebox/media/N.Y%20Rush.mp3",
+          "id": "7eb69ea49eebef125f07360542963e5a493f095cf78ad64aebbd83419973e7c2"
+        },
+        {
+          "title": "Ya Gotta Try (Live at Buddy Rich Memorial Concert)",
+          "artist": "Vinnie Colaiuta",
+          "path": "/api/jukebox/media/ya%20gotta%20try.mp3",
+          "id": "4f77bdd82d1697c4a75fd4db9664bac50d5f48e45f1443c616e6816ab57a4260"
+        },
+        {
+          "title": "Up (feat. Sonicwonder)",
+          "artist": "Hiromi",
+          "path": "/api/jukebox/media/up.mp3",
+          "id": "b608a79b65928736d9011451d016418b35e5fc2e5da8dd77367caae30aeedf1e"
+        },
+        {
+          "title": "Countdown (Remastered)",
+          "artist": "John Coltrane",
+          "path": "/api/jukebox/media/Countdown.mp3",
+          "id": "0d28996f8e76e9b18fe7bdf814171e58c1b4317fc9869bbbe7bd8c0beb914456"
+        },
+        {
+          "title": "Waltz of the Mushroom Hunters (Remastered 2024)",
+          "artist": "Buddy Rich",
+          "path": "/api/jukebox/media/Waltz%20of%20the%20Mushroom%20Hunters.mp3",
+          "id": "668c6f505acd92c1f7a70aa490be47b7ca47729137f52b614bf1116a292ccc5a"
+        },
+        {
+          "title": "Guilty Pleasure",
+          "artist": "山中千尋 (Yamanaka Chihiro)",
+          "path": "/api/jukebox/media/Guilty%20Pleasure.mp3",
+          "id": "92f6991c62d38f27856d16b9c38afdb5deebc9f37901bd187abd996f3dd10cd9"
+        },
+        {
+          "title": "Airegin (1956 Rudy Van Gelder Remastering)",
+          "artist": "The Miles Davis Quintet",
+          "path": "/api/jukebox/media/Airegin.mp3",
+          "id": "489566e7ee8e3da34cbf6471dde646822fad1575720217a7ea18d21eb0b008f7"
+        },
+        {
+          "title": "The Collector (Remastered)",
+          "artist": "Wayne Shorter",
+          "path": "/api/jukebox/media/The%20Collector%20%28Remastered%29.mp3",
+          "id": "12af3da2265aec50c4144f1fb88b7a76985b3086f3cda9b276b3c10947a7d584"
+        }
+      ]
+    },
+    {
+      "id": "f75304d2-2973-4d03-825f-e63138ef3509",
+      "name": "20th Century Neon Genesis Mix",
+      "tracks": [
+        {
+          "title": "Messages from the Stars",
+          "artist": "The RAH Band",
+          "path": "/api/jukebox/media/Messages%20from%20the%20Stars.mp3",
+          "id": "e7907111cf577f9943640a25f24a26356beddcc349e5917439b2f3eca283b9b0"
+        },
+        {
+          "title": "Yellow Magic (Tong Poo) (2018 Bob Ludwig Remastering)",
+          "artist": "Yellow Magic Orchestra",
+          "path": "/api/jukebox/media/Tong%20Poo%20%282018%20Bob%20Ludwig%20Remastering%29.mp3",
+          "id": "18bb839321b91231dd49b417b16645f6c4fecaa2563a6285a8cd3ac42278318e"
+        },
+        {
+          "title": "Rockit",
+          "artist": "Herbie Hancock",
+          "path": "/api/jukebox/media/Rockit.mp3",
+          "id": "e5f0a3077669f3998f664e58a4b45a4681884e95eac450a85cfd7c945239a2a4"
+        },
+        {
+          "title": "Autodrive",
+          "artist": "Herbie Hancock",
+          "path": "/api/jukebox/media/Autodrive.mp3",
+          "id": "68153e8fcf7d02a4aa49a27107a4a992c16609b3cea16e27275ca1721d0ffa56"
+        },
+        {
+          "title": "Pocket Calculator (2009 Remaster)",
+          "artist": "Kraftwerk",
+          "path": "/api/jukebox/media/Pocket%20Calculator%20%282009%20Remaster%29.mp3",
+          "id": "2070e1851d2cd331aa71bb9f4eb23f1678c2e6ccc1c00a03a1b873d06f9e7c43"
+        },
+        {
+          "title": "Rydeen (2018 Bob Ludwig Remastering)",
+          "artist": "Yellow Magic Orchestra",
+          "path": "/api/jukebox/media/rydeen.mp3",
+          "id": "18588e1392eeca4f4679f911f64f47eecae135c15118619ee20949ebf456eff5"
+        },
+        {
+          "title": "Robot Rock",
+          "artist": "Daft Punk",
+          "path": "/api/jukebox/media/Robot%20Rock.mp3",
+          "id": "a24b58fcbf4f2b6a7d6233b21ddf6f5fab650708887d9d08e8f1cbc2f2ec0881"
+        }
+      ]
+    },
+    {
+      "id": "8a923a7c-6baa-4b53-beab-2a8e31dc533a",
+      "name": "渋谷系 / Shibuya-kei",
+      "tracks": [
+        {
+          "id": "9d9f63bd-ade0-4c6e-8785-58d45649f57b",
+          "title": "Psychological Counterpoint",
+          "artist": "Nujabes",
+          "path": "/api/jukebox/media/f3f5c620-142b-4eab-be9e-269b4f0cee66.mp3"
+        }
+      ]
+    }
+  ]
+}

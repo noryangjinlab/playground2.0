@@ -4,8 +4,6 @@ package-lock.json
 .env.*
 !.env.example
 !.env.production.example
-/server/data/
-/server/labdata/
-/server/jukeboxdata/
+/server/data/labdata/
 /backup/
 /server/public/host/cbf-praylist-11bbf27f1baa.json
