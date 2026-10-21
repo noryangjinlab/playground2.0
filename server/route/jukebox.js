@@ -48,6 +48,42 @@ function createRouter(directory = process.env.JUKEBOX_DATA_DIR || path.join(__di
       res.status(201).json({ playlist });
     } catch (error) { next(error); }
   });
+  router.patch('/playlists/:id', async (req, res, next) => {
+    try {
+      const name = field(req.body?.name, '플레이리스트 이름');
+      const playlist = await serial(async () => {
+        const data = await read();
+        const item = data.playlists.find(item => item.id === req.params.id);
+        if (!item) throw Object.assign(new Error('플레이리스트를 찾을 수 없습니다.'), { status: 404 });
+        item.name = name; await save(data); return item;
+      });
+      res.json({ playlist });
+    } catch (error) { next(error); }
+  });
+  router.delete('/playlists/:id', async (req, res, next) => {
+    try {
+      await serial(async () => {
+        const data = await read();
+        const index = data.playlists.findIndex(item => item.id === req.params.id);
+        if (index < 0) throw Object.assign(new Error('플레이리스트를 찾을 수 없습니다.'), { status: 404 });
+        data.playlists.splice(index, 1); await save(data);
+      });
+      res.json({ message: '플레이리스트를 삭제했습니다.' });
+    } catch (error) { next(error); }
+  });
+  router.delete('/playlists/:id/items/:trackId', async (req, res, next) => {
+    try {
+      const playlist = await serial(async () => {
+        const data = await read();
+        const item = data.playlists.find(item => item.id === req.params.id);
+        if (!item) throw Object.assign(new Error('플레이리스트를 찾을 수 없습니다.'), { status: 404 });
+        const index = item.tracks.findIndex(track => track.id === req.params.trackId);
+        if (index < 0) throw Object.assign(new Error('목록에서 곡을 찾을 수 없습니다.'), { status: 404 });
+        item.tracks.splice(index, 1); await save(data); return item;
+      });
+      res.json({ playlist });
+    } catch (error) { next(error); }
+  });
   // Add an existing library track to a playlist without uploading it again.
   router.post('/playlists/:id/items', async (req, res, next) => {
     try {

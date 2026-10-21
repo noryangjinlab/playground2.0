@@ -14,6 +14,7 @@ export default function JukeboxManager({ onCatalogChange, onClose, zIndex, onAct
   const [notice, setNotice] = useState(null);
   const [addingMusic, setAddingMusic] = useState(false);
   const [addingPlaylist, setAddingPlaylist] = useState(false);
+  const [renaming, setRenaming] = useState(false);
   const [draggedId, setDraggedId] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const lock = useRef(false);
@@ -62,6 +63,7 @@ export default function JukeboxManager({ onCatalogChange, onClose, zIndex, onAct
     publish({ ...catalog, playlists: catalog.playlists.map(item => item.id === playlist.id ? playlist : item) });
   }
   function addTrack(track) {
+    setRenaming(false);
     if (!selected) return;
     run(async () => {
       const { playlist } = await fetchApi(`/jukebox/playlists/${selected.id}/items`, { method: 'POST', body: JSON.stringify({ trackId: track.id }) });
@@ -78,6 +80,29 @@ export default function JukeboxManager({ onCatalogChange, onClose, zIndex, onAct
       const { playlist } = await fetchApi(`/jukebox/playlists/${selected.id}/order`, { method: 'PUT', body: JSON.stringify({ trackIds: tracks.map(track => track.id) }) });
       replacePlaylist(playlist);
     }, '곡 순서를 저장했습니다.');
+  }
+
+  function renamePlaylist(event) {
+    event.preventDefault();
+    const name = new FormData(event.currentTarget).get('name');
+    run(async () => {
+      const { playlist } = await fetchApi(`/jukebox/playlists/${selected.id}`, { method: 'PATCH', body: JSON.stringify({ name }) });
+      replacePlaylist(playlist); setRenaming(false);
+    }, '플레이리스트 이름을 변경했습니다.');
+  }
+  function deletePlaylist() {
+    if (!selected || lock.current || !window.confirm(`「${selected.name}」 플레이리스트를 삭제할까요? 음악 보관함과 MP3 파일은 유지됩니다.`)) return;
+    run(async () => {
+      await fetchApi(`/jukebox/playlists/${selected.id}`, { method: 'DELETE' });
+      const playlists = catalog.playlists.filter(item => item.id !== selected.id);
+      publish({ ...catalog, playlists }); setSelectedId(playlists[0]?.id || ''); setRenaming(false);
+    }, '플레이리스트를 삭제했습니다. 음악 보관함의 곡은 유지됩니다.');
+  }
+  function removeTrack(track) {
+    run(async () => {
+      const { playlist } = await fetchApi(`/jukebox/playlists/${selected.id}/items/${track.id}`, { method: 'DELETE' });
+      replacePlaylist(playlist);
+    }, `「${track.title}」을 목록에서 뺐습니다. 보관함에서 다시 추가할 수 있습니다.`);
   }
 
   function startPointerDrag(event, track) {
@@ -142,6 +167,8 @@ export default function JukeboxManager({ onCatalogChange, onClose, zIndex, onAct
         </section>
         <section className="jm-panel jm-order" aria-label="플레이리스트 곡 순서">
           <div className="jm-panel-heading"><h2>{selected?.name || '플레이리스트를 선택하세요'}<small>{selected ? `${selected.tracks.length}곡` : ''}</small></h2></div>
+          {selected && <div className="jm-playlist-actions"><button disabled={busy} onClick={() => setRenaming(value => !value)} aria-expanded={renaming}>이름 수정</button><button disabled={busy} onClick={deletePlaylist}>플레이리스트 삭제</button></div>}
+          {selected && renaming && <form key={selected.id} className="jm-form" onSubmit={renamePlaylist}><fieldset disabled={busy}><legend>플레이리스트 이름 수정</legend><label>이름<input name="name" defaultValue={selected.name} required maxLength={200} autoFocus /></label><div className="jm-form-actions"><button type="button" onClick={() => setRenaming(false)}>취소</button><button type="submit">저장</button></div></fieldset></form>}
           <p className="jm-hint">⠿ 곡을 드래그하여 순서 변경 · 자동 저장<br />화살표 버튼으로도 순서를 바꿀 수 있습니다.</p>
           <ol className="jm-list">{selected?.tracks.map((track, index) => <li key={track.id} data-jm-index={index}
             className={`jm-track jm-sortable${draggedId === track.id ? ' is-dragging' : ''}${dropTarget === track.id && draggedId !== track.id ? ' is-drop-target' : ''}`}
@@ -152,7 +179,7 @@ export default function JukeboxManager({ onCatalogChange, onClose, zIndex, onAct
             <button className="jm-grip" disabled={busy} aria-label={`${track.title} 순서 드래그`} title="드래그하여 순서 변경"
               onPointerDown={event => startPointerDrag(event, track)} onPointerMove={movePointerDrag} onPointerUp={event => endPointerDrag(event)} onPointerCancel={event => endPointerDrag(event, true)} onLostPointerCapture={event => endPointerDrag(event, true)}>⠿</button>
             <span className="jm-number">{index + 1}</span><div className="jm-track-info"><strong>{track.title}</strong><span>{track.artist}</span></div>
-            <div className="jm-move"><button disabled={busy || index === 0} aria-label={`${track.title} 위로 이동`} onClick={() => reorder(track.id, index - 1)}>↑</button><button disabled={busy || index === selected.tracks.length - 1} aria-label={`${track.title} 아래로 이동`} onClick={() => reorder(track.id, index + 1)}>↓</button></div>
+            <div className="jm-move"><button disabled={busy || index === 0} aria-label={`${track.title} 위로 이동`} onClick={() => reorder(track.id, index - 1)}>↑</button><button disabled={busy || index === selected.tracks.length - 1} aria-label={`${track.title} 아래로 이동`} onClick={() => reorder(track.id, index + 1)}>↓</button><button disabled={busy} aria-label={`${track.title} 목록에서 빼기`} title="목록에서 빼기 (MP3 유지)" onClick={() => removeTrack(track)}>−</button></div>
           </li>)}{!selected?.tracks.length && <li className="jm-empty">{selected ? '아직 곡이 없습니다. 음악 보관함에서 + 버튼을 눌러 곡을 담으세요.' : '플레이리스트를 선택하면 곡이 표시됩니다.'}</li>}</ol>
         </section>
       </div>}

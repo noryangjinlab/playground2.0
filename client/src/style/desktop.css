@@ -94,7 +94,6 @@
   .window-menubar { gap: 12px; font-size: 9px; }
   .task-button { width: auto; flex: 1; min-width: 0; font-size: 9px; gap: 4px; }
   .task-button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .music-task { flex: 0 0 34px; }
-  .music-task span { display: none; }
+  .music-task { flex: 0 0 auto; }
   .system-tray { padding: 2px 6px; font-size: 9px; }
 }

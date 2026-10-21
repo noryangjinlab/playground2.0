@@ -40,6 +40,7 @@
 .jm-form label { display: grid; gap: 4px; margin-bottom: 9px; font-size: 11px; }
 .jm-form input { width: 100%; min-width: 0; box-sizing: border-box; padding: 4px; }
 .jm-form-actions { display: flex; justify-content: flex-end; gap: 5px; }
+.jm-playlist-actions { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; border-bottom: 1px solid #aaa; }
 .jm-empty { padding: 22px 14px; color: #666; font-size: 12px; line-height: 1.8; text-align: center; }
 .jm-status { border: 1px inset white; margin: 2px; padding: 6px 8px; font-size: 11px; line-height: 1.5; }
 .jm-status.is-error { color: #a00000; }

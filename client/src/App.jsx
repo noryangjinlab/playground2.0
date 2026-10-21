@@ -284,7 +284,7 @@ function App() {
   const isNotionPage = location.pathname.startsWith('/lab-wish');
   const isHost = location.pathname.startsWith('/host');
 
-  const [audioState, setAudioState] = useState(0);
+  const [audioState, setAudioState] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

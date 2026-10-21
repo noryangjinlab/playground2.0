@@ -544,8 +544,8 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
   const [isShuffle, setIsShuffle] = useState(false);
 
   // Window State
-  const [isOff, setIsOff] = useState(false);
-  const [isSmall, setIsSmall] = useState(false);
+  const [isOff, setIsOff] = useState(props === 1);
+  const [isSmall, setIsSmall] = useState(props === 0);
 
   // Playlist & Channel Data
   const [playlists, setPlaylists] = useState([]);
@@ -848,6 +848,11 @@ export default function AudioPlayer98({ onSend, props, onActivate, zIndex = 90 }
     const activePlaylistId = playlists[channel]?.id;
     const nextChannel = data.playlists.findIndex(item => item.id === activePlaylistId);
     const nextTrackIndex = data.playlists[nextChannel]?.tracks.findIndex(track => track.path === currTrack?.path);
+    if (nextChannel < 0 || (currTrack && !(nextTrackIndex >= 0))) {
+      audioRef.current?.pause();
+      playingRef.current = false;
+      setIsPlaying(false);
+    }
     setPlaylists(data.playlists);
     setChannel(nextChannel < 0 ? 0 : nextChannel);
     setIndex(nextTrackIndex >= 0 ? nextTrackIndex : 0);
