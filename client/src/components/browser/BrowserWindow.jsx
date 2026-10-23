@@ -3,15 +3,18 @@ import { AppWindow } from '../app-window';
 import '../../style/browser.css';
 import HelpPage from './HelpPage';
 import HomePage from './HomePage';
+import PassbankPage from './PassbankPage';
 
 const pages = [
   { id: 'home', title: '홈', address: '@explorer://home', component: HomePage },
   { id: 'help', title: '파일탐색기 도움말', address: '@explorer://help', component: HelpPage },
+  { id: 'passbank', title: 'passbank', address: '@explorer://passbank', component: PassbankPage },
 ];
 
 export default function BrowserWindow({ pageId = 'home', onPageChange, ...windowProps }) {
   const initialPage = pages.some(page => page.id === pageId) ? pageId : 'home';
   const [currentId, setCurrentId] = useState(initialPage);
+  const [maximized, setMaximized] = useState(true);
   const currentRef = useRef(initialPage);
   const [history, setHistory] = useState({ items: [initialPage], index: 0 });
   const currentPage = pages.find(page => page.id === currentId) || pages[0];
@@ -48,7 +51,7 @@ export default function BrowserWindow({ pageId = 'home', onPageChange, ...window
   };
 
   return <AppWindow {...windowProps} title="@ explorer" icon="/images/icon/i_explorer.png" width={900} height={650} className="browser-window"
-    footer={<span className="browser-status">{currentPage.title} · @ explorer</span>}>
+    maximized={maximized} onMaximizedChange={setMaximized}>
     <div className="browser-frame">
       <div className="browser-toolbar" aria-label="브라우저 탐색 도구">
         <button type="button" aria-label="뒤로" title="뒤로" disabled={history.index === 0} onClick={() => goToHistory(history.index - 1)}>←</button>
@@ -56,7 +59,7 @@ export default function BrowserWindow({ pageId = 'home', onPageChange, ...window
         <button type="button" aria-label="홈" title="홈" onClick={() => navigateTo('home')}>⌂</button>
         <label className="browser-address"><span>주소</span><input readOnly value={currentPage.address} aria-label="현재 페이지 주소"/></label>
       </div>
-      <div className="browser-layout">
+      <div className={`browser-layout ${currentId !== 'help' ? 'browser-layout-home' : ''}`}>
         <nav className="browser-pages" aria-label="페이지 링크">
           <strong>페이지</strong>
           {pages.map(page => <button key={page.id} type="button" className={currentId === page.id ? 'is-current' : ''}

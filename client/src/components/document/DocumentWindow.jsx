@@ -1,10 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { EditorState } from 'prosemirror-state';
 import { AppWindow } from '../app-window';
-import { CodeBlock, TextStyle, FontSize, ChildNote, LabImage } from '../../routes/lab';
+import { CodeBlock, TextStyle, FontSize, ChildNote, LabImage } from './documentNodes';
 import { fetchApi } from '../../api';
 import '../../style/document.css';
 import DocumentSlashMenu from './DocumentSlashMenu';
@@ -43,8 +42,7 @@ const PageLink = ChildNote.extend({
       HTMLAttributes.title || '(제목 없음)']];
   },
 });
-export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
-  const navigate = useNavigate();
+export default function DocumentWindow({ onClose, onHelp, pageId = 'root', onPageChange, ...windowProps }) {
   const [notes, setNotes] = useState([]);
   const [treeVisible, setTreeVisible] = useState(true);
   const [maximized, setMaximized] = useState(false);
@@ -67,6 +65,9 @@ export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
   const autosave = useRef(null);
   const transitioning = useRef(false);
   const creating = useRef(false);
+  const openedLink = useRef('root');
+  const openingLink = useRef(false);
+  const openPage = useRef(null);
   const deletingPage = useRef(false);
   const uploadTask = useRef(null);
   const uploadHandler = useRef(null);
@@ -287,7 +288,8 @@ export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
     if (!await finishPending()) return;
     if (toggleBranch) toggle(item.id);
     const token = ++request.current;
-    setSelection(item); setDirty(false); setLoaded(false); setLoading(item.id !== 'root');
+    openedLink.current = item.id;
+    setSelection(item); onPageChange?.(item.id); setDirty(false); setLoaded(false); setLoading(item.id !== 'root');
     draft.current = null;
     editor?.commands.setContent('', { emitUpdate: false });
     if (item.id === 'root') { setMessage('왼쪽 폴더 트리에서 문서를 선택하세요.'); return; }
@@ -316,6 +318,21 @@ export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
     } catch (error) { if (token === request.current) setMessage(`열기 실패: ${error.message}`); }
     finally { if (token === request.current) setLoading(false); }
   }
+  useLayoutEffect(() => { openPage.current = open; });
+  useEffect(() => {
+    if (!editor || loadingTree || openingLink.current || openedLink.current === pageId) return;
+    const item = notes.find(note => note.id === pageId) || { id: pageId, title: pageId === 'root' ? '파일탐색기' : '문서', folder: pageId === 'root' };
+    const ancestors = new Set(['root']);
+    let parent = item.parentId;
+    while (parent && !ancestors.has(parent)) {
+      ancestors.add(parent);
+      parent = notes.find(note => note.id === parent)?.parentId;
+    }
+    openingLink.current = true;
+    setExpanded(previous => new Set([...previous, ...ancestors]));
+    void openPage.current(item).finally(() => { openingLink.current = false; });
+  }, [editor, loadingTree, pageId, notes]);
+
   async function deleteCurrentPage() {
     if (!canEdit || selection.id === 'root' || creating.current || deletingPage.current) return;
     const targets = new Set([selection.id]);
@@ -419,10 +436,6 @@ export default function DocumentWindow({ onClose, onHelp, ...windowProps }) {
         {expanded.has('root') && <>
           {loadingTree ? <p className="explorer-tree-message">불러오는 중…</p> : treeError ? <div className="explorer-tree-message" role="alert">{treeError}<button onClick={loadTree}>다시 시도</button></div> : roots.map(note => branch(note))}
           {!loadingTree && !treeError && !notes.length && <p className="explorer-tree-message">저장된 문서가 없습니다.</p>}
-          <div className="explorer-tree-row" style={{ paddingLeft: 20 }}>
-            <span className="explorer-tree-spacer" aria-hidden="true"/>
-            <Link className="explorer-node explorer-external" to="/lab-wish" onClick={async event => { event.preventDefault(); if (!creating.current && !deletingPage.current && await finishPending()) navigate('/lab-wish'); }}><img src={folderIcon} alt=""/><span>wish ↗</span></Link>
-          </div>
         </>}
         </div>
       </aside>

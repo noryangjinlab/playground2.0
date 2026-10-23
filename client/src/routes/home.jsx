@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { desktopLink, readDesktopLink } from '../desktopLink';
 import AudioPlayer from '../components/jukebox/AudioPlayer';
 import DocumentWindow from '../components/document/DocumentWindow';
 import AuthWindow from '../components/AuthWindow';
@@ -18,18 +18,31 @@ const iconFiles = {
 function Icon({ type }) {
   return <img className="desktop-icon-art" src={`/images/icon/${iconFiles[type]}`} alt="" draggable={false}/>;
 }
-export default function Home({ audioState, onAudioChange }) {
-  const [welcomeState, setWelcomeState] = useState('closed');
-  const [documentsState, setDocumentsState] = useState('closed');
-  const [authState, setAuthState] = useState('closed');
-  const [browserState, setBrowserState] = useState('closed');
-  const [browserPage, setBrowserPage] = useState('home');
+export default function Home() {
+  const [initialLink] = useState(() => readDesktopLink(window.location.search));
+  const [audioState, onAudioChange] = useState(initialLink.app === 'jukebox' ? 2 : 1);
+  const [welcomeState, setWelcomeState] = useState(initialLink.app === 'welcome' ? 'open' : 'closed');
+  const [documentsState, setDocumentsState] = useState(initialLink.app === 'documents' ? 'open' : 'closed');
+  const [authState, setAuthState] = useState(initialLink.app === 'auth' ? 'open' : 'closed');
+  const [browserState, setBrowserState] = useState(initialLink.app === 'explorer' ? 'open' : 'closed');
+  const [browserPage, setBrowserPage] = useState(initialLink.app === 'explorer' ? initialLink.page : 'home');
+  const [documentPage, setDocumentPage] = useState(initialLink.app === 'documents' ? initialLink.page : 'root');
+  const [authPage, setAuthPage] = useState(initialLink.app === 'auth' ? initialLink.page : 'login');
   const { bringToFront, windowLayer, getActiveWindow } = useWindowStack(['welcome', 'documents', 'music', 'auth', 'browser']);
   const activeWindow = getActiveWindow(id => id === 'welcome' ? welcomeState === 'open' : id === 'documents' ? documentsState === 'open' : id === 'auth' ? authState === 'open' : id === 'browser' ? browserState === 'open' : audioState === 2);
+  useEffect(() => {
+    const app = activeWindow === 'browser' ? 'explorer' : activeWindow === 'music' ? 'jukebox' : activeWindow;
+    const page = app === 'explorer' ? browserPage : app === 'documents' ? documentPage : app === 'auth' ? authPage : null;
+    const url = desktopLink(app, page);
+    if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== url) {
+      window.history.replaceState(null, '', url);
+    }
+  }, [activeWindow, browserPage, documentPage, authPage]);
   const activateBrowser = () => { setBrowserState('open'); bringToFront('browser'); };
   const openBrowser = (page = 'home') => { setBrowserPage(page); activateBrowser(); };
   const openWelcome = () => { setWelcomeState('open'); bringToFront('welcome'); };
   const openDocuments = () => { setDocumentsState('open'); bringToFront('documents'); };
+  const openDocument = id => { setDocumentPage(id); openDocuments(); };
   const openAuth = () => { setAuthState('open'); bringToFront('auth'); };
   const [now, setNow] = useState(() => new Date());
   const [selected, setSelected] = useState([]);
@@ -112,21 +125,21 @@ export default function Home({ audioState, onAudioChange }) {
             Dyson V10 Vacuum Guitar on LIVE</p>
             </article>
           </div>
-          <div className="welcome-actions"><Link to="/lab/f4134acb-f0db-4934-9c18-0f90065d4711" className="win98-button">패치노트 보기</Link></div>
+          <div className="welcome-actions"><button type="button" onClick={() => openDocument('f4134acb-f0db-4934-9c18-0f90065d4711')} className="win98-button">패치노트 보기</button></div>
         </div>
         <footer className="window-status"><span>No copyright ⓒ 2023 noryangjinlab. All rights not reserved.</span><span>Last update 2026.09.26</span></footer>
       </AppWindow>}
     </div>
     <AudioPlayer props={audioState} onSend={onAudioChange} zIndex={windowLayer('music')} onActivate={() => bringToFront('music')}/>
-    {documentsState !== 'closed' && <DocumentWindow onHelp={() => openBrowser('help')} minimized={documentsState === 'minimized'} zIndex={windowLayer('documents')} onActivate={() => bringToFront('documents')} onMinimize={() => setDocumentsState('minimized')} onClose={() => setDocumentsState('closed')}/>}
+    {documentsState !== 'closed' && <DocumentWindow pageId={documentPage} onPageChange={setDocumentPage} onHelp={() => openBrowser('help')} minimized={documentsState === 'minimized'} zIndex={windowLayer('documents')} onActivate={() => bringToFront('documents')} onMinimize={() => setDocumentsState('minimized')} onClose={() => setDocumentsState('closed')}/>}
     {browserState !== 'closed' && <BrowserWindow pageId={browserPage} onPageChange={setBrowserPage} minimized={browserState === 'minimized'} zIndex={windowLayer('browser')} onActivate={() => bringToFront('browser')} onMinimize={() => setBrowserState('minimized')} onClose={() => setBrowserState('closed')}/>}
-    {authState !== 'closed' && <AuthWindow minimized={authState === 'minimized'} zIndex={windowLayer('auth')} onActivate={() => bringToFront('auth')} onMinimize={() => setAuthState('minimized')} onClose={() => setAuthState('closed')}/>}
+    {authState !== 'closed' && <AuthWindow initialMode={authPage} onPageChange={setAuthPage} minimized={authState === 'minimized'} zIndex={windowLayer('auth')} onActivate={() => bringToFront('auth')} onMinimize={() => setAuthState('minimized')} onClose={() => setAuthState('closed')}/>}
     <footer className="win98-taskbar">
       {browserState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'browser' ? 'pressed' : ''}`} onClick={() => activeWindow === 'browser' ? setBrowserState('minimized') : activateBrowser()}><Icon type="net"/><span>@explorer</span></button>}
       {authState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'auth' ? 'pressed' : ''}`} onClick={() => activeWindow === 'auth' ? setAuthState('minimized') : openAuth()}><Icon type="login"/><span>로그인 체계</span></button>}
       {documentsState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'documents' ? 'pressed' : ''}`} onClick={() => activeWindow === 'documents' ? setDocumentsState('minimized') : openDocuments()}><Icon type="folder"/><span>파일탐색기</span></button>}
       {welcomeState !== 'closed' && <button className={`win98-button task-button ${activeWindow === 'welcome' ? 'pressed' : ''}`} onClick={() => activeWindow === 'welcome' ? setWelcomeState('minimized') : openWelcome()}><Icon type="computer"/><span>Welcome</span></button>}
-      {audioState !== 1 && <button className={`win98-button task-button music-task ${activeWindow === 'music' ? 'pressed' : ''}`} onClick={() => activeWindow === 'music' ? onAudioChange(0) : openMusic()}><Icon type="music"/><span>Jukebox.exe</span></button>}
+      {audioState !== 1 && <button className={`win98-button task-button ${activeWindow === 'music' ? 'pressed' : ''}`} onClick={() => activeWindow === 'music' ? onAudioChange(0) : openMusic()}><Icon type="music"/><span>Jukebox.exe</span></button>}
       <time className="system-tray" dateTime={now.toISOString()}>
         <span className="tray-date">{now.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
         <span>{now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>

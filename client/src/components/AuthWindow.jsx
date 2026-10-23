@@ -5,9 +5,10 @@ import '../style/auth-window.css';
 
 const emptyForm = { username: '', password: '', name: '', nickname: '', email: '' };
 
-export default function AuthWindow(windowProps) {
+export default function AuthWindow({ initialMode = 'login', onPageChange, ...windowProps }) {
   const id = useId();
-  const [mode, setMode] = useState('login');
+  const [mode, setMode] = useState(initialMode === 'signup' ? 'signup' : 'login');
+  useEffect(() => { onPageChange?.(mode); }, [mode, onPageChange]);
   const [form, setForm] = useState(emptyForm);
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
